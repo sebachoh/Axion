@@ -65,6 +65,14 @@ function pxToTime(py: number): string {
   return `${clampedH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 }
 
+function getEndTime(startTime: string, durationMins: number): string {
+  const [h, m] = startTime.split(':').map(Number);
+  const totalMins = h * 60 + m + durationMins;
+  const endH = Math.floor(totalMins / 60) % 24;
+  const endM = totalMins % 60;
+  return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+}
+
 export default function TimeBlockingDashboard({ initialBlocks, selectedDate, initialTasks, bankActivities }: Props) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [ghostTop, setGhostTop] = useState<number | null>(null);
@@ -211,32 +219,32 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
           <form action={addBankActivity} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Crea Nueva Actividad</label>
-                <input name="name" placeholder="Nombre (ej. Gimnasio, Almuerzo...)" required style={{ padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
+                <input name="name" placeholder="Nombre (ej. Gym, Almuerzo...)" required style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
              </div>
              
-             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Emoji</label>
-                  <input name="icon" placeholder="🏠" style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Emoji</label>
+                  <input name="icon" placeholder="🏠" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Duración (m)</label>
-                  <input name="default_mins" type="number" defaultValue={60} style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Duración (min)</label>
+                  <input name="default_mins" type="number" defaultValue={60} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
                 </div>
              </div>
 
-             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
+             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Color Sugerido</label>
-                  <select name="color" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#000', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }}>
-                    <option value="#bfdbfe">Blue / Salud</option>
-                    <option value="#fbcfe8">Pink / Rutinas</option>
-                    <option value="#bbf7d0">Green / Relax</option>
-                    <option value="#fef68a">Yellow / Fun</option>
-                    <option value="#e9d5ff">Purple / Creative</option>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Color</label>
+                  <select name="color" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#000', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
+                    <option value="#bfdbfe">Blue</option>
+                    <option value="#fbcfe8">Pink</option>
+                    <option value="#bbf7d0">Green</option>
+                    <option value="#fef68a">Yellow</option>
+                    <option value="#e9d5ff">Purple</option>
                   </select>
                 </div>
-                <button type="submit" className="glass-button" style={{ padding: '10px 18px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800 }}>Añadir al Banco</button>
+                <button type="submit" className="glass-button" style={{ padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800, fontSize: '0.8rem' }}>Añadir</button>
              </div>
           </form>
         </div>
@@ -301,106 +309,117 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
       </div>
 
       {/* ── Panel Central: Calendario ── */}
-      <div
-        ref={calendarRef}
-        className="glass-panel"
-        style={{ position: 'relative', height: `${TOTAL_HOURS * 60 * PIXELS_PER_MINUTE}px`, overflow: 'hidden', background: 'rgba(0,0,0,0.1)' }}
-        onDragOver={handleCalendarDragOver}
-        onDrop={handleCalendarDrop}
-        onDragLeave={handleCalendarDragLeave}
+      <div 
+        className="glass-panel" 
+        style={{ 
+          height: '650px', 
+          overflowY: 'auto', 
+          position: 'relative',
+          padding: '0', 
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255,255,255,0.1) transparent'
+        }}
       >
-        {/* Hour markers */}
-        {Array.from({ length: TOTAL_HOURS + 1 }).map((_, i) => {
-          const hour = START_HOUR + i;
-          return (
-            <div key={hour} style={{ position: 'absolute', top: `${i * 60 * PIXELS_PER_MINUTE}px`, left: 0, right: 0, borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
-              <span style={{ position: 'absolute', top: '-10px', left: '8px', fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-                {hour.toString().padStart(2, '0')}:00
+        <div
+          ref={calendarRef}
+          style={{ position: 'relative', height: `${TOTAL_HOURS * 60 * PIXELS_PER_MINUTE}px`, background: 'rgba(0,0,0,0.1)' }}
+          onDragOver={handleCalendarDragOver}
+          onDrop={handleCalendarDrop}
+          onDragLeave={handleCalendarDragLeave}
+        >
+          {/* Hour markers */}
+          {Array.from({ length: TOTAL_HOURS + 1 }).map((_, i) => {
+            const hour = START_HOUR + i;
+            return (
+              <div key={hour} style={{ position: 'absolute', top: `${i * 60 * PIXELS_PER_MINUTE}px`, left: 0, right: 0, borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
+                <span style={{ position: 'absolute', top: '-10px', left: '8px', fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                  {hour.toString().padStart(2, '0')}:00
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Ghost drop preview */}
+          {ghostTop !== null && (draggingTask || movingBlock || draggingBankActivity) && (
+            <div style={{
+              position: 'absolute', top: `${ghostTop}px`, left: '60px', right: '8px',
+              height: `${(movingBlock?.durationMins ?? draggingBankActivity?.defaultMins ?? 120) * PIXELS_PER_MINUTE}px`,
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px dashed #fff',
+              borderRadius: '6px', zIndex: 40, pointerEvents: 'none',
+            }} />
+          )}
+
+          {/* Rendered blocks */}
+          {blocksToday.map(block => (
+            <div key={block.id}
+              draggable
+              onDragStart={() => setMovingBlock(block)}
+              onDragEnd={() => { setMovingBlock(null); setGhostTop(null); }}
+              onClick={() => setEditingBlock(block)}
+              style={{
+                position: 'absolute',
+                top: `${calculateTop(block.startTime)}px`,
+                left: '60px', right: '8px',
+                height: `${calculateHeight(block.durationMins)}px`,
+                background: block.color, borderRadius: '6px',
+                padding: '8px 12px', color: '#1d1d1f',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
+                overflow: 'hidden', zIndex: 10, cursor: 'move',
+                borderLeft: '4px solid rgba(0,0,0,0.25)',
+                transition: 'opacity 0.2s',
+                opacity: movingBlock?.id === block.id ? 0.3 : 1
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{block.title}</span>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <span style={{ opacity: 0.4, fontSize: '0.7rem' }}>✎</span>
+                  <form action={deleteTimeBlock.bind(null, block.id)}>
+                    <button type="submit" style={{ background: 'transparent', border: 'none', color: 'rgba(0,0,0,0.4)', cursor: 'pointer' }}>✕</button>
+                  </form>
+                </div>
+              </div>
+              <span style={{ fontSize: '0.73rem', opacity: 0.75, marginTop: '2px', fontWeight: 600 }}>
+                {block.startTime} - {getEndTime(block.startTime, block.durationMins)} ({block.durationMins}m)
               </span>
             </div>
-          );
-        })}
+          ))}
 
-        {/* Ghost drop preview */}
-        {ghostTop !== null && (draggingTask || movingBlock || draggingBankActivity) && (
-          <div style={{
-            position: 'absolute', top: `${ghostTop}px`, left: '60px', right: '8px',
-            height: `${(movingBlock?.durationMins ?? draggingBankActivity?.defaultMins ?? 120) * PIXELS_PER_MINUTE}px`,
-            background: 'rgba(255,255,255,0.1)',
-            border: '2px dashed #fff',
-            borderRadius: '6px', zIndex: 40, pointerEvents: 'none',
-          }} />
-        )}
-
-        {/* Rendered blocks */}
-        {blocksToday.map(block => (
-          <div key={block.id}
-            draggable
-            onDragStart={() => setMovingBlock(block)}
-            onDragEnd={() => { setMovingBlock(null); setGhostTop(null); }}
-            onClick={() => setEditingBlock(block)}
-            style={{
-              position: 'absolute',
-              top: `${calculateTop(block.startTime)}px`,
-              left: '60px', right: '8px',
-              height: `${calculateHeight(block.durationMins)}px`,
-              background: block.color, borderRadius: '6px',
-              padding: '8px 12px', color: '#1d1d1f',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
-              overflow: 'hidden', zIndex: 10, cursor: 'move',
-              borderLeft: '4px solid rgba(0,0,0,0.25)',
-              transition: 'opacity 0.2s',
-              opacity: movingBlock?.id === block.id ? 0.3 : 1
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{block.title}</span>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <span style={{ opacity: 0.4, fontSize: '0.7rem' }}>✎</span>
-                <form action={deleteTimeBlock.bind(null, block.id)}>
-                  <button type="submit" style={{ background: 'transparent', border: 'none', color: 'rgba(0,0,0,0.4)', cursor: 'pointer' }}>✕</button>
+          {/* Edit Modal (Inline Overlay) */}
+          {editingBlock && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+              <div className="glass-panel" style={{ width: '100%', maxWidth: '300px', padding: '1.5rem', background: '#2d2d2f', color: '#fff' }}>
+                <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>Editar Bloque</h4>
+                <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Título</label>
+                    <input name="title" defaultValue={editingBlock.title} required style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid #444' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Duración (minutos)</label>
+                    <input name="duration_mins" type="number" defaultValue={editingBlock.durationMins} step={15} required style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid #444' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Color</label>
+                    <select name="color" defaultValue={editingBlock.color} style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#000', border: '1px solid #444' }}>
+                      <option value="#bbf7d0">🟢 Trabajo</option>
+                      <option value="#bfdbfe">🔵 Salud</option>
+                      <option value="#fbcfe8">🩷 Rutinas</option>
+                      <option value="#fef68a">🟡 Ocio</option>
+                      <option value="#e9d5ff">Lila 🟣 Creatividad</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <button type="button" onClick={() => setEditingBlock(null)} style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none' }}>Cancelar</button>
+                    <button type="submit" style={{ flex: 1, padding: '10px', borderRadius: '6px', background: '#fff', color: '#000', border: 'none', fontWeight: 700 }}>Guardar</button>
+                  </div>
                 </form>
               </div>
             </div>
-            <span style={{ fontSize: '0.73rem', opacity: 0.75, marginTop: '2px', fontWeight: 600 }}>
-              {block.startTime} · {block.durationMins}m
-            </span>
-          </div>
-        ))}
-
-        {/* Edit Modal (Inline Overlay) */}
-        {editingBlock && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-            <div className="glass-panel" style={{ width: '100%', maxWidth: '300px', padding: '1.5rem', background: '#2d2d2f', color: '#fff' }}>
-              <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>Editar Bloque</h4>
-              <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Título</label>
-                  <input name="title" defaultValue={editingBlock.title} required style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid #444' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Duración (minutos)</label>
-                  <input name="duration_mins" type="number" defaultValue={editingBlock.durationMins} step={15} required style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid #444' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Color</label>
-                  <select name="color" defaultValue={editingBlock.color} style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#000', border: '1px solid #444' }}>
-                    <option value="#bbf7d0">🟢 Trabajo</option>
-                    <option value="#bfdbfe">🔵 Salud</option>
-                    <option value="#fbcfe8">🩷 Rutinas</option>
-                    <option value="#fef68a">🟡 Ocio</option>
-                    <option value="#e9d5ff">Lila 🟣 Creatividad</option>
-                  </select>
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  <button type="button" onClick={() => setEditingBlock(null)} style={{ flex: 1, padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none' }}>Cancelar</button>
-                  <button type="submit" style={{ flex: 1, padding: '10px', borderRadius: '6px', background: '#fff', color: '#000', border: 'none', fontWeight: 700 }}>Guardar</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* ── Panel Derecho: Métricas ── */}

@@ -367,20 +367,31 @@ export default function LanguagePortal({ config, words, resources, skills, topic
             </form>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+            gap: '1rem' 
+          }}>
             {topics.length === 0 ? (
-              <p style={{ textAlign: 'center', opacity: 0.5, fontStyle: 'italic', padding: '2rem' }}>Crea temas para organizar tu conocimiento profundo.</p>
+              <p style={{ gridColumn: '1/-1', textAlign: 'center', opacity: 0.5, fontStyle: 'italic', padding: '2rem' }}>Crea temas para organizar tu conocimiento profundo.</p>
             ) : topics.map(topic => (
-              <div key={topic.id} className="glass-panel" style={{ padding: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                  <h4 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', color: config.accentColor }}>{topic.title}</h4>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div key={topic.id} className="glass-panel" style={{ 
+                padding: editingTopicId === topic.id ? '1.5rem' : '1.25rem', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '1rem',
+                gridColumn: editingTopicId === topic.id ? '1 / -1' : 'auto',
+                transition: 'all 0.3s ease'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.02em', color: config.accentColor, margin: 0 }}>{topic.title}</h4>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {editingTopicId !== topic.id ? (
-                      <button onClick={() => startEditingTopic(topic)} className="glass-button" style={{ fontSize: '0.8rem', padding: '6px 16px' }}>Editar Notas</button>
+                      <button onClick={() => startEditingTopic(topic)} style={{ background: 'transparent', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem' }}>✎</button>
                     ) : (
-                      <button onClick={() => handleSaveTopic(topic.id)} className="glass-button" style={{ fontSize: '0.8rem', background: '#1dd1a1', color: '#fff', padding: '6px 16px' }}>Guardar Cambios</button>
+                      <button onClick={() => handleSaveTopic(topic.id)} style={{ padding: '4px 10px', borderRadius: '4px', background: '#1dd1a1', color: '#fff', border: 'none', fontSize: '0.75rem', fontWeight: 700 }}>Guardar</button>
                     )}
-                    <button onClick={() => deleteTopic(topic.id, config.slug)} style={{ background: 'transparent', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: '1.2rem', padding: '0 8px' }}>✕</button>
+                    <button onClick={() => deleteTopic(topic.id, config.slug)} style={{ background: 'transparent', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: '0.9rem' }}>✕</button>
                   </div>
                 </div>
                 
@@ -390,18 +401,20 @@ export default function LanguagePortal({ config, words, resources, skills, topic
                     onChange={e => setTopicDraft(e.target.value)}
                     placeholder="Escribe aquí tus notas detalladas..."
                     style={{ 
-                      width: '100%', minHeight: '300px', padding: '1.5rem', borderRadius: '12px', 
+                      width: '100%', minHeight: '200px', padding: '1rem', borderRadius: '8px', 
                       background: 'rgba(0,0,0,0.3)', color: '#fff', border: '1px solid var(--glass-border)',
-                      outline: 'none', fontFamily: 'monospace', lineHeight: '1.6', fontSize: '1rem'
+                      outline: 'none', fontFamily: 'monospace', lineHeight: '1.6', fontSize: '0.95rem'
                     }}
                   />
                 ) : (
                   <div style={{ 
-                    whiteSpace: 'pre-wrap', fontSize: '1rem', color: 'rgba(255,255,255,0.9)', 
-                    lineHeight: '1.8', minHeight: '100px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px',
-                    borderLeft: `4px solid ${config.accentColor}`
-                  }}>
-                    {topic.content || 'Aún no has agregado notas para este tema. Haz clic en "Editar Notas" para empezar.'}
+                    fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', 
+                    lineHeight: '1.6', maxHeight: '100px', overflow: 'hidden', 
+                    display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical',
+                    background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px',
+                    borderLeft: `3px solid ${config.accentColor}`, cursor: 'pointer'
+                  }} onClick={() => startEditingTopic(topic)}>
+                    {topic.content || 'Sin notas.'}
                   </div>
                 )}
               </div>

@@ -13,6 +13,8 @@ export interface DashboardData {
   journalMoodToday: string | null;
   pendingTasksHighPriority: number;
   financialBalance: number;
+  routineType: 'mañana' | 'noche';
+  routineTasks: { id: string; name: string; completed: boolean }[];
 }
 
 function getTodayStr() {
@@ -54,6 +56,19 @@ export function getDashboardData(): DashboardData {
   const financeRows = db.prepare('SELECT type, amount FROM finance_transactions').all() as any[];
   const balance = financeRows.reduce((acc, t) => t.type === 'income' ? acc + t.amount : acc - t.amount, 0);
 
+  // Routines Connection
+  const hour = new Date().getHours();
+  const routineType: 'mañana' | 'noche' = hour < 15 ? 'mañana' : 'noche';
+  const dbType = routineType === 'mañana' ? 'morning' : 'night';
+
+  const routineRows = db.prepare(`
+    SELECT rt.id, rt.task_name as name, 
+    EXISTS(SELECT 1 FROM routine_completions rc WHERE rc.task_id = rt.id AND rc.completion_date = @today) as completed
+    FROM routine_tasks rt
+    WHERE rt.type = @dbType
+    ORDER BY rt.order_index ASC
+  `).all({ dbType, today }) as any[];
+
   return {
     date: today,
     habits,
@@ -65,6 +80,8 @@ export function getDashboardData(): DashboardData {
     journalMoodToday: journalRow?.mood ?? null,
     pendingTasksHighPriority: highPriority,
     financialBalance: balance,
+    routineType,
+    routineTasks: routineRows,
   };
 }
 

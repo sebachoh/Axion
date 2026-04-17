@@ -28,150 +28,213 @@ export default async function DashboardPage() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  const habitsTotal = data.habits.length;
-  const habitsCompleted = data.habitsCompletedToday;
-  const habitsPct = habitsTotal > 0 ? Math.round((habitsCompleted / habitsTotal) * 100) : 0;
+  // Calculate Routine Progress
+  const totalRoutine = data.routineTasks.length;
+  const completedRoutine = data.routineTasks.filter(t => t.completed).length;
+  const routinePct = totalRoutine > 0 ? Math.round((completedRoutine / totalRoutine) * 100) : 0;
+  
   const hoursBlocked = Math.round(data.totalTimeBlockedMins / 60 * 10) / 10;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '3rem' }}>
 
-      {/* ── Hero Banner ── */}
+      {/* ── Hero Banner (Premium Minimalist Architecture) ── */}
       <div className="full-bleed" style={{
         width: 'calc(100% + 4rem)',
         marginTop: 'calc(-1 * var(--spacing-xl))',
-        height: '280px',
+        height: '320px',
         position: 'relative',
-        background: 'url(https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1400&q=80) center/cover no-repeat', // Nature/Focus
+        background: 'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop) center/cover no-repeat', 
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        padding: '3rem',
+        padding: '3.5rem 4rem',
         marginBottom: '-1rem',
+        overflow: 'hidden'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.85) 100%)' }} />
+        
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', fontWeight: 600, textTransform: 'capitalize', marginBottom: '0.5rem' }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', fontWeight: 600, textTransform: 'capitalize', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
             {currentDate}
           </p>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: 900, letterSpacing: '-0.06em', lineHeight: 1.0, color: '#fff', textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
-            LifeOS Dashboard
+          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.07em', lineHeight: 0.95, color: '#fff', textShadow: '0 4px 40px rgba(0,0,0,0.6)' }}>
+            Axion LifeOS
+            <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: 400, opacity: 0.6, letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '0.5rem' }}>Ecosystem of Focus</span>
           </h1>
         </div>
-        
+
         {data.journalMoodToday && (
           <div style={{ 
-            position: 'absolute', top: '2rem', right: '3rem', textAlign: 'center', 
-            padding: '1rem 1.75rem', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)', 
-            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '16px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+            position: 'absolute', top: '3rem', right: '4rem', textAlign: 'center', 
+            minWidth: '120px', padding: '1.25rem', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(25px)', 
+            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '24px',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
           }}>
-            <div style={{ fontSize: '2.5rem' }}>{MOOD_EMOJIS[data.journalMoodToday] || '😶'}</div>
-            <p style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 700, marginTop: '6px', opacity: 0.8 }}>Mood Actual</p>
+            <div style={{ fontSize: '3rem' }}>{MOOD_EMOJIS[data.journalMoodToday] || '😐'}</div>
+            <p style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 800, marginTop: '8px', opacity: 0.9, letterSpacing: '0.05em' }}>MINDSET</p>
           </div>
         )}
       </div>
 
-      {/* ── Quick Stats Row ── */}
+      {/* ── Stats Pulse Row ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
         {[
-          { label: 'Hábitos Hoy', value: `${habitsCompleted}/${habitsTotal}`, sub: `${habitsPct}%`, color: '#1dd1a1', icon: '🌱' },
-          { label: 'Tareas Hoy', value: data.tasksToday.length, sub: 'Pendientes', color: '#feca57', icon: '⚡' },
-          { label: 'Time Blocking', value: `${hoursBlocked}h`, sub: 'Agendadas', color: '#a29bfe', icon: '🗓️' },
-          { label: 'Financial Balance', value: `$${data.financialBalance.toLocaleString()}`, sub: 'Capital total', color: '#2ed573', icon: '💰' },
-          { label: 'Urgencia', value: data.pendingTasksHighPriority, sub: 'Fuego', color: '#ff6b6b', icon: '🔥' },
+          { label: `Rutina ${data.routineType}`, value: `${completedRoutine}/${totalRoutine}`, sub: `${routinePct}% completado`, color: '#1dd1a1', icon: data.routineType === 'mañana' ? '🌅' : '🌙' },
+          { label: 'Tareas Hoy', value: data.tasksToday.length, sub: 'En Agenda', color: '#feca57', icon: '⚡' },
+          { label: 'Time Blocking', value: `${hoursBlocked}h`, sub: 'Estructura', color: '#a29bfe', icon: '🗓️' },
+          { label: 'Wealth Balance', value: `$${data.financialBalance.toLocaleString()}`, sub: 'Wealth Mirror', color: '#2ed573', icon: '💰' },
+          { label: 'Urgencia', value: data.pendingTasksHighPriority, sub: 'Puntos de Fuego', color: '#ff6b6b', icon: '🔥' },
         ].map(stat => (
-          <div key={stat.label} className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div key={stat.label} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '3rem', opacity: 0.05, transform: 'rotate(15deg)' }}>{stat.icon}</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.2rem' }}>{stat.icon}</span>
-              <span style={{ fontWeight: 800, fontSize: '1.4rem', color: stat.color }}>{stat.value}</span>
+              <span style={{ fontSize: '1.4rem' }}>{stat.icon}</span>
+              <span style={{ fontWeight: 800, fontSize: '1.6rem', color: stat.color }}>{stat.value}</span>
             </div>
-            <p style={{ fontWeight: 700, fontSize: '0.8rem', margin: 0 }}>{stat.label}</p>
-            <p style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', margin: 0 }}>{stat.sub}</p>
+            <p style={{ fontWeight: 800, fontSize: '0.85rem', margin: 0 }}>{stat.label}</p>
+            <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', margin: 0 }}>{stat.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* ── Contextual Grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
+      {/* ── The Bento Ecosystem ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr)', gap: '1.5rem', alignItems: 'start' }}>
         
-        {/* Sector: Foco y Tareas */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>🎯 Foco Táctico</h3>
-          {data.tasksToday.length === 0 ? (
-            <p style={{ opacity: 0.5, fontStyle: 'italic', fontSize: '0.9rem' }}>Agenda limpia. ¡Disfruta el día!</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {data.tasksToday.map(t => (
-                <div key={t.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px', borderRadius: '8px', borderLeft: `3px solid ${getPriorityColor(t.priority)}`, background: 'rgba(255,255,255,0.03)' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{t.title}</span>
-                    {t.notes && <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{t.notes}</span>}
+        {/* Column 1: EXECUTION */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* Tareas Tácticas */}
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>⚡ Táctico Hoy</h3>
+              <Link href="/workspace/tareas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Ver todo</Link>
+            </div>
+            {data.tasksToday.length === 0 ? (
+              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Despejado. Tiempo de reflexión.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {data.tasksToday.map(t => (
+                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', borderLeft: `4px solid ${getPriorityColor(t.priority)}` }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.title}</span>
+                    </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Timeblocking Timeline */}
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>🗓️ Estructura</h3>
+            {data.timeBlocksToday.length === 0 ? (
+              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Sin bloques hoy.</p>
+            ) : (
+              <div style={{ borderLeft: '2px solid rgba(255,255,255,0.05)', paddingLeft: '1.5rem', marginLeft: '0.25rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {data.timeBlocksToday.map((b, i) => (
+                  <div key={i} style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '6px', left: '-1.85rem', width: '10px', height: '10px', borderRadius: '50%', background: b.color, boxShadow: `0 0 10px ${b.color}` }} />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{b.title}</span>
+                      <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>{b.startTime} - {b.durationMins} min</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Link href="/workspace/planeacion" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Abrir Planeador →</Link>
+          </div>
+        </div>
+
+        {/* Column 2: RHYTHM */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* Active Routine tasks instead of general habits */}
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>{data.routineType === 'mañana' ? '🌅 Mañana' : '🌙 Noche'}</h3>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1dd1a1' }}>{routinePct}%</span>
+            </div>
+            
+            <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${routinePct}%`, background: '#1dd1a1', transition: 'width 1s ease' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {data.routineTasks.length === 0 ? (
+                <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Sin tareas configuradas para esta fase.</p>
+              ) : data.routineTasks.map(task => (
+                <div key={task.id} style={{ 
+                  display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', 
+                  borderRadius: '10px', background: task.completed ? 'rgba(29,209,161,0.05)' : 'rgba(255,255,255,0.02)',
+                  opacity: task.completed ? 0.6 : 1
+                }}>
+                  <div style={{ 
+                    width: '18px', height: '18px', borderRadius: '4px', border: '2px solid rgba(255,255,255,0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: task.completed ? '#1dd1a1' : 'transparent'
+                  }}>
+                    {task.completed && <span style={{ fontSize: '10px', color: '#000' }}>✓</span>}
+                  </div>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, textDecoration: task.completed ? 'line-through' : 'none' }}>{task.name}</span>
                 </div>
               ))}
             </div>
-          )}
-          <Link href="/workspace/tareas" style={{ fontSize: '0.8rem', color: '#feca57', textDecoration: 'none', marginTop: '1rem', fontWeight: 600 }}>Administrar tareas →</Link>
-        </div>
-
-        {/* Sector: Journal Reflection */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>📓 Bitácora</h3>
-          {latestJournal ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ fontStyle: 'italic', fontSize: '0.95rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px' }}>
-                "{latestJournal.content.length > 120 ? latestJournal.content.substring(0, 120) + '...' : latestJournal.content}"
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Última reflexión guardada.</p>
-            </div>
-          ) : (
-            <p style={{ opacity: 0.5, fontStyle: 'italic', fontSize: '0.9rem' }}>No has escrito nada hoy.</p>
-          )}
-          <Link href="/lifestyle/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', textDecoration: 'none', marginTop: '1rem', fontWeight: 600 }}>Ir al Journal →</Link>
-        </div>
-
-        {/* Sector: Financial Milestone */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>💰 Wealth Mirror</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-             <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Balance Neto Actual</p>
-             <h4 style={{ fontSize: '1.8rem', fontWeight: 800 }}>${data.financialBalance.toLocaleString()}</h4>
-             <div style={{ height: '4px', background: 'rgba(46, 213, 115, 0.1)', borderRadius: '2px', overflow: 'hidden', marginTop: '0.5rem' }}>
-                <div style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #2ed573, #1dd1a1)' }} />
-             </div>
+            <Link href="/rutinas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Gestionar Rutinas →</Link>
           </div>
-          <Link href="/lifestyle/finanzas" style={{ fontSize: '0.8rem', color: '#2ed573', textDecoration: 'none', marginTop: '1rem', fontWeight: 600 }}>Ver Finanzas →</Link>
-        </div>
 
-      </div>
-
-      {/* ── Quick Navigation ── */}
-      <div>
-        <p style={{ fontWeight: 800, marginBottom: '1.25rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.75rem' }}>
-          Launcher Central
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem' }}>
-          {[
-            { label: 'Planeación', href: '/workspace/planeacion', icon: '📅' },
-            { label: 'Tareas', href: '/workspace/tareas', icon: '✅' },
-            { label: 'Rutinas', href: '/rutinas', icon: '🌀' },
-            { label: 'Journal', href: '/lifestyle/journal', icon: '📓' },
-            { label: 'Finanzas', href: '/lifestyle/finanzas', icon: '💰' },
-            { label: 'Alternancia', href: '/workspace/alternancia', icon: '🎯' },
-            { label: 'Idiomas', href: '/academia/idiomas', icon: '🌍' },
-            { label: 'Careers', href: '/academia/careers', icon: '💻' },
-          ].map(item => (
-            <Link key={item.href} href={item.href} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer', textAlign: 'center', transition: 'transform 0.2s ease' }}>
-                <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
-                <span style={{ fontWeight: 700, fontSize: '0.8rem' }}>{item.label}</span>
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>📔 Bitácora</h3>
+            {latestJournal ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ 
+                  fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.85)', 
+                  lineHeight: 1.6, background: 'rgba(255,255,255,0.05)', 
+                  padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  "{latestJournal.content.length > 150 ? latestJournal.content.substring(0, 150) + '...' : latestJournal.content}"
+                </div>
               </div>
-            </Link>
-          ))}
+            ) : (
+              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Pensamiento limpio hoy.</p>
+            )}
+            <Link href="/lifestyle/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', fontWeight: 700 }}>Escribir ahora →</Link>
+          </div>
         </div>
-      </div>
 
+        {/* Column 3: WEALTH & LAUNCHER */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '4px solid #2ed573' }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>💰 Wealth Mirror</h3>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+               <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>Balance Neto</span>
+               <h4 style={{ fontSize: '2.5rem', fontWeight: 900 }}>${data.financialBalance.toLocaleString()}</h4>
+            </div>
+            <Link href="/lifestyle/finanzas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Wealth Engine →</Link>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '2rem', flex: 1 }}>
+            <h3 style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem' }}>Launcher</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+              {[
+                { label: 'Idiomas', href: '/academia/idiomas', icon: '🌍' },
+                { label: 'Careers', href: '/academia/careers', icon: '💻' },
+                { label: 'Proyectos', href: '/workspace/proyectos', icon: '🚀' },
+                { label: 'Alternancia', href: '/workspace/alternancia', icon: '🎯' },
+              ].map(item => (
+                <Link key={item.href} href={item.href} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ padding: '0.75rem', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                    <span style={{ fontWeight: 600, fontSize: '0.75rem' }}>{item.label}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
