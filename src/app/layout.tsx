@@ -51,7 +51,7 @@ export default function RootLayout({
               {/* Personal */}
               <div className="sidebar-section">
                 <span className="sidebar-section-title">👤 Personal</span>
-                <Link href="/workspace/journal" className="sidebar-link">Journal</Link>
+                <Link href="/journal" className="sidebar-link">Journal</Link>
                 <Link href="/finanzas" className="sidebar-link">Finanzas</Link>
               </div>
 

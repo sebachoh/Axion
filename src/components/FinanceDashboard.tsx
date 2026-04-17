@@ -7,7 +7,7 @@ import {
   addGoal, 
   updateGoalAmount, 
   deleteGoal 
-} from '@/app/lifestyle/finanzas/actions';
+} from '@/app/finanzas/actions';
 
 export interface Transaction {
   id: string;
@@ -76,15 +76,15 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
             <form action={addTransaction} style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr 120px', gap: '1rem', alignItems: 'flex-end' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Tipo</label>
-                <select name="type" style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#000', border: '1px solid var(--glass-border)' }}>
-                  <option value="expense">Gasto</option>
-                  <option value="income">Ingreso</option>
+                <select name="type" style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)' }}>
+                  <option value="expense" style={{ color: '#000' }}>Gasto</option>
+                  <option value="income" style={{ color: '#000' }}>Ingreso</option>
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Categoría</label>
-                <select name="category" style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#000', border: '1px solid var(--glass-border)' }}>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <select name="category" style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)' }}>
+                  {CATEGORIES.map(c => <option key={c} value={c} style={{ color: '#000' }}>{c}</option>)}
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -105,7 +105,13 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
             <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem' }}>Historial Reciente</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {transactions.length === 0 ? (
-                <p style={{ opacity: 0.5, fontStyle: 'italic', textAlign: 'center', padding: '2rem' }}>Sin movimientos registrados.</p>
+                <div style={{ textAlign: 'center', padding: '3rem 1rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ fontSize: '3rem', opacity: 0.3 }}>📥</div>
+                  <p style={{ opacity: 0.5, fontStyle: 'italic', fontSize: '1rem' }}>Wealth Engine está listo.</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', maxWidth: '300px' }}>
+                    Registra tu primer movimiento arriba para empezar a trackear tu balance neto y metas.
+                  </p>
+                </div>
               ) : transactions.map(t => (
                 <div key={t.id} style={{ 
                   display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', 

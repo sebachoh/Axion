@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { addJournalEntry, deleteJournalEntry } from '@/app/lifestyle/journal/actions';
+import { addJournalEntry, deleteJournalEntry } from '@/app/journal/actions';
 
 export interface JournalEntry {
   id: string;

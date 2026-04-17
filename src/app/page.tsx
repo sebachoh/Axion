@@ -20,9 +20,20 @@ async function getLatestJournalEntry() {
   return db.prepare('SELECT content FROM journal_entries ORDER BY created_at DESC LIMIT 1').get() as { content: string } | undefined;
 }
 
+function getEndTime(startTime: string, durationMins: number): string {
+  const [h, m] = startTime.split(':').map(Number);
+  const totalMins = h * 60 + m + durationMins;
+  const endH = Math.floor(totalMins / 60) % 24;
+  const endM = totalMins % 60;
+  return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+}
+
 export default async function DashboardPage() {
   const data = getDashboardData();
   const latestJournal = await getLatestJournalEntry();
+
+  const now = new Date();
+  const currentHourMins = now.getHours() * 60 + now.getMinutes();
 
   const currentDate = new Date().toLocaleDateString('es-ES', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -34,6 +45,21 @@ export default async function DashboardPage() {
   const routinePct = totalRoutine > 0 ? Math.round((completedRoutine / totalRoutine) * 100) : 0;
   
   const hoursBlocked = Math.round(data.totalTimeBlockedMins / 60 * 10) / 10;
+
+  // Find Current & Next Focus
+  const sortedBlocks = [...data.timeBlocksToday].sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const currentBlock = sortedBlocks.find(b => {
+    const [h, m] = b.startTime.split(':').map(Number);
+    const startTotal = h * 60 + m;
+    const endTotal = startTotal + b.durationMins;
+    return currentHourMins >= startTotal && currentHourMins < endTotal;
+  });
+  
+  const nextBlock = sortedBlocks.find(b => {
+    const [h, m] = b.startTime.split(':').map(Number);
+    const startTotal = h * 60 + m;
+    return startTotal > currentHourMins;
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '3rem' }}>
@@ -75,6 +101,31 @@ export default async function DashboardPage() {
             <p style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 800, marginTop: '8px', opacity: 0.9, letterSpacing: '0.05em' }}>MINDSET</p>
           </div>
         )}
+      </div>
+
+      {/* ── Live Focus Widget ── */}
+      <div className="glass-panel" style={{ 
+        padding: '1.5rem 2.5rem', margin: '0 -0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: 'linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
+        borderLeft: '5px solid var(--color-text)', borderRadius: '16px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          <div>
+            <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, fontWeight: 700 }}>Ahora Mismo</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+               <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{currentBlock ? currentBlock.title : 'Tiempo Libre / Reflexión'}</h2>
+               {currentBlock && <span style={{ padding: '2px 10px', borderRadius: '20px', background: currentBlock.color, color: '#000', fontSize: '0.7rem', fontWeight: 800 }}>HASTA {getEndTime(currentBlock.startTime, currentBlock.durationMins)}</span>}
+            </div>
+          </div>
+          <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
+          <div>
+            <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, fontWeight: 700 }}>A Continuación</span>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)' }}>
+              {nextBlock ? `${nextBlock.title} (${nextBlock.startTime})` : 'Fin de la jornada'}
+            </p>
+          </div>
+        </div>
+        <Link href="/workspace/planeacion" className="glass-button" style={{ padding: '10px 20px', fontSize: '0.8rem', fontWeight: 700 }}>Ver Horario Completo</Link>
       </div>
 
       {/* ── Stats Pulse Row ── */}
@@ -137,7 +188,7 @@ export default async function DashboardPage() {
                     <div style={{ position: 'absolute', top: '6px', left: '-1.85rem', width: '10px', height: '10px', borderRadius: '50%', background: b.color, boxShadow: `0 0 10px ${b.color}` }} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{b.title}</span>
-                      <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>{b.startTime} - {b.durationMins} min</span>
+                      <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>{b.startTime} - {getEndTime(b.startTime, b.durationMins)} ({b.durationMins}m)</span>
                     </div>
                   </div>
                 ))}
@@ -150,7 +201,7 @@ export default async function DashboardPage() {
         {/* Column 2: RHYTHM */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
-          {/* Active Routine tasks instead of general habits */}
+          {/* Active Routine tasks */}
           <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>{data.routineType === 'mañana' ? '🌅 Mañana' : '🌙 Noche'}</h3>
@@ -183,27 +234,9 @@ export default async function DashboardPage() {
             </div>
             <Link href="/rutinas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Gestionar Rutinas →</Link>
           </div>
-
-          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>📔 Bitácora</h3>
-            {latestJournal ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ 
-                  fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.85)', 
-                  lineHeight: 1.6, background: 'rgba(255,255,255,0.05)', 
-                  padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)'
-                }}>
-                  "{latestJournal.content.length > 150 ? latestJournal.content.substring(0, 150) + '...' : latestJournal.content}"
-                </div>
-              </div>
-            ) : (
-              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Pensamiento limpio hoy.</p>
-            )}
-            <Link href="/lifestyle/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', fontWeight: 700 }}>Escribir ahora →</Link>
-          </div>
         </div>
 
-        {/* Column 3: WEALTH & LAUNCHER */}
+        {/* Column 3: WEALTH & REFLECTION */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '4px solid #2ed573' }}>
             <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>💰 Wealth Mirror</h3>
@@ -211,26 +244,25 @@ export default async function DashboardPage() {
                <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>Balance Neto</span>
                <h4 style={{ fontSize: '2.5rem', fontWeight: 900 }}>${data.financialBalance.toLocaleString()}</h4>
             </div>
-            <Link href="/lifestyle/finanzas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Wealth Engine →</Link>
+            <Link href="/finanzas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Wealth Engine →</Link>
           </div>
 
-          <div className="glass-panel" style={{ padding: '2rem', flex: 1 }}>
-            <h3 style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem' }}>Launcher</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
-              {[
-                { label: 'Idiomas', href: '/academia/idiomas', icon: '🌍' },
-                { label: 'Careers', href: '/academia/careers', icon: '💻' },
-                { label: 'Proyectos', href: '/workspace/proyectos', icon: '🚀' },
-                { label: 'Alternancia', href: '/workspace/alternancia', icon: '🎯' },
-              ].map(item => (
-                <Link key={item.href} href={item.href} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ padding: '0.75rem', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
-                    <span style={{ fontWeight: 600, fontSize: '0.75rem' }}>{item.label}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>📔 Bitácora</h3>
+            {latestJournal ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ 
+                  fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.85)', 
+                  lineHeight: 1.6, background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', 
+                  padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  "{latestJournal.content.length > 200 ? latestJournal.content.substring(0, 200) + '...' : latestJournal.content}"
+                </div>
+              </div>
+            ) : (
+              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Pensamiento limpio hoy.</p>
+            )}
+            <Link href="/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', fontWeight: 700 }}>Escribir ahora →</Link>
           </div>
         </div>
 

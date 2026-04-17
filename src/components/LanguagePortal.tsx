@@ -126,13 +126,21 @@ export default function LanguagePortal({ config, words, resources, skills, topic
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: `linear-gradient(135deg, ${config.accentColor}22, transparent 60%), linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.75))` }} />
         
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-end', gap: '1.5rem' }}>
-          <div style={{ fontSize: '5rem', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}>{config.flag}</div>
-          <div>
-            <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Academia / Idiomas</p>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1, color: '#fff', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>{config.name}</h1>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{config.speakers} hablantes en el mundo</p>
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-end', gap: '1.5rem', width: '100%', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem' }}>
+            <div style={{ fontSize: '5rem', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}>{config.flag}</div>
+            <div>
+              <p style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Academia / Idiomas</p>
+              <h1 style={{ fontSize: '3.5rem', fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1, color: '#fff', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>{config.name}</h1>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{config.speakers} hablantes en el mundo</p>
+            </div>
           </div>
+
+          {config.countryOutlineUrl && (
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src={config.countryOutlineUrl} alt={`${config.name} Outline`} style={{ height: '100px', width: 'auto', filter: 'invert(1) opacity(0.4) drop-shadow(0 0 10px rgba(255,255,255,0.2))' }} />
+            </div>
+          )}
         </div>
       </div>
 
