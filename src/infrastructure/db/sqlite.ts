@@ -200,6 +200,17 @@ export function initDB() {
       tags TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT, -- Hashed
+      name TEXT,
+      image TEXT,
+      email_verified DATETIME,
+      verification_token TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Quick SQLite migration for order_index in existing routine_tasks and tasks tables

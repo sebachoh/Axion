@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { getDashboardData } from '@/core/usecases/dashboardUsecases';
 import db from '@/infrastructure/db/sqlite';
 import WealthMirror from '@/components/WealthMirror';
-import ActivityPulse from '@/components/ActivityPulse';
 
 const MOOD_EMOJIS: Record<string, string> = {
   '1': '😫',
@@ -69,7 +68,7 @@ export default async function DashboardPage() {
       {/* ── Hero Banner (Premium Minimalist Architecture) ── */}
       <div className="full-bleed" style={{
         marginTop: 'calc(-1 * var(--spacing-xl))',
-        height: '320px',
+        height: '288px',
         position: 'relative',
         background: 'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop) center/cover no-repeat',
         display: 'flex',
@@ -150,153 +149,100 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* ── The Bento Ecosystem ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr)', gap: '1.5rem', alignItems: 'start' }}>
+      {/* ── The Bento Ecosystem Reimagined ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'stretch' }}>
 
-        {/* Column 1: EXECUTION */}
+        {/* Column 1: EXECUTIVE FOCUS */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
           {/* Tareas Tácticas */}
-          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="glass-panel" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem', borderTop: '4px solid #fff' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>⚡ Táctico Hoy</h3>
+              <h3 style={{ fontWeight: 800, fontSize: '1.3rem', letterSpacing: '-0.02em' }}>⚡ Táctico Hoy</h3>
               <Link href="/workspace/tareas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Ver todo</Link>
             </div>
             {data.tasksToday.length === 0 ? (
-              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Despejado. Tiempo de reflexión.</p>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3, fontStyle: 'italic', fontSize: '0.9rem' }}>
+                Agenda despejada.
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {data.tasksToday.map(t => (
-                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', borderLeft: `4px solid ${getPriorityColor(t.priority)}` }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.title}</span>
-                    </div>
+                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `5px solid ${getPriorityColor(t.priority)}` }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{t.title}</span>
                   </div>
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Timeblocking Timeline */}
-          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>🗓️ Estructura</h3>
-            {data.timeBlocksToday.length === 0 ? (
-              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Sin bloques hoy.</p>
-            ) : (
-              <div style={{ borderLeft: '2px solid rgba(255,255,255,0.05)', paddingLeft: '1.5rem', marginLeft: '0.25rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {data.timeBlocksToday.map((b, i) => (
-                  <div key={i} style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', top: '6px', left: '-1.85rem', width: '10px', height: '10px', borderRadius: '50%', background: b.color, boxShadow: `0 0 10px ${b.color}` }} />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{b.title}</span>
-                      <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>{b.startTime} - {getEndTime(b.startTime, b.durationMins)} ({b.durationMins}m)</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Link href="/workspace/planeacion" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Abrir Planeador →</Link>
           </div>
         </div>
 
-        {/* Column 2: RHYTHM */}
+        {/* Column 2: RHYTHM & STRUCTURE */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-          {/* Active Routine tasks */}
+          {/* Active Routine */}
           <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>{data.routineType === 'mañana' ? '🌅 Mañana' : '🌙 Noche'}</h3>
-              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1dd1a1' }}>{routinePct}%</span>
+              <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>{data.routineType === 'mañana' ? '🌅 Ritual Mañana' : '🌙 Ritual Noche'}</h3>
+              <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#1dd1a1' }}>{routinePct}%</span>
             </div>
-
-            <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${routinePct}%`, background: '#1dd1a1', transition: 'width 1s ease' }} />
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {data.routineTasks.length === 0 ? (
-                <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Sin tareas configuradas para esta fase.</p>
-              ) : data.routineTasks.map(task => (
-                <div key={task.id} style={{
-                  display: 'flex', alignItems: 'center', gap: '12px', padding: '10px',
-                  borderRadius: '10px', background: task.completed ? 'rgba(29,209,161,0.05)' : 'rgba(255,255,255,0.02)',
-                  opacity: task.completed ? 0.6 : 1
-                }}>
-                  <div style={{
-                    width: '18px', height: '18px', borderRadius: '4px', border: '2px solid rgba(255,255,255,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: task.completed ? '#1dd1a1' : 'transparent'
-                  }}>
-                    {task.completed && <span style={{ fontSize: '10px', color: '#000' }}>✓</span>}
-                  </div>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 600, textDecoration: task.completed ? 'line-through' : 'none' }}>{task.name}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {data.routineTasks.slice(0, 4).map(task => (
+                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', opacity: task.completed ? 0.4 : 1 }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: task.completed ? '#1dd1a1' : 'rgba(255,255,255,0.2)' }} />
+                  <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{task.name}</span>
                 </div>
               ))}
             </div>
-            <Link href="/rutinas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Gestionar Rutinas →</Link>
+          </div>
+
+          {/* Timeblocking */}
+          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>🗓️ Estructura</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {data.timeBlocksToday.slice(0,3).map((b, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: b.color }} />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{b.title}</span>
+                    <span style={{ fontSize: '0.7rem', opacity: 0.4 }}>{b.startTime}</span>
+                  </div>
+                </div>
+              ))}
+              {data.timeBlocksToday.length === 0 && <p style={{ opacity: 0.3, fontSize: '0.8rem' }}>Sin bloques.</p>}
+            </div>
           </div>
         </div>
 
-        {/* Column 3: FUTURE & WEALTH */}
+        {/* Column 3: REFLECTION & MIRROR */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <WealthMirror balance={data.financialBalance} />
-
-          {/* Bóveda Snippet */}
-          <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', borderLeft: '4px solid #f9ca24' }}>
-            <h3 style={{ fontWeight: 800, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>✨ Visión & Insight</h3>
-            {data.latestVision ? (
-              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.5, fontWeight: 700 }}>Meta Próxima - {data.latestVision.timeframe}</span>
-                <p style={{ fontWeight: 700, fontSize: '1rem', marginTop: '4px' }}>{data.latestVision.title}</p>
-                <Link href="/boveda/vision" style={{ fontSize: '0.75rem', color: '#f9ca24', display: 'block', marginTop: '8px' }}>Explorar Visión Board →</Link>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                <p style={{ opacity: 0.5, fontSize: '0.85rem', marginBottom: '1rem' }}>Tu visión a largo plazo comienza aquí.</p>
-                <Link href="/boveda/vision" className="glass-button" style={{ fontSize: '0.75rem', padding: '8px 16px', background: '#f9ca24', color: '#000', fontWeight: 800 }}>Definir mi Visión</Link>
-              </div>
-            )}
-
-            {data.latestVaultResource ? (
-              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.5, fontWeight: 700 }}>Último Recurso - {data.latestVaultResource.type}</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', marginTop: '4px' }}>{data.latestVaultResource.title}</p>
-                <Link href="/boveda/recursos" style={{ fontSize: '0.75rem', color: '#3498db', display: 'block', marginTop: '8px' }}>Ver en la Bóveda →</Link>
-              </div>
-            ) : (
-              <Link href="/boveda/recursos" style={{ 
-                textAlign: 'center', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', 
-                border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none'
-              }}>
-                + Añadir Recurso (Vault)
-              </Link>
-            )}
+          
+          {/* Life Philosophy / Mantra */}
+          <div className="glass-panel" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.4, fontWeight: 700 }}>Filosofía</span>
+            <p style={{ fontSize: '0.9rem', fontWeight: 500, lineHeight: 1.5, color: 'rgba(255,255,255,0.8)' }}>
+              "La disciplina es el puente entre las metas y los logros."
+            </p>
           </div>
 
+          {/* Bitácora / Journal */}
           <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
-            <h3 style={{ fontWeight: 800, fontSize: '1.2rem' }}>📔 Bitácora</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '1.2rem' }}>📔</span>
+              <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>Bitácora</h3>
+            </div>
             {latestJournal ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{
-                  fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.85)',
-                  lineHeight: 1.6, background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
-                  padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)'
-                }}>
-                  "{latestJournal.content.length > 200 ? latestJournal.content.substring(0, 200) + '...' : latestJournal.content}"
-                </div>
+              <div style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '1rem' }}>
+                "{latestJournal.content.length > 120 ? latestJournal.content.substring(0, 120) + '...' : latestJournal.content}"
               </div>
             ) : (
-              <p style={{ opacity: 0.4, fontStyle: 'italic', fontSize: '0.9rem', textAlign: 'center' }}>Pensamiento limpio hoy.</p>
+              <p style={{ opacity: 0.3, fontSize: '0.85rem' }}>No hay entradas hoy.</p>
             )}
-            <Link href="/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', fontWeight: 700 }}>Escribir ahora →</Link>
+            <Link href="/journal" style={{ fontSize: '0.75rem', color: '#ff7f50', fontWeight: 700, marginTop: 'auto' }}>Escribir ahora →</Link>
           </div>
         </div>
-      </div>
-
-      {/* ── Visual Analytics Section ── */}
-      <div style={{ marginTop: '1rem' }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 900, letterSpacing: '-0.05em', marginBottom: '1.5rem', opacity: 0.9 }}>Pulso de Evolución</h2>
-        <ActivityPulse habits={data.weeklyHabitStats} tasks={data.weeklyTaskStats} />
       </div>
     </div>
   );
