@@ -17,6 +17,8 @@ export interface DashboardData {
   routineTasks: { id: string; name: string; completed: boolean }[];
   latestVision?: { title: string; area: string; timeframe: string };
   latestVaultResource?: { title: string; type: string };
+  weeklyHabitStats: { date: string; count: number }[];
+  weeklyTaskStats: { date: string; count: number }[];
 }
 
 function getTodayStr() {
@@ -75,6 +77,23 @@ export function getDashboardData(): DashboardData {
   const vision = db.prepare('SELECT title, area, timeframe FROM vision_boards ORDER BY created_at DESC LIMIT 1').get() as any;
   const vault = db.prepare('SELECT title, type FROM vault_resources ORDER BY created_at DESC LIMIT 1').get() as any;
 
+  // Weekly Stats
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  const startDate = sevenDaysAgo.toISOString().split('T')[0];
+
+  const habitWeekly = db.prepare(`
+    SELECT date, COUNT(*) as count FROM habit_logs 
+    WHERE date >= @startDate AND status = 'done'
+    GROUP BY date ORDER BY date ASC
+  `).all({ startDate }) as { date: string; count: number }[];
+
+  const taskWeekly = db.prepare(`
+    SELECT date(created_at) as date, COUNT(*) as count FROM tasks 
+    WHERE date(created_at) >= @startDate AND status = 'done'
+    GROUP BY date(created_at) ORDER BY date ASC
+  `).all({ startDate }) as { date: string; count: number }[];
+
   return {
     date: today,
     habits,
@@ -90,6 +109,8 @@ export function getDashboardData(): DashboardData {
     routineTasks: routineRows,
     latestVision: vision ? { title: vision.title, area: vision.area, timeframe: vision.timeframe } : undefined,
     latestVaultResource: vault ? { title: vault.title, type: vault.type } : undefined,
+    weeklyHabitStats: habitWeekly,
+    weeklyTaskStats: taskWeekly,
   };
 }
 

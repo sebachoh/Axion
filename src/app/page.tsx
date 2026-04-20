@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getDashboardData } from '@/core/usecases/dashboardUsecases';
 import db from '@/infrastructure/db/sqlite';
 import WealthMirror from '@/components/WealthMirror';
+import ActivityPulse from '@/components/ActivityPulse';
 
 const MOOD_EMOJIS: Record<string, string> = {
   '1': '😫',
@@ -290,7 +291,12 @@ export default async function DashboardPage() {
             <Link href="/journal" style={{ fontSize: '0.8rem', color: '#ff7f50', fontWeight: 700 }}>Escribir ahora →</Link>
           </div>
         </div>
+      </div>
 
+      {/* ── Visual Analytics Section ── */}
+      <div style={{ marginTop: '1rem' }}>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 900, letterSpacing: '-0.05em', marginBottom: '1.5rem', opacity: 0.9 }}>Pulso de Evolución</h2>
+        <ActivityPulse habits={data.weeklyHabitStats} tasks={data.weeklyTaskStats} />
       </div>
     </div>
   );

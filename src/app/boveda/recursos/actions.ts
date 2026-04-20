@@ -2,10 +2,9 @@
 
 import db from '@/infrastructure/db/sqlite';
 import { revalidatePath } from 'next/cache';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function addVaultResource(formData: FormData) {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const title = formData.get('title') as string;
   const type = formData.get('type') as string; // text, image, idea, link
   const content = formData.get('content') as string;

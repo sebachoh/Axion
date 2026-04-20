@@ -2,10 +2,9 @@
 
 import db from '@/infrastructure/db/sqlite';
 import { revalidatePath } from 'next/cache';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function addVisionBoard(formData: FormData) {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const title = formData.get('title') as string;
   const area = formData.get('area') as string;
   const timeframe = formData.get('timeframe') as string;
