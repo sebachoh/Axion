@@ -7,7 +7,7 @@ import {
   addGoal, 
   updateGoalAmount, 
   deleteGoal 
-} from '@/app/finanzas/actions';
+} from '@/app/(dashboard)/finanzas/actions';
 
 export interface Transaction {
   id: string;

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { addBancoItem, deleteBancoItem } from '@/app/workspace/alternancia/actions';
-import { BankItem } from '@/app/workspace/alternancia/banco/page';
+import { addBancoItem, deleteBancoItem } from '@/app/(dashboard)/workspace/alternancia/actions';
+import { BankItem } from '@/app/(dashboard)/workspace/alternancia/banco/page';
 
 interface Props {
   initialItems: BankItem[];

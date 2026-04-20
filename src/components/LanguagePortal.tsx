@@ -9,7 +9,7 @@ import {
   addTopic,
   updateTopicContent,
   deleteTopic
-} from '@/app/academia/idiomas/[lang]/actions';
+} from '@/app/(dashboard)/academia/idiomas/[lang]/actions';
 
 export interface LangWord {
   id: string;

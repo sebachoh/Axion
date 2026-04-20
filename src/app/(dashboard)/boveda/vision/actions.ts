@@ -2,8 +2,13 @@
 
 import db from '@/infrastructure/db/sqlite';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 
 export async function addVisionBoard(formData: FormData) {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
   const id = crypto.randomUUID();
   const title = formData.get('title') as string;
   const area = formData.get('area') as string;
@@ -12,20 +17,26 @@ export async function addVisionBoard(formData: FormData) {
   const image_url = formData.get('image_url') as string;
 
   db.prepare(`
-    INSERT INTO vision_boards (id, title, area, timeframe, content, image_url)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(id, title, area, timeframe, content, image_url);
+    INSERT INTO vision_boards (id, user_id, title, area, timeframe, content, image_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(id, userId, title, area, timeframe, content, image_url);
 
   revalidatePath('/boveda/vision');
 }
 
 export async function deleteVisionBoard(id: string) {
-  db.prepare('DELETE FROM vision_boards WHERE id = ?').run(id);
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
+  db.prepare('DELETE FROM vision_boards WHERE id = ? AND user_id = ?').run(id, userId);
   revalidatePath('/boveda/vision');
 }
 
 export async function getVisionBoards() {
-   // This should be done directly in the Page or a separate function, 
-   // but I'll provide a getter for consistency if needed.
-   return db.prepare('SELECT * FROM vision_boards ORDER BY created_at DESC').all();
+   const session = await auth();
+   const userId = (session?.user as any)?.id;
+   if (!userId) return [];
+
+   return db.prepare('SELECT * FROM vision_boards WHERE user_id = ? ORDER BY created_at DESC').all(userId);
 }

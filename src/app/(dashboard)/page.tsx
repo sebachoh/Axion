@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getDashboardData } from '@/core/usecases/dashboardUsecases';
 import db from '@/infrastructure/db/sqlite';
 import WealthMirror from '@/components/WealthMirror';
+import { auth } from '@/auth';
 
 const MOOD_EMOJIS: Record<string, string> = {
   '1': '😫',
@@ -17,8 +18,8 @@ function getPriorityColor(p: string) {
   return '#1dd1a1';
 }
 
-async function getLatestJournalEntry() {
-  return db.prepare('SELECT content FROM journal_entries ORDER BY created_at DESC LIMIT 1').get() as { content: string } | undefined;
+async function getLatestJournalEntry(userId: string) {
+  return db.prepare('SELECT content FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').get(userId) as { content: string } | undefined;
 }
 
 function getEndTime(startTime: string, durationMins: number): string {
@@ -30,8 +31,13 @@ function getEndTime(startTime: string, durationMins: number): string {
 }
 
 export default async function DashboardPage() {
-  const data = getDashboardData();
-  const latestJournal = await getLatestJournalEntry();
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  
+  if (!userId) return null;
+
+  const data = getDashboardData(userId);
+  const latestJournal = await getLatestJournalEntry(userId);
 
   const now = new Date();
   const currentHourMins = now.getHours() * 60 + now.getMinutes();

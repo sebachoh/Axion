@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useTransition } from 'react';
-import { addVaultResource, deleteVaultResource } from '@/app/boveda/recursos/actions';
+import { addVaultResource, deleteVaultResource } from '@/app/(dashboard)/boveda/recursos/actions';
 import { Plus, Trash2, Search, Link as LinkIcon, Image as ImageIcon, Lightbulb, FileText, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

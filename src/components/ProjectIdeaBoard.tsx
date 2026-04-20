@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { addProjectIdea, deleteProjectIdea } from '@/app/workspace/proyectos/actions';
+import { addProjectIdea, deleteProjectIdea } from '@/app/(dashboard)/workspace/proyectos/actions';
 
 export interface IdeaItem {
   id: string;

@@ -2,8 +2,13 @@
 
 import db from '@/infrastructure/db/sqlite';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 
 export async function addVaultResource(formData: FormData) {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
   const id = crypto.randomUUID();
   const title = formData.get('title') as string;
   const type = formData.get('type') as string; // text, image, idea, link
@@ -12,18 +17,26 @@ export async function addVaultResource(formData: FormData) {
   const tags = formData.get('tags') as string;
 
   db.prepare(`
-    INSERT INTO vault_resources (id, title, type, content, media_url, tags)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(id, title, type, content, media_url, tags);
+    INSERT INTO vault_resources (id, user_id, title, type, content, media_url, tags)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(id, userId, title, type, content, media_url, tags);
 
   revalidatePath('/boveda/recursos');
 }
 
 export async function deleteVaultResource(id: string) {
-  db.prepare('DELETE FROM vault_resources WHERE id = ?').run(id);
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
+  db.prepare('DELETE FROM vault_resources WHERE id = ? AND user_id = ?').run(id, userId);
   revalidatePath('/boveda/recursos');
 }
 
 export async function getVaultResources() {
-   return db.prepare('SELECT * FROM vault_resources ORDER BY created_at DESC').all();
+   const session = await auth();
+   const userId = (session?.user as any)?.id;
+   if (!userId) return [];
+
+   return db.prepare('SELECT * FROM vault_resources WHERE user_id = ? ORDER BY created_at DESC').all(userId);
 }

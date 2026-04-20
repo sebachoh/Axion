@@ -7,7 +7,7 @@ import {
   updateTimeBlock,
   addBankActivity,
   deleteBankActivity
-} from '@/app/workspace/planeacion/actions';
+} from '@/app/(dashboard)/workspace/planeacion/actions';
 import { Task } from '@/core/domain/Task';
 
 export interface TimeBlock {

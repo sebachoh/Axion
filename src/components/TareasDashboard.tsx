@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Task } from '@/core/domain/Task';
-import { addTask, updateTaskStatus, deleteTask } from '@/app/workspace/tareas/actions';
+import { addTask, updateTaskStatus, deleteTask } from '@/app/(dashboard)/workspace/tareas/actions';
 
 interface Props {
   initialTasks: Task[];
@@ -84,7 +84,7 @@ export default function TareasDashboard({ initialTasks }: Props) {
     dragItem.current = null;
     dragOverItem.current = null;
     setPendingOrder(copy);
-    const { reorderTasks } = await import('@/app/workspace/tareas/actions');
+    const { reorderTasks } = await import('@/app/(dashboard)/workspace/tareas/actions');
     await reorderTasks(copy.map(t => t.id));
   };
 

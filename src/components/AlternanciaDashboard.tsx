@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { addAlternancia, updateAlternanciaStatus, deleteAlternancia } from '@/app/workspace/alternancia/actions';
+import { addAlternancia, updateAlternanciaStatus, deleteAlternancia } from '@/app/(dashboard)/workspace/alternancia/actions';
 
 export interface AlternanciaApp {
   id: string;

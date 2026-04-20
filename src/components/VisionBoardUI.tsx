@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { addVisionBoard, deleteVisionBoard } from '@/app/boveda/vision/actions';
+import { addVisionBoard, deleteVisionBoard } from '@/app/(dashboard)/boveda/vision/actions';
 import { Plus, Trash2, Filter, Clock, Layout, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
