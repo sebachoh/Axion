@@ -44,6 +44,10 @@ export async function deleteStickyNote(id: string) {
 export async function updateStickyNotePosition(id: string, x: number, y: number) {
   const stmt = db.prepare('UPDATE sticky_notes SET pos_x = ?, pos_y = ? WHERE id = ?');
   stmt.run(x, y, id);
-  // Revalidate might cause full page reload issues while dragging if not handled properly.
-  // We'll avoid heavily depending on full revalidation during drag for performance, but it's safe on server actions.
+}
+
+export async function updateStickyNoteContent(id: string, title: string, body: string, color: string) {
+  const stmt = db.prepare('UPDATE sticky_notes SET title = ?, body = ?, color = ? WHERE id = ?');
+  stmt.run(title, body, color, id);
+  revalidatePath('/');
 }

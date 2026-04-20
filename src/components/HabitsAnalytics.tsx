@@ -32,9 +32,12 @@ export default function HabitsAnalytics({ data }: Props) {
   const getHeatmapColor = (score: number) => {
     if (score < 0.2) return 'rgba(255, 255, 255, 0.05)';
     if (score < 0.5) return 'rgba(255, 255, 255, 0.2)';
-    if (score < 0.8) return 'var(--color-text-muted)';
-    return 'var(--color-text)'; // full completion
+    if (score < 0.8) return 'rgba(255, 255, 255, 0.5)';
+    return '#ffffff'; // White for full completion
   };
+
+  const chartColor = '#ffffff';
+  const chartSecondary = 'rgba(255,255,255,0.1)';
 
   const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -47,11 +50,11 @@ export default function HabitsAnalytics({ data }: Props) {
     if (historyMap.length === 0) return '';
     const points = historyMap.map((d, index) => {
       const x = (index / (daysToShow - 1)) * graphWidth;
-      const y = graphHeight - (d.score * graphHeight);
-      return `${x},${y}`;
-    });
-    return `M ${points.join(' L ')}`;
-  };
+    const y = 30 + (graphHeight - 60) - (d.score * (graphHeight - 60));
+    return `${x},${y}`;
+  });
+  return `M ${points.join(' L ')}`;
+};
 
   return (
     <div style={{ marginTop: '3rem' }}>
@@ -163,39 +166,39 @@ export default function HabitsAnalytics({ data }: Props) {
           </div>
 
           {data.totalTasks === 0 ? (
-             <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+             <div style={{ height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
                 Sin datos que graficar aún.
              </div>
           ) : (
-            <div style={{ position: 'relative', height: '200px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ position: 'relative', height: '240px', width: '100%', display: 'flex', flexDirection: 'column', padding: '0 1rem' }}>
               {/* Dynamic SVG Sparkline */}
-              <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%' }}>
-                <svg width="100%" height="100%" viewBox={`0 0 ${graphWidth} ${graphHeight}`} preserveAspectRatio="none" style={{ overflow: 'visible' }}>
+              <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
+                <svg width="100%" height="100%" viewBox={`0 0 ${graphWidth} ${graphHeight}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
                   {/* Grid Lines */}
                   {[0, 0.5, 1].map((p, i) => (
                     <line key={i} x1="0" y1={graphHeight * p} x2={graphWidth} y2={graphHeight * p} stroke="rgba(255,255,255,0.05)" strokeWidth="2" />
                   ))}
                   
                   {/* Fill Area */}
-                  <path d={`M 0,${graphHeight} L ${generateLinePath().replace('M ', '')} L ${graphWidth},${graphHeight} Z`} fill="url(#gradientFill)" />
+                  <path d={`M 0,${graphHeight + 10} L ${generateLinePath().replace('M ', '')} L ${graphWidth},${graphHeight + 10} Z`} fill="url(#gradientFill)" />
                   
                   {/* Stroke Line */}
-                  <path d={generateLinePath()} fill="none" stroke="var(--color-text)" strokeWidth="4" strokeLinejoin="round" />
+                  <path d={generateLinePath()} fill="none" stroke={chartColor} strokeWidth="4" strokeLinejoin="round" />
                   
                   {/* Plot Dots */}
                   {historyMap.map((d, i) => {
                     const cx = (i / (daysToShow - 1)) * graphWidth;
-                    const cy = graphHeight - (d.score * graphHeight);
+                    const cy = 30 + (graphHeight - 60) - (d.score * (graphHeight - 60));
                     return (
-                      <circle key={i} cx={cx} cy={cy} r="6" fill="var(--color-bg)" stroke="var(--color-text)" strokeWidth="3" 
+                      <circle key={i} cx={cx} cy={cy} r="7" fill="#fff" stroke={chartColor} strokeWidth="4" 
                         style={{ cursor: 'pointer', transition: 'all 0.2s' }}
                         onMouseOver={(e) => {
-                          e.currentTarget.setAttribute('r', '10');
-                          e.currentTarget.setAttribute('fill', 'var(--color-text)');
+                          e.currentTarget.setAttribute('r', '12');
+                          e.currentTarget.setAttribute('fill', chartColor);
                         }}
                         onMouseOut={(e) => {
-                          e.currentTarget.setAttribute('r', '6');
-                          e.currentTarget.setAttribute('fill', 'var(--color-bg)');
+                          e.currentTarget.setAttribute('r', '7');
+                          e.currentTarget.setAttribute('fill', '#fff');
                         }}
                       >
                         <title>{d.dateStr} - {Math.round(d.score * 100)}%</title>
@@ -205,20 +208,23 @@ export default function HabitsAnalytics({ data }: Props) {
                   
                   <defs>
                     <linearGradient id="gradientFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-text)" stopOpacity="0.2" />
-                      <stop offset="100%" stopColor="var(--color-text)" stopOpacity="0" />
+                      <stop offset="0%" stopColor="#fff" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="#fff" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                 </svg>
               </div>
               
               {/* X Axis Labels */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
                 {historyMap.filter((_, i) => daysToShow === 7 ? true : i % 4 === 0).map((d, index) => (
-                  <span key={index} style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
+                  <span key={index} style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                     {daysToShow === 7 ? dayLabels[d.dayIndex] : d.dateStr.split('-').slice(1).join('/')}
                   </span>
                 ))}
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Días del Periodo / Historial de Cumplimiento</span>
               </div>
             </div>
           )}

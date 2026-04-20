@@ -180,6 +180,26 @@ export function initDB() {
       color TEXT NOT NULL DEFAULT '#bfdbfe',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS vision_boards (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      area TEXT NOT NULL, -- Salud, Profesional, Familia, Educación, Carrera, etc.
+      timeframe TEXT NOT NULL, -- 2026, 5 años, 10 años
+      content TEXT,
+      image_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS vault_resources (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      type TEXT NOT NULL, -- text, image, idea, link, file
+      content TEXT,
+      media_url TEXT,
+      tags TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Quick SQLite migration for order_index in existing routine_tasks and tasks tables

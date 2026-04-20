@@ -175,11 +175,11 @@ export default function TareasDashboard({ initialTasks }: Props) {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>Deadline</label>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>Deadline (opcional)</label>
                   <input type="date" name="deadline" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'transparent', color: 'var(--color-text)', outline: 'none' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>Subnotas opcionales</label>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>Subnotas (opcional)</label>
                   <input type="text" name="notes" placeholder="Detalles extra..." style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'transparent', color: 'var(--color-text)', outline: 'none' }} />
                </div>
             </div>

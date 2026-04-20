@@ -15,6 +15,8 @@ export interface DashboardData {
   financialBalance: number;
   routineType: 'mañana' | 'noche';
   routineTasks: { id: string; name: string; completed: boolean }[];
+  latestVision?: { title: string; area: string; timeframe: string };
+  latestVaultResource?: { title: string; type: string };
 }
 
 function getTodayStr() {
@@ -69,6 +71,10 @@ export function getDashboardData(): DashboardData {
     ORDER BY rt.order_index ASC
   `).all({ dbType, today }) as any[];
 
+  // Vision & Vault snippets
+  const vision = db.prepare('SELECT title, area, timeframe FROM vision_boards ORDER BY created_at DESC LIMIT 1').get() as any;
+  const vault = db.prepare('SELECT title, type FROM vault_resources ORDER BY created_at DESC LIMIT 1').get() as any;
+
   return {
     date: today,
     habits,
@@ -82,6 +88,8 @@ export function getDashboardData(): DashboardData {
     financialBalance: balance,
     routineType,
     routineTasks: routineRows,
+    latestVision: vision ? { title: vision.title, area: vision.area, timeframe: vision.timeframe } : undefined,
+    latestVaultResource: vault ? { title: vault.title, type: vault.type } : undefined,
   };
 }
 

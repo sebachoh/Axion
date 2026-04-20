@@ -7,7 +7,8 @@ export async function addTask(formData: FormData) {
   const title = formData.get('title') as string;
   const status = formData.get('status') as string || 'pending';
   const priority = formData.get('priority') as string || 'medium';
-  const deadline = formData.get('deadline') as string || null;
+  const deadlineInput = formData.get('deadline') as string;
+  const deadline = deadlineInput && deadlineInput.trim() !== '' ? deadlineInput : null;
   const notes = formData.get('notes') as string || null;
 
   if (!title) return { error: 'Title is required' };

@@ -2,7 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { motion, PanInfo } from 'framer-motion';
-import { StickyNote, addStickyNote, deleteStickyNote, updateStickyNotePosition } from '@/core/usecases/stickyUsecases';
+import { StickyNote, addStickyNote, deleteStickyNote, updateStickyNotePosition, updateStickyNoteContent } from '@/core/usecases/stickyUsecases';
+import { Edit2, X, Plus } from 'lucide-react';
 
 interface Props {
   initialNotes: StickyNote[];
@@ -17,25 +18,36 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [color, setColor] = useState('#fef68a'); // Default Yellow pastel
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title) return;
-    await addStickyNote(title, body, color);
-    // Optimistic or waiting for revalidate? We can just let the Server Component refresh it, 
-    // but to avoid a full page flash, we can optimistically add it locally.
-    const newNote: StickyNote = {
-      id: crypto.randomUUID(),
-      title,
-      body,
-      color,
-      pos_x: Math.floor(Math.random() * 50),
-      pos_y: Math.floor(Math.random() * 50),
-    };
-    setNotes((prev) => [...prev, newNote]);
+
+    if (editingNoteId) {
+      // Update Mode
+      await updateStickyNoteContent(editingNoteId, title, body, color);
+      setNotes(prev => prev.map(n => n.id === editingNoteId ? { ...n, title, body, color } : n));
+      setEditingNoteId(null);
+    } else {
+      // Add Mode
+      await addStickyNote(title, body, color);
+      const newNote: StickyNote = {
+        id: crypto.randomUUID(),
+        title,
+        body,
+        color,
+        pos_x: Math.floor(Math.random() * 50),
+        pos_y: Math.floor(Math.random() * 50),
+      };
+      setNotes((prev) => [...prev, newNote]);
+    }
+
     setIsAdding(false);
     setTitle('');
     setBody('');
+    setColor('#fef68a');
   };
 
   const handleDelete = async (id: string) => {
@@ -67,7 +79,15 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Sticky Notes</h3>
         <button 
-          onClick={() => setIsAdding(!isAdding)}
+          onClick={() => {
+            if (isAdding) {
+              setEditingNoteId(null);
+              setTitle('');
+              setBody('');
+              setColor('#fef68a');
+            }
+            setIsAdding(!isAdding);
+          }}
           className="glass-button" 
           style={{ fontSize: '0.8rem', padding: '6px 12px' }}
         >
@@ -76,7 +96,7 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleAddSubmit} style={{ 
+        <form onSubmit={handleFormSubmit} style={{ 
           marginBottom: '1rem', 
           display: 'flex', 
           flexDirection: 'column', 
@@ -115,7 +135,9 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
                 }}
               />
             ))}
-            <button type="submit" className="glass-button" style={{ marginLeft: 'auto', background: 'var(--color-text)', color: 'var(--color-bg)' }}>Guardar</button>
+            <button type="submit" className="glass-button" style={{ marginLeft: 'auto', background: 'var(--color-text)', color: 'var(--color-bg)' }}>
+              {editingNoteId ? 'Actualizar' : 'Guardar'}
+            </button>
           </div>
         </form>
       )}
@@ -141,53 +163,81 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
             dragMomentum={false}
             onDragEnd={(_, info) => handleDragEnd(note.id, info, note)}
             initial={{ x: note.pos_x, y: note.pos_y }}
+            layout
+            onClick={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
             
-            // A bug in framer-motion sometimes ignores initial x/y if style isn't explicitly set initially or via initial prop, 
-            // but for absolute positioned items controlled by drag, setting style={{ x, y }} directly can conflict with drag.
-            // Using animate to snap it or just relying on initial combined with absolute position works.
             style={{
               position: 'absolute',
               x: note.pos_x,
               y: note.pos_y,
-              width: '180px',
-              minHeight: '180px',
+              width: expandedNoteId === note.id ? '280px' : '180px',
+              minHeight: expandedNoteId === note.id ? '240px' : '180px',
+              height: expandedNoteId === note.id ? 'auto' : '180px',
               backgroundColor: note.color,
               padding: '1rem',
               borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              boxShadow: expandedNoteId === note.id ? '0 20px 40px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.1)',
               color: '#1f2937', // Always dark text for pastel notes
               cursor: 'grab',
               display: 'flex',
               flexDirection: 'column',
-              zIndex: 10
+              zIndex: expandedNoteId === note.id ? 100 : 10,
+              transition: 'zIndex 0s'
             }}
-            whileHover={{ scale: 1.02, zIndex: 20 }}
+            whileHover={{ scale: 1.02, zIndex: expandedNoteId === note.id ? 100 : 20 }}
             whileDrag={{ scale: 1.05, cursor: 'grabbing', boxShadow: '0 12px 24px rgba(0,0,0,0.2)', zIndex: 50 }}
-            whileTap={{ zIndex: 50 }}
+            whileTap={{ scale: 0.98 }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
               <h4 style={{ fontWeight: 700, fontSize: '0.9rem', margin: 0, paddingRight: '12px' }}>{note.title}</h4>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }} 
-                style={{ 
-                  background: 'transparent', border: 'none', cursor: 'pointer', 
-                  fontSize: '1rem', opacity: 0.6, padding: '2px', lineHeight: 1 
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
-                onMouseOut={(e) => (e.currentTarget.style.opacity = '0.6')}
-              >
-                ×
-              </button>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingNoteId(note.id);
+                    setTitle(note.title);
+                    setBody(note.body || '');
+                    setColor(note.color);
+                    setIsAdding(true);
+                  }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.8rem', opacity: 0.6, padding: '2px' }}
+                  onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseOut={(e) => (e.currentTarget.style.opacity = '0.6')}
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }} 
+                  style={{ 
+                    background: 'transparent', border: 'none', cursor: 'pointer', 
+                    fontSize: '1rem', opacity: 0.6, padding: '2px', lineHeight: 1 
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseOut={(e) => (e.currentTarget.style.opacity = '0.6')}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             {note.body && (
-              <p style={{ fontSize: '0.85rem', lineHeight: 1.4, flex: 1, margin: 0 }}>
+              <p style={{ 
+                fontSize: '0.85rem', 
+                lineHeight: 1.4, 
+                flex: 1, 
+                margin: 0,
+                display: expandedNoteId === note.id ? 'block' : '-webkit-box',
+                WebkitLineClamp: expandedNoteId === note.id ? 'unset' : 6,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
                 {note.body}
               </p>
             )}
             
             {/* Grab aesthetic hint */}
-            <div style={{ alignSelf: 'center', marginTop: 'auto', opacity: 0.3, letterSpacing: '2px' }}>
-              •••
+            <div style={{ alignSelf: 'center', marginTop: 'auto', opacity: 0.3, letterSpacing: '2px', fontSize: '0.7rem' }}>
+              {expandedNoteId === note.id ? '▲ Click para contraer' : '•••'}
             </div>
           </motion.div>
         ))}

@@ -57,6 +57,17 @@ function getTaskColor(priority: string) {
   }
 }
 
+function getCategoryName(color: string): string {
+  const map: Record<string, string> = {
+    '#bbf7d0': 'Trabajo 🟢',
+    '#bfdbfe': 'Salud 🔵',
+    '#fbcfe8': 'Rutinas 🩷',
+    '#fef68a': 'Ocio 🟡',
+    '#e9d5ff': 'Creatividad 🟣'
+  };
+  return map[color] || 'Personal';
+}
+
 function pxToTime(py: number): string {
   const totalMins = Math.round(py / PIXELS_PER_MINUTE / 30) * 30; // snap to 30-min
   const h = Math.floor(totalMins / 60) + START_HOUR;
@@ -81,9 +92,20 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   const [movingBlock, setMovingBlock] = useState<TimeBlock | null>(null);
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
+    
+    // Auto-scroll to current time on mount
+    if (scrollContainerRef.current) {
+      const top = ((currentTime.getHours() - START_HOUR) * 60 + currentTime.getMinutes()) * PIXELS_PER_MINUTE;
+      scrollContainerRef.current.scrollTo({
+        top: Math.max(0, top - 100),
+        behavior: 'smooth'
+      });
+    }
+
     return () => clearInterval(interval);
   }, []);
 
@@ -311,6 +333,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
       {/* ── Panel Central: Calendario ── */}
       <div 
         className="glass-panel" 
+        ref={scrollContainerRef}
         style={{ 
           height: '650px', 
           overflowY: 'auto', 
@@ -387,6 +410,26 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
             </div>
           ))}
 
+          {/* Real-time Indicator Line */}
+          {showLiveLine && (
+            <div style={{ 
+              position: 'absolute', top: `${liveLineTop}px`, left: 0, right: 0, 
+              display: 'flex', alignItems: 'center', pointerEvents: 'none', zIndex: 50 
+            }}>
+              <div style={{ 
+                width: '10px', height: '10px', borderRadius: '50%', background: '#ff4757', 
+                marginLeft: '45px', boxShadow: '0 0 10px rgba(255, 71, 87, 0.8)' 
+              }} />
+              <div style={{ flex: 1, height: '2px', background: '#ff4757', boxShadow: '0 0 5px rgba(255, 71, 87, 0.4)' }} />
+              <div style={{ 
+                background: '#ff4757', color: '#fff', fontSize: '10px', fontWeight: 800, 
+                padding: '2px 6px', borderRadius: '4px', marginRight: '8px'
+              }}>
+                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+          )}
+
           {/* Edit Modal (Inline Overlay) */}
           {editingBlock && (
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
@@ -438,10 +481,15 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
               return (
                 <div key={col} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: col }} />
-                  <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${pct}%`, background: col }} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 600, opacity: 0.8 }}>{getCategoryName(col)}</span>
+                      <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{pct}%</span>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: col }} />
+                    </div>
                   </div>
-                  <span style={{ fontSize: '0.75rem', width: '30px' }}>{pct}%</span>
                 </div>
               );
             })}
