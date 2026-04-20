@@ -3,6 +3,28 @@
 import db from '@/infrastructure/db/sqlite';
 import bcrypt from 'bcryptjs';
 import { sendVerificationEmail } from '@/core/utils/email';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
+
+export async function authenticate(formData: FormData) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return { error: 'Credenciales inválidas.' };
+        default:
+          // Check for the custom error thrown in authorize()
+          if (error.cause?.err?.message) {
+             return { error: error.cause.err.message };
+          }
+          return { error: 'Error al iniciar sesión.' };
+      }
+    }
+    throw error;
+  }
+}
 
 export async function registerUser(formData: FormData) {
   const email = formData.get('email') as string;

@@ -115,7 +115,8 @@ export function getDashboardData(userId: string): DashboardData {
 }
 
 // Keep backward compat
-export async function getDashboardSummary() {
-  const data = getDashboardData();
+export async function getDashboardSummary(userId?: string) {
+  if (!userId) return { habits: [], monthlyProgress: 0 };
+  const data = getDashboardData(userId);
   return { habits: data.habits, monthlyProgress: 0 };
 }

@@ -1,11 +1,12 @@
 import { Task } from '@/core/domain/Task';
 import db from '@/infrastructure/db/sqlite';
 import TareasDashboard from '@/components/TareasDashboard';
+import { auth } from '@/auth';
 
-// Fetch tasks
-function getTasks(): Task[] {
-  const stmt = db.prepare('SELECT id, title, status, priority, deadline, notes, created_at as createdAt FROM tasks ORDER BY created_at DESC');
-  const rows = stmt.all() as unknown[];
+// Fetch tasks for specific user
+async function getTasks(userId: string): Promise<Task[]> {
+  const stmt = db.prepare('SELECT id, title, status, priority, deadline, notes, created_at as createdAt FROM tasks WHERE user_id = ? ORDER BY created_at DESC');
+  const rows = stmt.all(userId) as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as { id: string, title: string, status: string, priority: string, deadline: string | null, notes: string | null, createdAt: string };
@@ -21,8 +22,13 @@ function getTasks(): Task[] {
   });
 }
 
-export default function TareasPage() {
-  const tasks = getTasks();
+export default async function TareasPage() {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  
+  if (!userId) return null;
+
+  const tasks = await getTasks(userId);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

@@ -235,6 +235,38 @@ export function initDB() {
       verification_token TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS active_projects (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      short_name TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      color_start TEXT DEFAULT '#FF9A9E',
+      color_end TEXT DEFAULT '#FECFEF',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS user_languages (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      flag TEXT NOT NULL,
+      description TEXT,
+      path TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS user_specializations (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      short_code TEXT NOT NULL,
+      description TEXT,
+      color_start TEXT DEFAULT '#A1C4FD',
+      color_end TEXT DEFAULT '#C2E9FB',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Multi-user migration
@@ -255,17 +287,6 @@ export function initDB() {
     }
   });
 
-  // Assign existing data to the first user found (Sebastian) if no user_id is set
-  try {
-    const firstUser = db.prepare('SELECT id FROM users ORDER BY created_at ASC LIMIT 1').get() as { id: string } | undefined;
-    if (firstUser) {
-      tables.forEach(table => {
-        db.prepare(`UPDATE ${table} SET user_id = ? WHERE user_id IS NULL`).run(firstUser.id);
-      });
-    }
-  } catch (e) {
-    console.error('Migration error:', e);
-  }
 
   // Quick SQLite migration for order_index
   try {

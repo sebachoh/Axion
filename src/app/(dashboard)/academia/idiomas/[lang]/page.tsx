@@ -1,6 +1,7 @@
 import db from '@/infrastructure/db/sqlite';
 import { notFound } from 'next/navigation';
 import LanguagePortal, { LangWord, LangResource, LangSkill, LangConfig, LangTopic } from '@/components/LanguagePortal';
+import { auth } from '@/auth';
 
 const LANG_CONFIGS: Record<string, LangConfig> = {
   frances: {
@@ -54,23 +55,23 @@ export async function generateStaticParams() {
   return Object.keys(LANG_CONFIGS).map(lang => ({ lang }));
 }
 
-function getWords(lang: string): LangWord[] {
-  const rows = db.prepare('SELECT id, lang, word, translation, precision, topic, created_at as createdAt FROM language_words WHERE lang = @lang ORDER BY created_at DESC').all({ lang }) as any[];
+function getWords(lang: string, userId: string): LangWord[] {
+  const rows = db.prepare('SELECT id, lang, word, translation, precision, topic, created_at as createdAt FROM language_words WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
-function getResources(lang: string): LangResource[] {
-  const rows = db.prepare('SELECT id, lang, title, url, type, skill, created_at as createdAt FROM language_resources WHERE lang = @lang ORDER BY created_at DESC').all({ lang }) as any[];
+function getResources(lang: string, userId: string): LangResource[] {
+  const rows = db.prepare('SELECT id, lang, title, url, type, skill, created_at as createdAt FROM language_resources WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
-function getSkills(lang: string): LangSkill[] {
-  const rows = db.prepare('SELECT skill, level FROM language_skills WHERE lang = @lang').all({ lang }) as any[];
+function getSkills(lang: string, userId: string): LangSkill[] {
+  const rows = db.prepare('SELECT skill, level FROM language_skills WHERE lang = @lang AND user_id = @userId').all({ lang, userId }) as any[];
   return rows;
 }
 
-function getTopics(lang: string): LangTopic[] {
-  const rows = db.prepare('SELECT id, lang, title, content, created_at as createdAt FROM language_topics WHERE lang = @lang ORDER BY created_at ASC').all({ lang }) as any[];
+function getTopics(lang: string, userId: string): LangTopic[] {
+  const rows = db.prepare('SELECT id, lang, title, content, created_at as createdAt FROM language_topics WHERE lang = @lang AND user_id = @userId ORDER BY created_at ASC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
@@ -79,10 +80,15 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
   const config = LANG_CONFIGS[lang];
   if (!config) notFound();
 
-  const words = getWords(lang);
-  const resources = getResources(lang);
-  const skills = getSkills(lang);
-  const topics = getTopics(lang);
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+
+  if (!userId) return null;
+
+  const words = getWords(lang, userId);
+  const resources = getResources(lang, userId);
+  const skills = getSkills(lang, userId);
+  const topics = getTopics(lang, userId);
 
   return (
     <LanguagePortal

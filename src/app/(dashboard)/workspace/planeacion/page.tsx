@@ -1,10 +1,11 @@
 import db from '@/infrastructure/db/sqlite';
 import TimeBlockingDashboard, { TimeBlock } from '@/components/TimeBlockingDashboard';
 import { Task } from '@/core/domain/Task';
+import { auth } from '@/auth';
 
-function getTimeBlocks(date: string): TimeBlock[] {
-  const stmt = db.prepare('SELECT id, title, start_time as startTime, duration_mins as durationMins, color, block_date as blockDate FROM time_blocks WHERE block_date = @date ORDER BY start_time ASC');
-  const rows = stmt.all({ date }) as unknown[];
+function getTimeBlocks(date: string, userId: string): TimeBlock[] {
+  const stmt = db.prepare('SELECT id, title, start_time as startTime, duration_mins as durationMins, color, block_date as blockDate FROM time_blocks WHERE block_date = @date AND user_id = @userId ORDER BY start_time ASC');
+  const rows = stmt.all({ date, userId }) as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;
@@ -21,15 +22,15 @@ function getTimeBlocks(date: string): TimeBlock[] {
 
 function getTodayStr() {
   const today = new Date();
-  // Format YYYY-MM-DD local time manually to avoid UTC offset issues
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
   const dd = String(today.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
-function getTasks(): Task[] {
-  const stmt = db.prepare('SELECT * FROM tasks ORDER BY created_at DESC');
-  const rows = stmt.all() as any[];
+
+function getTasks(userId: string): Task[] {
+  const stmt = db.prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC');
+  const rows = stmt.all(userId) as any[];
   
   return rows.map(row => ({
     id: row.id,
@@ -42,16 +43,21 @@ function getTasks(): Task[] {
   }));
 }
 
-function getBankActivities() {
-  const stmt = db.prepare('SELECT id, name, color, default_mins as defaultMins, icon FROM planning_bank ORDER BY created_at ASC');
-  return stmt.all() as any[];
+function getBankActivities(userId: string) {
+  const stmt = db.prepare('SELECT id, name, color, default_mins as defaultMins, icon FROM planning_bank WHERE user_id = ? ORDER BY created_at ASC');
+  return stmt.all(userId) as any[];
 }
 
-export default function PlaneacionPage() {
+export default async function PlaneacionPage() {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+
+  if (!userId) return null;
+
   const todayStr = getTodayStr();
-  const blocks = getTimeBlocks(todayStr);
-  const tasks = getTasks();
-  const bankActivities = getBankActivities();
+  const blocks = getTimeBlocks(todayStr, userId);
+  const tasks = getTasks(userId);
+  const bankActivities = getBankActivities(userId);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
