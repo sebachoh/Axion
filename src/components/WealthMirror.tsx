@@ -37,7 +37,7 @@ export default function WealthMirror({ balance }: WealthMirrorProps) {
         <h3 style={{ fontWeight: 800, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Wallet size={20} strokeWidth={2.5} /> Wealth Mirror
         </h3>
-        <button 
+        <button
           onClick={toggleHide}
           style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
           onMouseOver={(e) => e.currentTarget.style.color = '#fff'}
@@ -47,11 +47,11 @@ export default function WealthMirror({ balance }: WealthMirrorProps) {
           {isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
-      
+
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>Balance Neto</span>
         <h4 style={{ fontSize: '2.5rem', fontWeight: 900, transition: 'all 0.3s' }}>
-          {isHidden ? '••••••' : `$${balance.toLocaleString()}`}
+          {isHidden ? '••••••' : `${balance.toLocaleString()} €`}
         </h4>
       </div>
       <Link href="/finanzas" style={{ fontSize: '0.8rem', opacity: 0.5 }}>Wealth Engine →</Link>

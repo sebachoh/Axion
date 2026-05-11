@@ -56,18 +56,18 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
         <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '4px solid #1dd1a1' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Balance Total</span>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>${balance.toLocaleString()}</h2>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>€{balance.toLocaleString()}</h2>
           <p style={{ fontSize: '0.8rem', color: '#1dd1a1' }}>+{(totalIncome > 0 ? (balance/totalIncome*100).toFixed(0) : 0)}% Tasa de ahorro</p>
         </div>
         <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '4px solid #feca57' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Ingresos Mensuales</span>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>${totalIncome.toLocaleString()}</h2>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>€{totalIncome.toLocaleString()}</h2>
           <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Flujo de entrada total</p>
         </div>
         <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '4px solid #ff6b6b' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Gastos Totales</span>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>${totalExpense.toLocaleString()}</h2>
-          <p style={{ fontSize: '0.8rem', color: '#ff6b6b' }}>-{totalExpense.toLocaleString()} consumidos</p>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 800 }}>€{totalExpense.toLocaleString()}</h2>
+          <p style={{ fontSize: '0.8rem', color: '#ff6b6b' }}>-€{totalExpense.toLocaleString()} consumidos</p>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
                 </select>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Monto ($)</label>
+                <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Monto (€)</label>
                 <input name="amount" type="number" step="0.01" required style={{ padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)' }} />
               </div>
               <button type="submit" className="glass-button" style={{ padding: '10px', fontWeight: 800, background: 'var(--color-text)', color: 'var(--color-bg)' }}>+</button>
@@ -138,7 +138,7 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
                     fontWeight: 800, fontSize: '1.1rem',
                     color: t.type === 'income' ? '#1dd1a1' : '#ff6b6b'
                   }}>
-                    {t.type === 'income' ? '+' : '-'} ${t.amount.toLocaleString()}
+                    {t.type === 'income' ? '+' : '-'} €{t.amount.toLocaleString()}
                   </span>
                   <button 
                     onClick={() => deleteTransaction(t.id)}
@@ -182,8 +182,8 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
                       <div style={{ height: '100%', width: `${pct}%`, background: goal.color, transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', opacity: 0.6 }}>
-                      <span>${goal.current_amount.toLocaleString()}</span>
-                      <span>{pct}% - Goal: ${goal.target_amount.toLocaleString()}</span>
+                      <span>€{goal.current_amount.toLocaleString()}</span>
+                      <span>{pct}% - Goal: €{goal.target_amount.toLocaleString()}</span>
                     </div>
                     {/* Botones de aporte rápido */}
                     <div style={{ display: 'flex', gap: '5px', marginTop: '2px' }}>
@@ -196,7 +196,7 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
                             background: 'rgba(255,255,255,0.04)', borderRadius: '4px', 
                             color: '#fff', border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer'
                           }}
-                        >+${v}</button>
+                        >+€{v}</button>
                       ))}
                     </div>
                   </div>

@@ -45,19 +45,19 @@ export default function WealthBalanceCard({ balance }: Props) {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontWeight: 800, fontSize: '1.6rem', color: '#2ed573' }}>
-              {isHidden ? '••••••' : `$${balance.toLocaleString()}`}
+              {isHidden ? '••••••' : `${balance.toLocaleString()} €`}
             </span>
             <button
               onClick={toggleHide}
-              style={{ 
-                background: 'transparent', 
-                border: 'none', 
-                color: 'rgba(255,255,255,0.4)', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                alignItems: 'center', 
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
                 padding: 0,
-                transition: 'color 0.2s' 
+                transition: 'color 0.2s'
               }}
               onMouseOver={(e) => e.currentTarget.style.color = '#fff'}
               onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
