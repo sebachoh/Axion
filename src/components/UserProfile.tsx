@@ -15,7 +15,7 @@ export default function UserProfile({ user }: UserProfileProps) {
   if (!user) return null;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', color: 'var(--color-text)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         {user.image ? (
           <img src={user.image} alt="User" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
@@ -23,7 +23,7 @@ export default function UserProfile({ user }: UserProfileProps) {
           <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-3))' }}></div>
         )}
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100px' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'Usuario'}</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'Usuario'}</span>
           <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</span>
         </div>
       </div>

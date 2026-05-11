@@ -46,6 +46,12 @@ export default function FinanceDashboard({ transactions, goals }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
       
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <a href="/finanzas/graficas" className="glass-button" style={{ textDecoration: 'none', padding: '10px 20px', fontWeight: 600, fontSize: '0.9rem' }}>
+          📊 Ver Gráficas y Analítica
+        </a>
+      </div>
+      
       {/* ── Top Stats Row ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
         <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '4px solid #1dd1a1' }}>

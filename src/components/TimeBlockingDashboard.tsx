@@ -86,6 +86,7 @@ function getEndTime(startTime: string, durationMins: number): string {
 
 export default function TimeBlockingDashboard({ initialBlocks, selectedDate, initialTasks, bankActivities }: Props) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [mounted, setMounted] = useState(false);
   const [ghostTop, setGhostTop] = useState<number | null>(null);
   const [draggingTask, setDraggingTask] = useState<Task | null>(null);
   const [draggingBankActivity, setDraggingBankActivity] = useState<BankActivity | null>(null);
@@ -95,6 +96,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     
     // Auto-scroll to current time on mount
@@ -125,11 +127,43 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   const showLiveLine = isToday && nowHours >= START_HOUR && nowHours < END_HOUR;
   const liveLineTop = ((nowHours - START_HOUR) * 60 + nowMinutes) * PIXELS_PER_MINUTE;
 
-  const totalMins = blocksToday.reduce((acc, b) => acc + b.durationMins, 0);
-  const colorMap = blocksToday.reduce((acc, b) => {
-    acc[b.color] = (acc[b.color] || 0) + b.durationMins;
+  // Helper to merge overlapping intervals and get total unique minutes
+  const calculateUniqueBlockedMins = (blocks: typeof blocksToday) => {
+    if (blocks.length === 0) return 0;
+    const intervals = blocks.map(b => {
+      const [h, m] = b.startTime.split(':').map(Number);
+      const start = h * 60 + m;
+      const end = start + b.durationMins;
+      return { start, end };
+    });
+    intervals.sort((a, b) => a.start - b.start);
+    const merged: Array<{ start: number; end: number }> = [];
+    let current = { ...intervals[0] };
+    for (let i = 1; i < intervals.length; i++) {
+      const next = intervals[i];
+      if (next.start <= current.end) {
+        current.end = Math.max(current.end, next.end);
+      } else {
+        merged.push(current);
+        current = { ...next };
+      }
+    }
+    merged.push(current);
+    return merged.reduce((acc, interval) => acc + (interval.end - interval.start), 0);
+  };
+
+  const totalMins = calculateUniqueBlockedMins(blocksToday);
+
+  const colorGroups = blocksToday.reduce((acc, b) => {
+    if (!acc[b.color]) acc[b.color] = [];
+    acc[b.color].push(b);
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, typeof blocksToday>);
+
+  const colorMap: Record<string, number> = {};
+  Object.entries(colorGroups).forEach(([col, blocks]) => {
+    colorMap[col] = calculateUniqueBlockedMins(blocks);
+  });
 
   const getDaysDiff = (d: string) => {
     const dt = new Date(d + 'T00:00:00');
@@ -202,10 +236,35 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '25% 47% 25%', gap: '1.5rem', alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '27% 46% 27%', gap: '1.5rem', alignItems: 'start' }}>
 
-      {/* ── Panel Izquierdo: Launcher ── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}>
+      {/* ── Panel Izquierdo: Creación y Banco ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        
+        {/* Section: Añadir Bloque Rápido */}
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.25rem' }}>Bloque Directo ⚡</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>Agendar sin banco.</p>
+          <form action={addTimeBlock} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <input type="hidden" name="block_date" value={selectedDate} />
+            <input name="title" placeholder="Título del bloque..." required style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+               <input name="start_time" type="time" defaultValue={`${nowHours.toString().padStart(2, '0')}:00`} required style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
+               <input name="duration_mins" type="number" placeholder="Minutos (ej. 60)" defaultValue={60} required style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+               <select name="color" style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#000', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
+                 <option value="#bbf7d0">🟢 Trabajo</option>
+                 <option value="#bfdbfe">🔵 Salud</option>
+                 <option value="#fbcfe8">🩷 Rutinas</option>
+                 <option value="#fef68a">🟡 Ocio</option>
+                 <option value="#e9d5ff">🟣 Creatividad</option>
+                 <option value="#ff6b6b">🔴 Urgencia</option>
+                </select>
+               <button type="submit" className="glass-button" style={{ padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800, fontSize: '0.8rem' }}>Añadir</button>
+            </div>
+          </form>
+        </div>
         
         {/* Section: Actividades Recurrentes (Bank) */}
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
@@ -269,64 +328,6 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                 <button type="submit" className="glass-button" style={{ padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800, fontSize: '0.8rem' }}>Añadir</button>
              </div>
           </form>
-        </div>
-
-        {/* Section: Tareas Launcher */}
-        <div className="glass-panel" style={{ padding: '1.5rem', flex: 1 }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.25rem' }}>Tareas Tácticas 🎯</h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
-            Arrastra para agendar.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {tasksHoy.length > 0 && (
-              <>
-                <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700 }}>Para hoy</p>
-                {tasksHoy.map(task => {
-                  const isAgendated = agendatedTitles.has(task.title);
-                  return (
-                    <div key={task.id}
-                      draggable={!isAgendated}
-                      onDragStart={() => setDraggingTask(task)}
-                      onDragEnd={() => { setDraggingTask(null); setGhostTop(null); }}
-                      style={{
-                        padding: '10px 12px', borderRadius: '8px',
-                        background: isAgendated ? 'rgba(255,255,255,0.02)' : `${getTaskColor(task.priority)}18`,
-                        borderLeft: `3px solid ${isAgendated ? 'rgba(255,255,255,0.1)' : getTaskColor(task.priority)}`,
-                        cursor: isAgendated ? 'default' : 'grab', opacity: isAgendated ? 0.4 : 1,
-                        display: 'flex', flexDirection: 'column', gap: '2px',
-                      }}
-                    >
-                      <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{isAgendated ? '🔒 ' : ''}{task.title}</span>
-                      <span style={{ fontSize: '0.7rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
-                    </div>
-                  );
-                })}
-              </>
-            )}
-
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700, marginTop: '0.5rem' }}>Pendientes</p>
-            {allNonDone.filter(t => !(t.deadline && getDaysDiff(t.deadline) === 0)).map(task => {
-              const isAgendated = agendatedTitles.has(task.title);
-              return (
-                <div key={task.id}
-                  draggable={!isAgendated}
-                  onDragStart={() => setDraggingTask(task)}
-                  onDragEnd={() => { setDraggingTask(null); setGhostTop(null); }}
-                  style={{
-                    padding: '10px 12px', borderRadius: '8px',
-                    background: isAgendated ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
-                    borderLeft: `3px solid ${isAgendated ? 'rgba(255,255,255,0.1)' : getTaskColor(task.priority)}`,
-                    cursor: isAgendated ? 'default' : 'grab', opacity: isAgendated ? 0.4 : 1,
-                    display: 'flex', flexDirection: 'column', gap: '2px',
-                  }}
-                >
-                  <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{isAgendated ? '🔒 ' : ''}{task.title}</span>
-                  <span style={{ fontSize: '0.7rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
 
@@ -425,7 +426,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                 background: '#ff4757', color: '#fff', fontSize: '10px', fontWeight: 800, 
                 padding: '2px 6px', borderRadius: '4px', marginRight: '8px'
               }}>
-                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {mounted ? currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
               </div>
             </div>
           )}
@@ -465,8 +466,68 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
         </div>
       </div>
 
-      {/* ── Panel Derecho: Métricas ── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '1rem' }}>
+      {/* ── Panel Derecho: Tareas y Métricas ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        
+        {/* Section: Tareas Launcher */}
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.25rem' }}>Tareas Tácticas 🎯</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+            Arrastra para agendar.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            {tasksHoy.length > 0 && (
+              <>
+                <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700 }}>Para hoy</p>
+                {tasksHoy.map(task => {
+                  const isAgendated = agendatedTitles.has(task.title);
+                  return (
+                    <div key={task.id}
+                      draggable={!isAgendated}
+                      onDragStart={() => setDraggingTask(task)}
+                      onDragEnd={() => { setDraggingTask(null); setGhostTop(null); }}
+                      style={{
+                        padding: '10px 12px', borderRadius: '8px',
+                        background: isAgendated ? 'rgba(255,255,255,0.02)' : `${getTaskColor(task.priority)}18`,
+                        borderLeft: `3px solid ${isAgendated ? 'rgba(255,255,255,0.1)' : getTaskColor(task.priority)}`,
+                        cursor: isAgendated ? 'default' : 'grab', opacity: isAgendated ? 0.4 : 1,
+                        display: 'flex', flexDirection: 'column', gap: '2px',
+                      }}
+                    >
+                      <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{isAgendated ? '🔒 ' : ''}{task.title}</span>
+                      <span style={{ fontSize: '0.7rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700, marginTop: '0.5rem' }}>Pendientes</p>
+            {allNonDone.filter(t => !(t.deadline && getDaysDiff(t.deadline) === 0)).map(task => {
+              const isAgendated = agendatedTitles.has(task.title);
+              return (
+                <div key={task.id}
+                  draggable={!isAgendated}
+                  onDragStart={() => setDraggingTask(task)}
+                  onDragEnd={() => { setDraggingTask(null); setGhostTop(null); }}
+                  style={{
+                    padding: '10px 12px', borderRadius: '8px',
+                    background: isAgendated ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
+                    borderLeft: `3px solid ${isAgendated ? 'rgba(255,255,255,0.1)' : getTaskColor(task.priority)}`,
+                    cursor: isAgendated ? 'default' : 'grab', opacity: isAgendated ? 0.4 : 1,
+                    display: 'flex', flexDirection: 'column', gap: '2px',
+                  }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{isAgendated ? '🔒 ' : ''}{task.title}</span>
+                  <span style={{ fontSize: '0.7rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Section: Métricas de Tiempo */}
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Métricas de Tiempo</h3>
           {(() => {
@@ -495,6 +556,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
             })}
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -267,6 +267,61 @@ export function initDB() {
       color_end TEXT DEFAULT '#C2E9FB',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS stage_projects (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      status TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS stage_tasks (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      status TEXT NOT NULL,
+      priority TEXT NOT NULL DEFAULT 'media',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS stage_commands (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      command TEXT NOT NULL,
+      description TEXT,
+      category TEXT NOT NULL DEFAULT 'General',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS hogar_chores (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      last_done_at DATETIME,
+      frequency_days INTEGER DEFAULT 7,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS hogar_shopping_list (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      item_name TEXT NOT NULL,
+      is_completed BOOLEAN NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS hogar_rent_payments (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      month_year TEXT NOT NULL,
+      amount REAL NOT NULL,
+      is_paid BOOLEAN NOT NULL DEFAULT 0,
+      paid_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Multi-user migration

@@ -60,7 +60,15 @@ export default async function PlaneacionPage() {
   const bankActivities = getBankActivities(userId);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div style={{ 
+      maxWidth: '1400px', 
+      width: '100%', 
+      margin: '0 auto', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '2rem',
+      padding: '0 var(--spacing-lg) 3rem var(--spacing-lg)'
+    }}>
       <header>
         <h1 className="page-title" style={{ fontSize: '2.5rem' }}>Planeación del Día</h1>
         <p className="page-subtitle">Time Blocking Visual & Tareas Tácticas / {todayStr}</p>

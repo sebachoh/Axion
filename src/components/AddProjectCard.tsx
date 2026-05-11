@@ -62,6 +62,16 @@ export default function AddProjectCard() {
           placeholder="Breve descripción..." 
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '0.8rem', minHeight: '60px', resize: 'none' }}
         />
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '4px', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: '4px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Color Inicio</label>
+            <input type="color" name="colorStart" defaultValue="#FF9A9E" style={{ width: '100%', height: '30px', padding: '0', border: 'none', background: 'transparent', cursor: 'pointer' }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: '4px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Color Fin</label>
+            <input type="color" name="colorEnd" defaultValue="#FECFEF" style={{ width: '100%', height: '30px', padding: '0', border: 'none', background: 'transparent', cursor: 'pointer' }} />
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button 
             type="submit" 

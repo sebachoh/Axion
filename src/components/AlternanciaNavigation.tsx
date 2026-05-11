@@ -14,8 +14,8 @@ export default function AlternanciaNavigation() {
         fontWeight: 600,
         fontSize: '0.9rem',
         textDecoration: 'none',
-        background: pathname === '/workspace/alternancia' ? 'var(--color-text)' : 'transparent',
-        color: pathname === '/workspace/alternancia' ? 'var(--color-bg)' : 'var(--color-text-muted)',
+        background: pathname === '/workspace/alternancia' ? '#fff' : 'transparent',
+        color: pathname === '/workspace/alternancia' ? '#000' : 'var(--color-text-muted)',
         transition: 'all 0.2s',
       }}>
         🕹️ Tracker Activo
@@ -27,8 +27,8 @@ export default function AlternanciaNavigation() {
         fontWeight: 600,
         fontSize: '0.9rem',
         textDecoration: 'none',
-        background: pathname === '/workspace/alternancia/banco' ? 'var(--color-text)' : 'transparent',
-        color: pathname === '/workspace/alternancia/banco' ? 'var(--color-bg)' : 'var(--color-text-muted)',
+        background: pathname === '/workspace/alternancia/banco' ? '#fff' : 'transparent',
+        color: pathname === '/workspace/alternancia/banco' ? '#000' : 'var(--color-text-muted)',
         transition: 'all 0.2s',
       }}>
         🏦 Banco de Datos

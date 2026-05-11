@@ -77,7 +77,10 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Sticky Notes</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Sticky Notes</h3>
+          <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>{notes.length}</span>
+        </div>
         <button 
           onClick={() => {
             if (isAdding) {

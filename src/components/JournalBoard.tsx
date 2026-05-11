@@ -79,8 +79,8 @@ export default function JournalBoard({ initialEntries }: Props) {
                </div>
 
                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                 <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Imagen URL (Opcional)</label>
-                 <input type="url" name="media_url" placeholder="https://..." style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'transparent', color: 'var(--color-text)', outline: 'none', width: '250px' }} />
+                 <label style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Imagen (Opcional)</label>
+                 <input type="file" accept="image/*" name="media_file" style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'transparent', color: 'var(--color-text)', outline: 'none', width: '250px' }} />
                </div>
              </div>
 

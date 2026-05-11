@@ -7,6 +7,20 @@ export default function AddLanguageCard() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const languages = [
+    { name: 'Inglés', flag: '🇺🇸' },
+    { name: 'Francés', flag: '🇫🇷' },
+    { name: 'Alemán', flag: '🇩🇪' },
+    { name: 'Italiano', flag: '🇮🇹' },
+    { name: 'Portugués', flag: '🇧🇷' },
+    { name: 'Japonés', flag: '🇯🇵' },
+    { name: 'Chino', flag: '🇨🇳' },
+    { name: 'Coreano', flag: '🇰🇷' },
+    { name: 'Ruso', flag: '🇷🇺' },
+    { name: 'Árabe', flag: '🇸🇦' }
+  ];
+  const [selectedLang, setSelectedLang] = useState(languages[0]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -45,20 +59,17 @@ export default function AddLanguageCard() {
   return (
     <div className="glass-panel" style={{ padding: '1.5rem', minHeight: '200px' }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <input 
-          name="name" 
-          placeholder="Nombre del Idioma" 
-          required 
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '0.9rem' }}
-        />
-        <input 
-          name="flag" 
-          placeholder="Bandera (Emoji, ej: 🇫🇷)" 
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '0.9rem' }}
-        />
+        <input type="hidden" name="name" value={selectedLang.name} />
+        <input type="hidden" name="flag" value={selectedLang.flag} />
+        <select 
+          onChange={(e) => setSelectedLang(languages[e.target.selectedIndex])}
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#000', fontSize: '0.9rem' }}
+        >
+          {languages.map(l => <option key={l.name} value={l.name} style={{color:'black'}}>{l.flag} {l.name}</option>)}
+        </select>
         <textarea 
           name="description" 
-          placeholder="Breve descripción de la ruta..." 
+          placeholder="Propósito para aprender este idioma..." 
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '0.8rem', minHeight: '60px', resize: 'none' }}
         />
         <div style={{ display: 'flex', gap: '0.5rem' }}>

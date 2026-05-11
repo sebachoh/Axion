@@ -30,7 +30,7 @@ export default async function CareersPage() {
         gap: '1.5rem',
       }}>
         {careers.map(career => (
-          <Link key={career.id} href="#" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link key={career.id} href={`/academia/careers/${career.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="glass-panel" style={{ 
               display: 'flex', 
               flexDirection: 'column', 

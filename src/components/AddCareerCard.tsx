@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { addSpecialization } from '../academia/careers/actions';
+import { addSpecialization } from '@/app/(dashboard)/academia/careers/actions';
 
 export default function AddCareerCard() {
   const [isOpen, setIsOpen] = useState(false);

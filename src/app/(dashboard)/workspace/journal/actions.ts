@@ -7,7 +7,15 @@ import crypto from 'crypto';
 export async function addJournalEntry(formData: FormData) {
   const content = formData.get('content') as string;
   const mood = formData.get('mood') as string || 'neutral';
-  const mediaUrl = formData.get('media_url') as string || '';
+  
+  let mediaUrl = formData.get('media_url') as string || '';
+  const mediaFile = formData.get('media_file') as File | null;
+
+  if (mediaFile && mediaFile.size > 0) {
+    const arrayBuffer = await mediaFile.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    mediaUrl = `data:${mediaFile.type};base64,${buffer.toString('base64')}`;
+  }
 
   if (!content) return;
 
