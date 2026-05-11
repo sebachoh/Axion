@@ -66,15 +66,12 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
   };
 
   return (
-    <div className="full-bleed" style={{
-      marginTop: 'calc(-1 * var(--spacing-xl))',
-      height: '288px',
+    <div className="full-bleed hero-banner-container" style={{
       position: 'relative',
       background: `url(${bannerUrl}) center/cover no-repeat`,
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-end',
-      padding: '3.5rem 4rem',
       marginBottom: '-1rem',
       overflow: 'hidden',
       transition: 'background 0.5s ease'
@@ -87,7 +84,7 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', fontWeight: 600, textTransform: 'capitalize', marginBottom: '0.75rem', letterSpacing: '-0.05em' }}>
           {currentDate}
         </p>
-        <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.07em', lineHeight: 0.95, color: '#fff', textShadow: '0 4px 40px rgba(0,0,0,0.6)' }}>
+        <h1 className="hero-banner-title" style={{ fontWeight: 900, letterSpacing: '-0.07em', lineHeight: 0.95, color: '#fff', textShadow: '0 4px 40px rgba(0,0,0,0.6)' }}>
           Axion
           <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: 400, opacity: 0.6, letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '-0.01rem' }}>Ecosystem</span>
         </h1>
@@ -95,8 +92,8 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
 
       {/* Mood mindet display */}
       {journalMoodToday && (
-        <div style={{
-          position: 'absolute', top: '3rem', right: '4rem', textAlign: 'center',
+        <div className="hero-banner-mindset" style={{
+          position: 'absolute', textAlign: 'center',
           minWidth: '120px', padding: '1.25rem', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(25px)',
           border: '1px solid rgba(255,255,255,0.2)', borderRadius: '24px',
           boxShadow: '0 20px 50px rgba(0,0,0,0.4)', zIndex: 2
@@ -108,7 +105,7 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
 
       {/* Camera Icon Floating Button to Change Banner */}
       {mounted && (
-        <div style={{ position: 'absolute', bottom: '2.5rem', right: '4rem', zIndex: 3 }}>
+        <div className="hero-banner-camera" style={{ position: 'absolute', zIndex: 3 }}>
           <button
             onClick={() => setShowPicker(!showPicker)}
             style={{

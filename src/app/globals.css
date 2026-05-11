@@ -581,3 +581,385 @@ ul[data-type="taskList"] input[type="checkbox"] {
     gap: 12px;
   }
 }
+
+/* ==========================================
+   HOMEPAGE RESPONSIVE STYLES (AXION DESIGN SYSTEM)
+   ========================================== */
+
+/* Hero Banner Responsiveness */
+.hero-banner-container {
+  height: 288px !important;
+  padding: 3.5rem 4rem !important;
+  margin-top: calc(-1 * var(--spacing-xl)) !important;
+}
+.hero-banner-title {
+  font-size: 4.5rem !important;
+}
+.hero-banner-mindset {
+  top: 3rem !important;
+  right: 4rem !important;
+}
+.hero-banner-camera {
+  bottom: 2.5rem !important;
+  right: 4rem !important;
+}
+
+@media (max-width: 850px) {
+  .hero-banner-container {
+    height: 200px !important;
+    padding: 2rem 1.5rem !important;
+    margin-top: 0 !important;
+    border-radius: 0 0 24px 24px !important;
+  }
+  .hero-banner-title {
+    font-size: 2.5rem !important;
+  }
+  .hero-banner-mindset {
+    top: 1.2rem !important;
+    right: 1.2rem !important;
+    padding: 0.6rem !important;
+    min-width: 70px !important;
+    border-radius: 16px !important;
+  }
+  .hero-banner-mindset div {
+    font-size: 1.6rem !important;
+  }
+  .hero-banner-mindset p {
+    font-size: 0.6rem !important;
+    margin-top: 2px !important;
+  }
+  .hero-banner-camera {
+    bottom: 1.2rem !important;
+    right: 1.2rem !important;
+  }
+}
+
+/* Page wrapper container margins */
+.dashboard-page-wrapper {
+  padding: 0 var(--spacing-lg) !important;
+}
+
+@media (max-width: 850px) {
+  .dashboard-page-wrapper {
+    padding: 0 1rem !important;
+  }
+  .full-bleed {
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    width: calc(100% + 2rem) !important;
+  }
+}
+
+/* Ahora Mismo (Live Focus) Responsiveness */
+.live-focus-widget {
+  padding: 1.5rem 2.5rem !important;
+  margin: 0 -0.5rem !important;
+  flex-direction: row !important;
+  display: flex !important;
+}
+.live-focus-divider {
+  display: block !important;
+}
+
+@media (max-width: 850px) {
+  .live-focus-widget {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 1.25rem !important;
+    margin: 0 !important;
+    gap: 1.25rem !important;
+    text-align: center !important;
+  }
+  .live-focus-widget > div:first-child {
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+  }
+  .live-focus-widget > div:first-child > div:not(.live-focus-divider) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .live-focus-divider {
+    display: none !important;
+  }
+}
+
+/* Stats Pulse Grid Responsiveness */
+.stats-pulse-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 1rem !important;
+}
+
+@media (max-width: 1200px) {
+  .stats-pulse-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-pulse-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .stats-pulse-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Bento Ecosystem Grid Responsiveness */
+.bento-ecosystem-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+@media (max-width: 1100px) {
+  .bento-ecosystem-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 850px) {
+  .bento-ecosystem-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE OVERLAY SIDEBAR FOR MOBILE (MAX-WIDTH: 850PX)
+   ========================================== */
+
+.mobile-sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 850px) {
+  .mobile-sidebar-backdrop {
+    display: block !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: 280px !important;
+    z-index: 1000 !important;
+    transform: translate3d(0, 0, 0) !important;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7) !important;
+    background: var(--sidebar-bg, rgba(20, 20, 20, 0.96)) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+  }
+  
+  .sidebar.collapsed {
+    transform: translate3d(-280px, 0, 0) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  .main-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: var(--spacing-lg) !important;
+    padding-bottom: var(--spacing-lg) !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* Bento Grid Responsive Collapse */
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+    gap: 1.25rem !important;
+  }
+  
+  .col-span-1, .col-span-2, .col-span-3, .col-span-4 {
+    grid-column: span 1 !important;
+  }
+}
+
+/* Time Blocking Responsive Grid */
+.timeblocking-grid {
+  display: grid !important;
+  grid-template-columns: 27% 46% 27% !important;
+  gap: 1.5rem !important;
+  align-items: start !important;
+}
+
+@media (max-width: 1100px) {
+  .timeblocking-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* Tareas Dashboard Responsive Grids */
+.tareas-grid-two {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1.5rem !important;
+  align-items: start !important;
+}
+
+.tareas-grid-three {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+  align-items: start !important;
+}
+
+@media (max-width: 850px) {
+  .tareas-grid-two, .tareas-grid-three {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* Stage Dashboard Responsive Layout */
+.stage-main-grid {
+  display: grid !important;
+  grid-template-columns: 1.2fr 1fr !important;
+  gap: 2rem !important;
+  align-items: start !important;
+}
+
+.stage-flex-row {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.stage-section-selector {
+  display: flex !important;
+  background: var(--glass-bg) !important;
+  padding: 6px !important;
+  border-radius: var(--radius-full) !important;
+  border: 1px solid var(--glass-border) !important;
+  gap: 6px !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 950px) {
+  .stage-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .stage-section-selector {
+    border-radius: var(--radius-sm) !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .stage-section-selector button {
+    padding: 8px 16px !important;
+    font-size: 0.8rem !important;
+    border-radius: var(--radius-sm) !important;
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .stage-flex-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+/* Banco de Alternancia Responsive Layouts */
+.banco-grid-layout {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+.banco-header-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 1.25rem !important;
+}
+
+@media (max-width: 950px) {
+  .banco-grid-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .banco-header-container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+  }
+  .banco-header-container button {
+    justify-content: center !important;
+  }
+}
+
+/* Language Portal Responsive Layouts */
+.lang-skills-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1rem !important;
+}
+
+.lang-skill-card {
+  padding: 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 0.5rem !important;
+}
+
+.lang-tabs-row {
+  display: flex !important;
+  gap: 0.5rem !important;
+  padding: 6px !important;
+  background: var(--glass-bg) !important;
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--glass-border) !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.lang-tabs-row::-webkit-scrollbar {
+  display: none !important;
+}
+
+.lang-stats-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1.5rem !important;
+}
+
+@media (max-width: 768px) {
+  .lang-skills-grid {
+    gap: 0.5rem !important;
+  }
+  .lang-skill-card {
+    padding: 0.75rem !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  .lang-skill-label, .lang-skill-subtitle {
+    display: none !important;
+  }
+  .lang-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}

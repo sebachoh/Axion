@@ -91,12 +91,14 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
   const topics = getTopics(lang, userId);
 
   return (
-    <LanguagePortal
-      config={config}
-      words={words}
-      resources={resources}
-      skills={skills}
-      topics={topics}
-    />
+    <div className="dashboard-page-wrapper">
+      <LanguagePortal
+        config={config}
+        words={words}
+        resources={resources}
+        skills={skills}
+        topics={topics}
+      />
+    </div>
   );
 }

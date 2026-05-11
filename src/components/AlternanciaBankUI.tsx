@@ -233,10 +233,7 @@ export default function AlternanciaBankUI({ initialItems }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
       
       {/* Cabecera unificada con botón de PDF */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
+      <div className="banco-header-container" style={{ 
         padding: '1.25rem 2rem', 
         borderRadius: '16px', 
         background: 'rgba(255, 255, 255, 0.01)', 
@@ -277,7 +274,7 @@ export default function AlternanciaBankUI({ initialItems }: Props) {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+      <div className="banco-grid-layout">
         
         {/* Columna 1: Radar de Empresas */}
         <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', minHeight: '600px', borderTop: '4px solid #1dd1a1' }}>

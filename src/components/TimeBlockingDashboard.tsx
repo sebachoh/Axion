@@ -236,7 +236,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '27% 46% 27%', gap: '1.5rem', alignItems: 'start' }}>
+    <div className="timeblocking-grid">
 
       {/* ── Panel Izquierdo: Creación y Banco ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

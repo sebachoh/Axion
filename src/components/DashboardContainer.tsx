@@ -72,6 +72,21 @@ export default function DashboardContainer({ initialLayout, user, children }: Da
           <ChevronRight size={18} />
         </button>
       )}
+      {/* Mobile Backdrop Overlay */}
+      {mounted && !isCollapsed && (
+        <div 
+          className="mobile-sidebar-backdrop"
+          onClick={toggleSidebar}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 950,
+            animation: 'fade-in 0.3s ease'
+          }}
+        />
+      )}
 
       {/* Animated Pinned/Collapsible Sidebar */}
       <aside 

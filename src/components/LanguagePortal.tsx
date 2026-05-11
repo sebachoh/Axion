@@ -145,20 +145,16 @@ export default function LanguagePortal({ config, words, resources, skills, topic
       </div>
 
       {/* ──────────────── SKILLS NAV ──────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="lang-skills-grid" style={{ marginBottom: '2rem' }}>
         {SKILLS.map(s => (
           <div 
             key={s.key} 
-            className="glass-panel" 
+            className="glass-panel lang-skill-card" 
             onClick={() => {
               setResourceSkillFilter(s.key);
               setTab('recursos');
             }}
             style={{ 
-              padding: '1.5rem', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '0.5rem', 
               cursor: 'pointer',
               border: resourceSkillFilter === s.key ? `2px solid ${config.accentColor}` : '1px solid var(--glass-border)',
               background: resourceSkillFilter === s.key ? `${config.accentColor}11` : 'var(--glass-bg)',
@@ -167,14 +163,14 @@ export default function LanguagePortal({ config, words, resources, skills, topic
             }}
           >
             <span style={{ fontSize: '2rem' }}>{s.icon}</span>
-            <p style={{ fontWeight: 700, fontSize: '1.1rem', margin: 0 }}>{s.label}</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: 0 }}>Ver recursos segmentados</p>
+            <p className="lang-skill-label" style={{ fontWeight: 700, fontSize: '1.1rem', margin: 0 }}>{s.label}</p>
+            <p className="lang-skill-subtitle" style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: 0 }}>Ver recursos segmentados</p>
           </div>
         ))}
       </div>
 
       {/* ──────────────── TABS ──────────────── */}
-      <div style={{ display: 'flex', gap: '0.5rem', padding: '6px', background: 'var(--glass-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)', width: 'fit-content', marginBottom: '1.5rem' }}>
+      <div className="lang-tabs-row" style={{ marginBottom: '1.5rem' }}>
         {[
           { id: 'vocab', label: '📘 Vocabulario' },
           { id: 'recursos', label: '📚 Recursos' },
@@ -433,7 +429,7 @@ export default function LanguagePortal({ config, words, resources, skills, topic
 
       {/* ──────────────── ESTADÍSTICAS ──────────────── */}
       {tab === 'stats' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div className="lang-stats-grid">
           <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <h3 style={{ fontWeight: 600, fontSize: '1.2rem' }}>📊 Resumen de Vocabulario</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

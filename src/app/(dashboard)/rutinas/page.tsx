@@ -11,7 +11,7 @@ export default async function RutinasPage() {
   const analyticsData = await getHabitsAnalytics(28);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div className="dashboard-page-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header>
         <h1 className="page-title" style={{ fontSize: '2.5rem' }}>Rutinas</h1>
         <p className="page-subtitle">Dashboard / Tracking Diario</p>

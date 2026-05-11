@@ -31,7 +31,7 @@ export default async function TareasPage() {
   const tasks = await getTasks(userId);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div className="dashboard-page-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header>
         <h1 className="page-title" style={{ fontSize: '2.5rem' }}>Vista de Mando (Tareas)</h1>
         <p className="page-subtitle">Priorativas, Deadlines y Sprints.</p>

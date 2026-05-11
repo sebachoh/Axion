@@ -144,7 +144,7 @@ export default function TareasDashboard({ initialTasks }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Barra de Filtros */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--glass-bg)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem', background: 'var(--glass-bg)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
         <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Filtro por Prioridad:</span>
         <button onClick={() => setFilterPriority('all')} style={{ background: filterPriority === 'all' ? '#fff' : 'transparent', color: filterPriority === 'all' ? '#000' : 'rgba(255,255,255,0.6)', border: 'none', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Todas</button>
         <button onClick={() => setFilterPriority('high')} style={{ background: filterPriority === 'high' ? '#ff6b6b' : 'transparent', color: filterPriority === 'high' ? '#000' : 'rgba(255,255,255,0.6)', border: 'none', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Alta</button>
@@ -152,7 +152,7 @@ export default function TareasDashboard({ initialTasks }: Props) {
         <button onClick={() => setFilterPriority('low')} style={{ background: filterPriority === 'low' ? '#1dd1a1' : 'transparent', color: filterPriority === 'low' ? '#000' : 'rgba(255,255,255,0.6)', border: 'none', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Baja</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
+      <div className="tareas-grid-two">
         
         {/* Formulario de Input principal */}
         <div className="glass-panel" style={{ padding: '2rem' }}>
@@ -205,7 +205,7 @@ export default function TareasDashboard({ initialTasks }: Props) {
       {/* Secciones de Clasificación temporal */}
       <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>Clasificación Temporal</h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+      <div className="tareas-grid-three">
 
         {/* Hoy */}
         <div className="glass-panel" style={{ padding: '1.5rem', borderTop: '3px solid #ff6b6b' }}>

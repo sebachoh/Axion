@@ -47,6 +47,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'completed'>('all');
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
+  const [activeSection, setActiveSection] = useState<'tasks' | 'projects' | 'commands'>('tasks');
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -142,14 +143,53 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
 
       </div>
 
-      {/* Main Grid Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem', alignItems: 'start' }}>
-        
-        {/* LEFT COLUMN: Tasks & Projects */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          
-          {/* Section: Pendientes (Tasks) */}
-          <div className="glass-panel" style={{ padding: '1.5rem' }}>
+      {/* Section Selector Tab Bar */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
+        <div className="stage-section-selector">
+          <button 
+            type="button"
+            onClick={() => setActiveSection('tasks')}
+            style={{
+              background: activeSection === 'tasks' ? 'var(--color-text)' : 'transparent',
+              color: activeSection === 'tasks' ? 'var(--color-bg)' : 'var(--color-text)',
+              border: 'none', padding: '10px 24px', borderRadius: 'var(--radius-full)', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}
+          >
+            <CheckSquare size={16} /> Pendientes
+          </button>
+          <button 
+            type="button"
+            onClick={() => setActiveSection('projects')}
+            style={{
+              background: activeSection === 'projects' ? 'var(--color-text)' : 'transparent',
+              color: activeSection === 'projects' ? 'var(--color-bg)' : 'var(--color-text)',
+              border: 'none', padding: '10px 24px', borderRadius: 'var(--radius-full)', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}
+          >
+            <Folder size={16} /> Proyectos
+          </button>
+          <button 
+            type="button"
+            onClick={() => setActiveSection('commands')}
+            style={{
+              background: activeSection === 'commands' ? 'var(--color-text)' : 'transparent',
+              color: activeSection === 'commands' ? 'var(--color-bg)' : 'var(--color-text)',
+              border: 'none', padding: '10px 24px', borderRadius: 'var(--radius-full)', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}
+          >
+            <Terminal size={16} /> Comandos / Refs
+          </button>
+        </div>
+      </div>
+
+      {/* Selected Section Panel Container */}
+      <div style={{ width: '100%' }}>
+        {activeSection === 'tasks' && (
+          /* Section: Pendientes (Tasks) */
+          <div className="glass-panel" style={{ padding: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <CheckSquare size={20} style={{ color: 'var(--color-text)' }} />
@@ -158,18 +198,21 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
               
               <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
                 <button 
+                  type="button"
                   onClick={() => setActiveTab('all')} 
                   style={{ background: activeTab === 'all' ? 'var(--color-text)' : 'transparent', color: activeTab === 'all' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
                 >
                   Todos
                 </button>
                 <button 
+                  type="button"
                   onClick={() => setActiveTab('pending')} 
                   style={{ background: activeTab === 'pending' ? 'var(--color-text)' : 'transparent', color: activeTab === 'pending' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
                 >
                   Pendientes
                 </button>
                 <button 
+                  type="button"
                   onClick={() => setActiveTab('completed')} 
                   style={{ background: activeTab === 'completed' ? 'var(--color-text)' : 'transparent', color: activeTab === 'completed' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
                 >
@@ -212,6 +255,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                   <div key={task.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
                       <button 
+                        type="button"
                         onClick={() => toggleStageTaskStatus(task.id, task.status)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: task.status === 'Completado' ? '#1dd1a1' : 'var(--color-text-muted)', display: 'flex', alignItems: 'center' }}
                       >
@@ -235,6 +279,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {getPriorityBadge(task.priority)}
                       <button 
+                        type="button"
                         onClick={() => deleteStageTask(task.id)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}
                         title="Eliminar"
@@ -247,9 +292,11 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
               )}
             </div>
           </div>
+        )}
 
-          {/* Section: Proyectos (Projects) */}
-          <div className="glass-panel" style={{ padding: '1.5rem' }}>
+        {activeSection === 'projects' && (
+          /* Section: Proyectos (Projects) */
+          <div className="glass-panel" style={{ padding: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
               <Folder size={20} style={{ color: 'var(--color-text)' }} />
               <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Proyectos del Stage</h3>
@@ -257,7 +304,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
 
             {/* Quick Add Project Form */}
             <form action={addStageProject} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.01)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="stage-flex-row">
                 <input 
                   type="text" 
                   name="title" 
@@ -276,7 +323,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                   <option value="Pausado" style={{color:'black'}}>Pausado</option>
                 </select>
               </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="stage-flex-row">
                 <input 
                   type="text" 
                   name="description" 
@@ -306,6 +353,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                         )}
                       </div>
                       <button 
+                        type="button"
                         onClick={() => deleteStageProject(project.id)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}
                       >
@@ -337,13 +385,11 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
               )}
             </div>
           </div>
+        )}
 
-        </div>
-
-        {/* RIGHT COLUMN: Commands & Quick Reference */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          
-          <div className="glass-panel" style={{ padding: '1.5rem' }}>
+        {activeSection === 'commands' && (
+          /* Section: Comandos y Referencias */
+          <div className="glass-panel" style={{ padding: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
               <Terminal size={20} style={{ color: 'var(--color-text)' }} />
               <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Comandos y Referencias</h3>
@@ -351,7 +397,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
 
             {/* Quick Add Command */}
             <form action={addStageCommand} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.01)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="stage-flex-row">
                 <input 
                   type="text" 
                   name="title" 
@@ -373,7 +419,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                 placeholder="docker-compose up -d --build" 
                 style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)', outline: 'none', fontSize: '0.9rem', fontFamily: 'monospace' }} 
               />
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="stage-flex-row">
                 <input 
                   type="text" 
                   name="description" 
@@ -392,6 +438,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                 {categories.map(cat => (
                   <button
                     key={cat}
+                    type="button"
                     onClick={() => setActiveCategory(cat)}
                     style={{
                       background: activeCategory === cat ? 'var(--color-text)' : 'rgba(255,255,255,0.05)',
@@ -428,6 +475,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                         </span>
                       </div>
                       <button 
+                        type="button"
                         onClick={() => deleteStageCommand(cmd.id)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '2px' }}
                       >
@@ -440,6 +488,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                         {cmd.command}
                       </code>
                       <button
+                        type="button"
                         onClick={() => handleCopy(cmd.id, cmd.command)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedId === cmd.id ? '#1dd1a1' : 'var(--color-text-muted)', display: 'flex', alignItems: 'center', padding: '4px' }}
                         title="Copiar comando"
@@ -458,9 +507,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
               )}
             </div>
           </div>
-
-        </div>
-
+        )}
       </div>
 
     </div>

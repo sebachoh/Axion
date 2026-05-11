@@ -109,18 +109,16 @@ export default async function DashboardPage() {
       />
 
       {/* Center and constrain all page content widgets to 1400px */}
-      <div style={{ 
+      <div className="dashboard-page-wrapper" style={{ 
         maxWidth: '1400px', 
         width: '100%', 
         margin: '0 auto', 
         display: 'flex', 
         flexDirection: 'column', 
         gap: '2rem',
-        padding: '0 var(--spacing-lg)'
       }}>
         {/* ── Live Focus Widget ── */}
-        <div className="glass-panel" style={{
-          padding: '1.5rem 2.5rem', margin: '0 -0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        <div className="glass-panel live-focus-widget" style={{
           background: 'linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
           borderLeft: '5px solid var(--color-text)', borderRadius: '16px'
         }}>
@@ -132,7 +130,7 @@ export default async function DashboardPage() {
                 {currentBlock && <span style={{ padding: '2px 10px', borderRadius: '20px', background: currentBlock.color, color: '#000', fontSize: '0.7rem', fontWeight: 800 }}>HASTA {getEndTime(currentBlock.startTime, currentBlock.durationMins)}</span>}
               </div>
             </div>
-            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
+            <div className="live-focus-divider" style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
             <div>
               <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, fontWeight: 700 }}>A Continuación</span>
               <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)' }}>
@@ -144,7 +142,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── Stats Pulse Row ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
+        <div className="stats-pulse-grid">
           {[
             { 
               label: `Rutina ${data.routineType}`, 
@@ -217,7 +215,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── The Bento Ecosystem Reimagined ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'stretch' }}>
+        <div className="bento-ecosystem-grid" style={{ alignItems: 'stretch' }}>
 
           {/* Column 1: EXECUTIVE FOCUS */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

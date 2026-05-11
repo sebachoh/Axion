@@ -46,7 +46,7 @@ export default async function StagePage() {
   ]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div className="dashboard-page-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{ background: 'var(--color-text)', color: 'var(--color-bg)', padding: '10px', borderRadius: '16px' }}>
           <Briefcase size={28} />
