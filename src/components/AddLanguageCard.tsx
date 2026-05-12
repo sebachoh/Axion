@@ -17,7 +17,7 @@ export default function AddLanguageCard() {
     { name: 'Chino', flag: '🇨🇳' },
     { name: 'Coreano', flag: '🇰🇷' },
     { name: 'Ruso', flag: '🇷🇺' },
-    { name: 'Árabe', flag: '🇸🇦' }
+    { name: 'Darija', flag: '🇲🇦' }
   ];
   const [selectedLang, setSelectedLang] = useState(languages[0]);
 
@@ -32,13 +32,13 @@ export default function AddLanguageCard() {
 
   if (!isOpen) {
     return (
-      <div 
+      <div
         onClick={() => setIsOpen(true)}
-        className="glass-panel" 
-        style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
+        className="glass-panel"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           justifyContent: 'center',
           padding: '2.5rem 1.5rem',
           textAlign: 'center',
@@ -61,27 +61,27 @@ export default function AddLanguageCard() {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <input type="hidden" name="name" value={selectedLang.name} />
         <input type="hidden" name="flag" value={selectedLang.flag} />
-        <select 
+        <select
           onChange={(e) => setSelectedLang(languages[e.target.selectedIndex])}
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#000', fontSize: '0.9rem' }}
         >
-          {languages.map(l => <option key={l.name} value={l.name} style={{color:'black'}}>{l.flag} {l.name}</option>)}
+          {languages.map(l => <option key={l.name} value={l.name} style={{ color: 'black' }}>{l.flag} {l.name}</option>)}
         </select>
-        <textarea 
-          name="description" 
-          placeholder="Propósito para aprender este idioma..." 
+        <textarea
+          name="description"
+          placeholder="Propósito para aprender este idioma..."
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px', color: '#fff', fontSize: '0.8rem', minHeight: '60px', resize: 'none' }}
         />
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             style={{ flex: 1, padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
           >
             {loading ? 'Añadiendo...' : 'Añadir'}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setIsOpen(false)}
             style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
           >

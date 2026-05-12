@@ -322,6 +322,19 @@ export function initDB() {
       paid_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS travel_pins (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      map_id TEXT NOT NULL,
+      city_name TEXT NOT NULL,
+      status TEXT NOT NULL,
+      color TEXT,
+      notes TEXT,
+      pos_x REAL,
+      pos_y REAL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Multi-user migration
@@ -331,7 +344,7 @@ export function initDB() {
     'alternancia_bank', 'project_ideas', 'time_blocks', 'journal_entries', 
     'language_words', 'language_resources', 'language_skills', 
     'language_topics', 'planning_bank', 'finance_transactions', 
-    'finance_goals', 'vision_boards', 'vault_resources'
+    'finance_goals', 'vision_boards', 'vault_resources', 'travel_pins'
   ];
 
   tables.forEach(table => {

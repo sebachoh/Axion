@@ -55,7 +55,19 @@ export default async function PlaneacionPage() {
   if (!userId) return null;
 
   const todayStr = getTodayStr();
-  const blocks = getTimeBlocks(todayStr, userId);
+  
+  // Calculate tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yyyy = tomorrow.getFullYear();
+  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const dd = String(tomorrow.getDate()).padStart(2, '0');
+  const tomorrowStr = `${yyyy}-${mm}-${dd}`;
+
+  const blocksToday = getTimeBlocks(todayStr, userId);
+  const blocksTomorrow = getTimeBlocks(tomorrowStr, userId);
+  const blocks = [...blocksToday, ...blocksTomorrow];
+
   const tasks = getTasks(userId);
   const bankActivities = getBankActivities(userId);
 

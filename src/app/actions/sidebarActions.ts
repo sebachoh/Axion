@@ -47,7 +47,8 @@ const defaultSidebarLayout = [
     items: [
       { id: 'journal', href: '/journal', label: 'Journal', icon: 'journal' },
       { id: 'finanzas', href: '/finanzas', label: 'Finanzas', icon: 'finanzas' },
-      { id: 'hogar', href: '/lifestyle/hogar', label: 'Hogar', icon: 'hogar' }
+      { id: 'hogar', href: '/lifestyle/hogar', label: 'Hogar', icon: 'hogar' },
+      { id: 'viajes', href: '/lifestyle/viajes', label: 'Viajes', icon: 'compass' }
     ]
   },
   {

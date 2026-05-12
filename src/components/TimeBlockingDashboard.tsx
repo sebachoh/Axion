@@ -85,6 +85,18 @@ function getEndTime(startTime: string, durationMins: number): string {
 }
 
 export default function TimeBlockingDashboard({ initialBlocks, selectedDate, initialTasks, bankActivities }: Props) {
+  const [activeDate, setActiveDate] = useState<string>(selectedDate);
+
+  const getTomorrowDateStr = (dateStr: string) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const tomorrowDateStr = getTomorrowDateStr(selectedDate);
+
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [mounted, setMounted] = useState(false);
   const [ghostTop, setGhostTop] = useState<number | null>(null);
@@ -111,7 +123,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
     return () => clearInterval(interval);
   }, []);
 
-  const blocksToday = initialBlocks.filter(b => b.blockDate === selectedDate);
+  const blocksToday = initialBlocks.filter(b => b.blockDate === activeDate);
   const agendatedTitles = new Set(blocksToday.map(b => b.title));
 
   const calculateTop = (timeStr: string) => {
@@ -123,7 +135,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
 
   const nowHours = currentTime.getHours();
   const nowMinutes = currentTime.getMinutes();
-  const isToday = new Date().toISOString().split('T')[0] === selectedDate;
+  const isToday = activeDate === selectedDate;
   const showLiveLine = isToday && nowHours >= START_HOUR && nowHours < END_HOUR;
   const liveLineTop = ((nowHours - START_HOUR) * 60 + nowMinutes) * PIXELS_PER_MINUTE;
 
@@ -165,12 +177,13 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
     colorMap[col] = calculateUniqueBlockedMins(blocks);
   });
 
-  const getDaysDiff = (d: string) => {
+  const getDaysDiffFromActive = (d: string) => {
     const dt = new Date(d + 'T00:00:00');
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    return Math.ceil((dt.getTime() - today.getTime()) / 86400000);
+    const active = new Date(activeDate + 'T00:00:00');
+    active.setHours(0, 0, 0, 0);
+    return Math.ceil((dt.getTime() - active.getTime()) / 86400000);
   };
-  const tasksHoy = initialTasks.filter(t => t.deadline && getDaysDiff(t.deadline) === 0 && t.status !== 'done');
+  const tasksHoy = initialTasks.filter(t => t.deadline && getDaysDiffFromActive(t.deadline) === 0 && t.status !== 'done');
   const allNonDone = initialTasks.filter(t => t.status !== 'done');
 
   // Calendar drag-and-drop handlers
@@ -200,7 +213,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
       formData.set('start_time', startTime);
       formData.set('duration_mins', '120');
       formData.set('color', color);
-      formData.set('block_date', selectedDate);
+      formData.set('block_date', activeDate);
       await addTimeBlock(formData);
     } else if (draggingBankActivity) {
       const formData = new FormData();
@@ -208,7 +221,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
       formData.set('start_time', startTime);
       formData.set('duration_mins', draggingBankActivity.defaultMins.toString());
       formData.set('color', draggingBankActivity.color);
-      formData.set('block_date', selectedDate);
+      formData.set('block_date', activeDate);
       await addTimeBlock(formData);
     } else if (movingBlock) {
       await updateTimeBlock(movingBlock.id, { start_time: startTime });
@@ -236,7 +249,56 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   };
 
   return (
-    <div className="timeblocking-grid">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      
+      {/* Selector de Fecha */}
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <button 
+          onClick={() => setActiveDate(selectedDate)}
+          className="glass-button"
+          style={{
+            padding: '10px 20px',
+            fontSize: '0.9rem',
+            fontWeight: 800,
+            background: activeDate === selectedDate ? 'var(--color-text)' : 'rgba(255,255,255,0.03)',
+            color: activeDate === selectedDate ? 'var(--color-bg)' : '#fff',
+            borderColor: activeDate === selectedDate ? 'transparent' : 'var(--glass-border)',
+            boxShadow: activeDate === selectedDate ? '0 4px 15px rgba(255,255,255,0.1)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: '10px',
+            cursor: 'pointer'
+          }}
+        >
+          <span>📅 Hoy</span>
+          <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({selectedDate})</span>
+        </button>
+
+        <button 
+          onClick={() => setActiveDate(tomorrowDateStr)}
+          className="glass-button"
+          style={{
+            padding: '10px 20px',
+            fontSize: '0.9rem',
+            fontWeight: 800,
+            background: activeDate === tomorrowDateStr ? 'var(--color-text)' : 'rgba(255,255,255,0.03)',
+            color: activeDate === tomorrowDateStr ? 'var(--color-bg)' : '#fff',
+            borderColor: activeDate === tomorrowDateStr ? 'transparent' : 'var(--glass-border)',
+            boxShadow: activeDate === tomorrowDateStr ? '0 4px 15px rgba(255,255,255,0.1)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: '10px',
+            cursor: 'pointer'
+          }}
+        >
+          <span>🌅 Mañana</span>
+          <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({tomorrowDateStr})</span>
+        </button>
+      </div>
+
+      <div className="timeblocking-grid">
 
       {/* ── Panel Izquierdo: Creación y Banco ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -246,7 +308,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.25rem' }}>Bloque Directo ⚡</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>Agendar sin banco.</p>
           <form action={addTimeBlock} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <input type="hidden" name="block_date" value={selectedDate} />
+            <input type="hidden" name="block_date" value={activeDate} />
             <input name="title" placeholder="Título del bloque..." required style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                <input name="start_time" type="time" defaultValue={`${nowHours.toString().padStart(2, '0')}:00`} required style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
@@ -479,7 +541,9 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {tasksHoy.length > 0 && (
               <>
-                <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700 }}>Para hoy</p>
+                <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700 }}>
+                  {activeDate === selectedDate ? 'Para hoy' : 'Para mañana'}
+                </p>
                 {tasksHoy.map(task => {
                   const isAgendated = agendatedTitles.has(task.title);
                   return (
@@ -496,7 +560,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                       }}
                     >
                       <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{isAgendated ? '🔒 ' : ''}{task.title}</span>
-                      <span style={{ fontSize: '0.7rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
+                      <span style={{ fontSize: '0.73rem' }}>{isAgendated ? 'Agendada' : task.priority}</span>
                     </div>
                   );
                 })}
@@ -504,7 +568,7 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
             )}
 
             <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 700, marginTop: '0.5rem' }}>Pendientes</p>
-            {allNonDone.filter(t => !(t.deadline && getDaysDiff(t.deadline) === 0)).map(task => {
+            {allNonDone.filter(t => !(t.deadline && getDaysDiffFromActive(t.deadline) === 0)).map(task => {
               const isAgendated = agendatedTitles.has(task.title);
               return (
                 <div key={task.id}
@@ -559,5 +623,6 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
 
       </div>
     </div>
+  </div>
   );
 }
