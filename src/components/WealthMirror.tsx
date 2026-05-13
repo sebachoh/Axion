@@ -48,9 +48,9 @@ export default function WealthMirror({ balance }: WealthMirrorProps) {
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>Balance Neto</span>
-        <h4 style={{ fontSize: '2.5rem', fontWeight: 900, transition: 'all 0.3s' }}>
+        <h4 style={{ fontSize: '1.8rem', fontWeight: 900, transition: 'all 0.3s', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {isHidden ? '••••••' : `${balance.toLocaleString()} €`}
         </h4>
       </div>

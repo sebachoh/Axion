@@ -1,23 +1,38 @@
 import Link from 'next/link';
+import db from '@/infrastructure/db/sqlite';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import FinanceAnalytics from '@/components/FinanceAnalytics';
 
-export default function FinanzasGraficasPage() {
+export const dynamic = 'force-dynamic';
+
+async function getData(userId: string) {
+  const transactions = await db.prepare('SELECT id, type, amount, category, description, date FROM finance_transactions WHERE user_id = ? ORDER BY date ASC').all(userId) as any[];
+  const budgets = await db.prepare('SELECT id, category, month, amount FROM finance_budgets WHERE user_id = ?').all(userId) as any[];
+  return { transactions, budgets };
+}
+
+export default async function FinanzasGraficasPage() {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+
+  if (!userId) {
+    redirect('/login');
+  }
+
+  const { transactions, budgets } = await getData(userId);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header style={{ paddingBottom: '2rem', borderBottom: '1px solid var(--glass-border)' }}>
+      <header style={{ paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
         <Link href="/finanzas" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block', marginBottom: '1rem' }}>
-          ← Volver a Finanzas
+          ← Volver a Wealth Engine
         </Link>
-        <h1 className="page-title" style={{ margin: 0 }}>Analítica Financiera</h1>
-        <p className="page-subtitle" style={{ marginTop: '0.5rem' }}>Visualiza tus gastos, ingresos y patrimonio neto.</p>
+        <h1 className="page-title" style={{ margin: 0, fontSize: '2.5rem', fontWeight: 800 }}>Analítica Financiera 📊</h1>
+        <p className="page-subtitle" style={{ marginTop: '0.5rem' }}>Visualización interactiva de gastos, balances y metas de presupuesto.</p>
       </header>
 
-      <div className="glass-panel" style={{ padding: '3rem', minHeight: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <div style={{ fontSize: '4rem', opacity: 0.5 }}>📊</div>
-        <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text)' }}>Espacio reservado para gráficas</h3>
-        <p style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', textAlign: 'center', maxWidth: '400px' }}>
-          Próximamente: Integración con Recharts o Chart.js para visualizar tus gastos por categoría, evolución del balance en el tiempo y cumplimiento de metas.
-        </p>
-      </div>
+      <FinanceAnalytics transactions={transactions} budgets={budgets} />
     </div>
   );
 }

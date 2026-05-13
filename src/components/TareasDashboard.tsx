@@ -46,18 +46,18 @@ export default function TareasDashboard({ initialTasks }: Props) {
   };
 
   const tasksHoy = filteredTasks.filter(t => t.deadline && getDaysDiff(t.deadline) <= 0 && t.status !== 'done');
-  const tasksProximos7 = filteredTasks.filter(t => t.deadline && getDaysDiff(t.deadline) > 0 && getDaysDiff(t.deadline) <= 7 && t.status !== 'done');
+  const tasksProximos7 = filteredTasks.filter(t => t.deadline && getDaysDiff(t.deadline) > 0 && t.status !== 'done');
   const tasksSinFecha = filteredTasks.filter(t => (!t.deadline || String(t.deadline).trim() === '') && t.status !== 'done');
   const tasksDone = filteredTasks.filter(t => t.status === 'done');
 
-  // Drag-and-drop for pending tasks
+  // Drag-and-drop for pending tasks (only the ones with no deadline)
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const [draggingIdx, setDraggingIdx] = useState<number | null>(null);
-  const [pendingOrder, setPendingOrder] = useState<Task[]>(filteredTasks.filter(t => t.status === 'pending'));
+  const [pendingOrder, setPendingOrder] = useState<Task[]>([]);
 
   useEffect(() => {
-    setPendingOrder(filteredTasks.filter(t => t.status === 'pending'));
+    setPendingOrder(filteredTasks.filter(t => (!t.deadline || String(t.deadline).trim() === '') && t.status !== 'done'));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterPriority, initialTasks.length]);
 

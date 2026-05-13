@@ -43,8 +43,8 @@ export default function WealthBalanceCard({ balance }: Props) {
           <span>
             <Wallet size={22} strokeWidth={2.5} style={{ color: '#2ed573' }} />
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontWeight: 800, fontSize: '1.6rem', color: '#2ed573' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#2ed573', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {isHidden ? '••••••' : `${balance.toLocaleString()} €`}
             </span>
             <button

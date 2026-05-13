@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Sun, Sunrise } from 'lucide-react';
 import { 
   addTimeBlock, 
   deleteTimeBlock, 
@@ -256,29 +257,33 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
         <button 
           onClick={() => setActiveDate(selectedDate)}
           style={{
-            padding: '10px 24px', fontSize: '0.9rem', fontWeight: 800,
+            padding: '10px 22px', 
+            fontSize: '0.85rem', 
+            fontWeight: 700,
+            fontFamily: 'Outfit, Inter, var(--font-sans), sans-serif',
+            letterSpacing: '-0.015em',
             background: activeDate === selectedDate 
               ? 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(220,220,220,0.95))' 
               : 'rgba(255,255,255,0.04)',
             color: activeDate === selectedDate ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
             border: activeDate === selectedDate ? '1px solid transparent' : '1px solid rgba(255,255,255,0.1)',
-            boxShadow: activeDate === selectedDate ? '0 4px 20px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
+            boxShadow: activeDate === selectedDate ? '0 4px 16px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
             display: 'flex', alignItems: 'center', gap: '8px',
-            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.25s ease',
+            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s ease',
             position: 'relative',
           }}
         >
-          <span style={{ fontSize: '1rem' }}>📅</span>
+          <Sun size={15} strokeWidth={2.5} style={{ opacity: 0.9 }} />
           <span>Hoy</span>
           <span style={{ 
-            fontSize: '0.72rem', opacity: activeDate === selectedDate ? 0.5 : 0.4,
+            fontSize: '0.7rem', opacity: activeDate === selectedDate ? 0.6 : 0.4,
             fontWeight: 500
           }}>({selectedDate})</span>
           {activeDate === selectedDate && (
             <span style={{
               position: 'absolute', bottom: '-2px', left: '50%', transform: 'translateX(-50%)',
-              width: '20px', height: '3px', borderRadius: '2px',
-              background: 'rgba(0,0,0,0.3)'
+              width: '16px', height: '3px', borderRadius: '2px',
+              background: 'rgba(0,0,0,0.4)'
             }} />
           )}
         </button>
@@ -286,29 +291,33 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
         <button 
           onClick={() => setActiveDate(tomorrowDateStr)}
           style={{
-            padding: '10px 24px', fontSize: '0.9rem', fontWeight: 800,
+            padding: '10px 22px', 
+            fontSize: '0.85rem', 
+            fontWeight: 700,
+            fontFamily: 'Outfit, Inter, var(--font-sans), sans-serif',
+            letterSpacing: '-0.015em',
             background: activeDate === tomorrowDateStr 
               ? 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(220,220,220,0.95))'
               : 'rgba(255,255,255,0.04)',
             color: activeDate === tomorrowDateStr ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
             border: activeDate === tomorrowDateStr ? '1px solid transparent' : '1px solid rgba(255,255,255,0.1)',
-            boxShadow: activeDate === tomorrowDateStr ? '0 4px 20px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
+            boxShadow: activeDate === tomorrowDateStr ? '0 4px 16px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
             display: 'flex', alignItems: 'center', gap: '8px',
-            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.25s ease',
+            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s ease',
             position: 'relative',
           }}
         >
-          <span style={{ fontSize: '1rem' }}>🌅</span>
+          <Sunrise size={15} strokeWidth={2.5} style={{ opacity: 0.9 }} />
           <span>Mañana</span>
           <span style={{ 
-            fontSize: '0.72rem', opacity: activeDate === tomorrowDateStr ? 0.5 : 0.4,
+            fontSize: '0.7rem', opacity: activeDate === tomorrowDateStr ? 0.6 : 0.4,
             fontWeight: 500
           }}>({tomorrowDateStr})</span>
           {activeDate === tomorrowDateStr && (
             <span style={{
               position: 'absolute', bottom: '-2px', left: '50%', transform: 'translateX(-50%)',
-              width: '20px', height: '3px', borderRadius: '2px',
-              background: 'rgba(0,0,0,0.3)'
+              width: '16px', height: '3px', borderRadius: '2px',
+              background: 'rgba(0,0,0,0.4)'
             }} />
           )}
         </button>
