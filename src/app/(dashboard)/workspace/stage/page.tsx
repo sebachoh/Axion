@@ -4,9 +4,10 @@ import StageDashboard, { StageTask, StageProject, StageCommand } from '@/compone
 import NotionEditor from '@/components/NotionEditor';
 import { getPageContent } from '@/core/usecases/pageUsecases';
 import { Briefcase } from 'lucide-react';
+import { seedStageTasksIfNeeded } from './actions';
 
 async function getStageTasks(userId: string): Promise<StageTask[]> {
-  const stmt = db.prepare('SELECT id, title, status, priority, created_at as createdAt FROM stage_tasks WHERE user_id = ? ORDER BY created_at DESC');
+  const stmt = db.prepare('SELECT id, title, status, priority, month, created_at as createdAt FROM stage_tasks WHERE user_id = ? ORDER BY created_at DESC');
   const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
@@ -37,6 +38,9 @@ export default async function StagePage() {
   const userId = (session?.user as any)?.id;
 
   if (!userId) return null;
+
+  // Sembrar tareas del Stage interactivas si es necesario
+  await seedStageTasksIfNeeded();
 
   const [tasks, projects, commands, initialContent] = await Promise.all([
     getStageTasks(userId),

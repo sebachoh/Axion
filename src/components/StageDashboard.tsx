@@ -9,7 +9,8 @@ import {
 import { 
   Terminal, Plus, Trash2, Folder, CheckCircle, Play, Pause, 
   ExternalLink, Clipboard, Check, Briefcase, FileText, Bookmark, 
-  Layers, CheckSquare, ListTodo, Code2
+  Layers, CheckSquare, ListTodo, Code2, Calendar, TrendingUp, 
+  Sparkles, BookOpen, Network, Activity
 } from 'lucide-react';
 
 export interface StageTask {
@@ -17,6 +18,7 @@ export interface StageTask {
   title: string;
   status: string;
   priority: string;
+  month?: number;
   createdAt: Date;
 }
 
@@ -48,6 +50,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'completed'>('all');
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
   const [activeSection, setActiveSection] = useState<'tasks' | 'projects' | 'commands'>('tasks');
+  const [selectedMonth, setSelectedMonth] = useState<number>(1); // Default to Month 1 to show his initial 5G curriculum
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -55,10 +58,11 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Filter Tasks
+  // Filter Tasks by status and month
   const filteredTasks = initialTasks.filter(task => {
-    if (activeTab === 'pending') return task.status === 'Pendiente';
-    if (activeTab === 'completed') return task.status === 'Completado';
+    if (activeTab === 'pending' && task.status !== 'Pendiente') return false;
+    if (activeTab === 'completed' && task.status !== 'Completado') return false;
+    if (selectedMonth !== 0 && task.month !== selectedMonth) return false;
     return true;
   });
 
@@ -69,6 +73,56 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
   const filteredCommands = activeCategory === 'Todos' 
     ? initialCommands 
     : initialCommands.filter(c => c.category === activeCategory);
+
+  // Calculate completion stats for the thesis
+  const totalStageTasks = initialTasks.length;
+  const completedStageTasks = initialTasks.filter(t => t.status === 'Completado').length;
+  const globalPercentage = totalStageTasks > 0 ? Math.round((completedStageTasks / totalStageTasks) * 100) : 0;
+
+  const getMonthPercentage = (m: number) => {
+    const monthTasks = initialTasks.filter(t => t.month === m);
+    const completed = monthTasks.filter(t => t.status === 'Completado').length;
+    return monthTasks.length > 0 ? Math.round((completed / monthTasks.length) * 100) : 0;
+  };
+
+  const monthsMetadata = [
+    { num: 0, title: 'Todos', label: 'Todo el Plan', desc: 'Vista global con tareas libres' },
+    { num: 1, title: 'Mes 1', label: 'Estudio & OAI', desc: 'Arquitectura 5G SA y OAI Core' },
+    { num: 2, title: 'Mes 2', label: 'Metavers VR', desc: 'Gemelo digital y renderizado' },
+    { num: 3, title: 'Mes 3', label: 'Slicing & Radio', desc: 'Radio USRP gNB y slicing' },
+    { num: 4, title: 'Mes 4', label: 'Tesis & Métricas', desc: 'Pruebas de estrés y memoria' }
+  ];
+
+  const getMonthTip = (m: number) => {
+    switch (m) {
+      case 1:
+        return {
+          icon: <BookOpen size={16} />,
+          title: "Foco Técnico del Mes 1",
+          text: "Domina el flujo de señalización del plano de control 5G (NAS, NGAP) y asegúrate de levantar el OAI CN5G en Docker-Compose de forma limpia en tu red local antes de pasar a integrar hardware."
+        };
+      case 2:
+        return {
+          icon: <Activity size={16} />,
+          title: "Foco Técnico del Mes 2",
+          text: "Analiza el patrón de flujo de renderizado del gemelo digital. Configura el cliente de VR con flujos simulados en localhost usando hilos eficientes para no penalizar el hilo principal de visualización."
+        };
+      case 3:
+        return {
+          icon: <Network size={16} />,
+          title: "Foco Técnico del Mes 3",
+          text: "Configura el Slicing en OAI CN5G. Utiliza SST=2 (URLLC) para aislar por completo el tráfico interactivo del gemelo digital del tráfico general de fondo en la red 5G SA privada."
+        };
+      case 4:
+        return {
+          icon: <TrendingUp size={16} />,
+          title: "Foco Técnico del Mes 4",
+          text: "Mide RTT y Throughput usando iperf3/ping en el slice priorizado. Genera los gráficos comparativos clave que demostrarán científicamente el beneficio de tu arquitectura 5G ante el Prof. Patrick Sondi."
+        };
+      default:
+        return null;
+    }
+  };
 
   const getPriorityBadge = (priority: string) => {
     switch(priority.toLowerCase()) {
@@ -189,52 +243,159 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
       <div style={{ width: '100%' }}>
         {activeSection === 'tasks' && (
           /* Section: Pendientes (Tasks) */
-          <div className="glass-panel" style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CheckSquare size={20} style={{ color: 'var(--color-text)' }} />
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Lista de Pendientes</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            {/* Stage Progress Tracker Banner */}
+            <div className="glass-panel" style={{ padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles size={18} style={{ color: '#f9ca24' }} /> Cronograma de Prácticas (4 Meses)
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                    Visualiza y gestiona las misiones técnicas de tu tesis para el IMT Nord Europe.
+                  </p>
+                </div>
+                <div style={{ background: 'rgba(29, 209, 161, 0.1)', border: '1px solid rgba(29, 209, 161, 0.2)', padding: '6px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600, color: '#1dd1a1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <TrendingUp size={14} /> Progreso Global: {globalPercentage}%
+                </div>
               </div>
-              
-              <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
-                <button 
-                  type="button"
-                  onClick={() => setActiveTab('all')} 
-                  style={{ background: activeTab === 'all' ? 'var(--color-text)' : 'transparent', color: activeTab === 'all' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
-                >
-                  Todos
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setActiveTab('pending')} 
-                  style={{ background: activeTab === 'pending' ? 'var(--color-text)' : 'transparent', color: activeTab === 'pending' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
-                >
-                  Pendientes
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setActiveTab('completed')} 
-                  style={{ background: activeTab === 'completed' ? 'var(--color-text)' : 'transparent', color: activeTab === 'completed' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
-                >
-                  Hechos
-                </button>
+              <div style={{ height: '8px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                <div style={{ width: `${globalPercentage}%`, height: '100%', background: 'linear-gradient(90deg, #54a0ff, #1dd1a1)', borderRadius: '10px', transition: 'width 0.6s ease-in-out' }} />
               </div>
             </div>
 
-            {/* Quick Add Task Form */}
-            <form action={addStageTask} style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem' }}>
-              <input 
-                type="text" 
-                name="title" 
-                required 
-                placeholder="Escribe un nuevo pendiente..." 
-                style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)', outline: 'none', fontSize: '0.9rem' }} 
-              />
-              <select 
-                name="priority" 
-                defaultValue="media" 
-                style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'black', outline: 'none', fontSize: '0.9rem', width: '100px' }}
-              >
+            {/* Months Navigation Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+              {monthsMetadata.map(m => {
+                const isActive = selectedMonth === m.num;
+                const progress = m.num === 0 ? globalPercentage : getMonthPercentage(m.num);
+                return (
+                  <button
+                    key={m.num}
+                    type="button"
+                    onClick={() => setSelectedMonth(m.num)}
+                    style={{
+                      background: isActive ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.01)',
+                      border: isActive ? '1px solid var(--color-text)' : '1px solid var(--glass-border)',
+                      borderRadius: '16px',
+                      padding: '12px 16px',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '10px',
+                      outline: 'none'
+                    }}
+                    onMouseOver={(e) => {
+                      if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                    }}
+                    onMouseOut={(e) => {
+                      if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.01)';
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {m.num === 0 ? 'Filtro' : `Fase ${m.num}`}
+                      </span>
+                      <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text)', marginTop: '2px' }}>
+                        {m.label}
+                      </h4>
+                    </div>
+                    
+                    <div style={{ width: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', fontWeight: 600, marginBottom: '4px', opacity: 0.8 }}>
+                        <span>Avance</span>
+                        <span style={{ color: progress === 100 ? '#1dd1a1' : 'inherit' }}>{progress}%</span>
+                      </div>
+                      <div style={{ height: '4px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                        <div style={{ width: `${progress}%`, height: '100%', background: progress === 100 ? '#1dd1a1' : 'var(--color-text)', transition: 'width 0.4s' }} />
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Contextual Academic Tips Banner */}
+            {(() => {
+              const tip = getMonthTip(selectedMonth);
+              if (!tip) return null;
+              return (
+                <div style={{
+                  display: 'flex',
+                  gap: '12px',
+                  background: 'rgba(84, 160, 255, 0.05)',
+                  border: '1px solid rgba(84, 160, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '1rem 1.25rem',
+                  alignItems: 'start'
+                }}>
+                  <div style={{ color: '#54a0ff', marginTop: '2px', display: 'flex', alignItems: 'center' }}>
+                    {tip.icon}
+                  </div>
+                  <div>
+                    <h5 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '3px' }}>{tip.title}</h5>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: '1.4' }}>{tip.text}</p>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Main Pendientes Panel */}
+            <div className="glass-panel" style={{ padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <CheckSquare size={20} style={{ color: 'var(--color-text)' }} />
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 600 }}>
+                    {selectedMonth === 0 ? 'Todos los Pendientes' : `Tareas de ${monthsMetadata.find(m => m.num === selectedMonth)?.label}`}
+                  </h3>
+                </div>
+                
+                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveTab('all')} 
+                    style={{ background: activeTab === 'all' ? 'var(--color-text)' : 'transparent', color: activeTab === 'all' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+                  >
+                    Todos
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveTab('pending')} 
+                    style={{ background: activeTab === 'pending' ? 'var(--color-text)' : 'transparent', color: activeTab === 'pending' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+                  >
+                    Pendientes
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveTab('completed')} 
+                    style={{ background: activeTab === 'completed' ? 'var(--color-text)' : 'transparent', color: activeTab === 'completed' ? 'var(--color-bg)' : 'var(--color-text)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+                  >
+                    Hechos
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Add Task Form */}
+              <form action={addStageTask} style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem' }}>
+                {/* Hidden input to bind current active month automatically */}
+                <input type="hidden" name="month" value={selectedMonth} />
+                
+                <input 
+                  type="text" 
+                  name="title" 
+                  required 
+                  placeholder={selectedMonth === 0 ? "Escribe un nuevo hito para el Stage..." : `Agregar tarea al ${monthsMetadata.find(m => m.num === selectedMonth)?.label}...`}
+                  style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)', outline: 'none', fontSize: '0.9rem' }} 
+                />
+                <select 
+                  name="priority" 
+                  defaultValue="media" 
+                  style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'black', outline: 'none', fontSize: '0.9rem', width: '100px' }}
+                >
                 <option value="baja" style={{color:'black'}}>Baja</option>
                 <option value="media" style={{color:'black'}}>Media</option>
                 <option value="alta" style={{color:'black'}}>Alta</option>
@@ -292,7 +453,8 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
               )}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {activeSection === 'projects' && (
           /* Section: Proyectos (Projects) */

@@ -410,13 +410,16 @@ export async function initDB() {
       }
     }
 
-    // Migración rápida para order_index
     try {
       await db.exec(`ALTER TABLE routine_tasks ADD COLUMN order_index INTEGER DEFAULT 0;`);
     } catch (e) {}
 
     try {
       await db.exec(`ALTER TABLE tasks ADD COLUMN order_index INTEGER DEFAULT 0;`);
+    } catch (e) {}
+
+    try {
+      await db.exec(`ALTER TABLE stage_tasks ADD COLUMN month INTEGER DEFAULT 0;`);
     } catch (e) {}
 
     console.log('[DB Initialization] Database tables initialized successfully.');

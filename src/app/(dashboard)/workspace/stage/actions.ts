@@ -14,20 +14,74 @@ async function getUserId() {
 
 // === Stage Tasks Actions ===
 
+export async function seedStageTasksIfNeeded() {
+  const userId = await getUserId();
+
+  // Check if any stage tasks already exist for this user
+  const countStmt = db.prepare('SELECT COUNT(*) as count FROM stage_tasks WHERE user_id = ?');
+  const countRes = await countStmt.get(userId) as { count: number };
+
+  if (countRes.count > 0) {
+    return; // Already seeded or has user tasks
+  }
+
+  const defaultTasks = [
+    // Month 1
+    { title: 'Estudiar arquitectura 5G Standalone (SA) y señalización de red', priority: 'alta', month: 1 },
+    { title: 'Analizar especificaciones 3GPP para flujos de baja latencia (URLLC)', priority: 'media', month: 1 },
+    { title: 'Configurar entorno de virtualización en Ubuntu con soporte Docker/K8s', priority: 'alta', month: 1 },
+    { title: 'Preparar controladores UHD para transceptores de radio USRP', priority: 'media', month: 1 },
+    { title: 'Desplegar Core Network 5G (CN5G) de OpenAirInterface con Docker', priority: 'alta', month: 1 },
+
+    // Month 2
+    { title: 'Estudiar requerimientos de ancho de banda y latencia para VR Metavers', priority: 'alta', month: 2 },
+    { title: 'Capturar y analizar trazas de tráfico de renderizado centralizado (Wireshark)', priority: 'media', month: 2 },
+    { title: 'Desarrollar cliente de visualización interactivo para el Gemelo Digital', priority: 'alta', month: 2 },
+    { title: 'Programar scripts (Python/Shell) de simulación de telemetría industrial 4.0', priority: 'media', month: 2 },
+    { title: 'Validar rendimiento de la app de realidad virtual en localhost', priority: 'media', month: 2 },
+
+    // Month 3
+    { title: 'Integrar hardware de radio USRP y levantar estación base gNB de OAI', priority: 'alta', month: 3 },
+    { title: 'Conectar dispositivo móvil comercial (UE) a la red gNB privada', priority: 'alta', month: 3 },
+    { title: 'Definir e implementar Network Slicing avanzado (identificadores SST/SD)', priority: 'alta', month: 3 },
+    { title: 'Configurar slice de alta prioridad exclusivo para el tráfico de realidad virtual', priority: 'alta', month: 3 },
+    { title: 'Transmitir flujos de telemetría y renderizado del gemelo digital por el canal 5G', priority: 'alta', month: 3 },
+
+    // Month 4
+    { title: 'Medir latencia (RTT), pérdida de paquetes y throughput en diferentes slices', priority: 'alta', month: 4 },
+    { title: 'Simular degradación de canal de radio y evaluar el impacto en la app de VR', priority: 'media', month: 4 },
+    { title: 'Ajustar schedulers y timers en el RAN de OAI para minimizar latencia', priority: 'alta', month: 4 },
+    { title: 'Escribir manuales de configuración de OAI Core, gNB y Docker-Compose', priority: 'media', month: 4 },
+    { title: 'Redactar memoria final del Stage para el Prof. Patrick Sondi', priority: 'alta', month: 4 }
+  ];
+
+  for (const t of defaultTasks) {
+    const id = crypto.randomUUID();
+    const insertStmt = db.prepare(`
+      INSERT INTO stage_tasks (id, user_id, title, status, priority, month)
+      VALUES (@id, @userId, @title, 'Pendiente', @priority, @month)
+    `);
+    await insertStmt.run({ id, userId, title: t.title, priority: t.priority, month: t.month });
+  }
+
+  revalidatePath('/workspace/stage');
+}
+
 export async function addStageTask(formData: FormData) {
   const userId = await getUserId();
   const title = formData.get('title') as string;
   const priority = formData.get('priority') as string || 'media';
+  const month = parseInt(formData.get('month') as string || '0', 10);
 
   if (!title) return;
 
   const id = crypto.randomUUID();
   const stmt = db.prepare(`
-    INSERT INTO stage_tasks (id, user_id, title, status, priority)
-    VALUES (@id, @userId, @title, 'Pendiente', @priority)
+    INSERT INTO stage_tasks (id, user_id, title, status, priority, month)
+    VALUES (@id, @userId, @title, 'Pendiente', @priority, @month)
   `);
 
-  await stmt.run({ id, userId, title, priority });
+  await stmt.run({ id, userId, title, priority, month });
   revalidatePath('/workspace/stage');
 }
 
