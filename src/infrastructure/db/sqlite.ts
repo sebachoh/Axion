@@ -394,11 +394,11 @@ export async function initDB() {
 
     // Migración de Multi-Usuario (añadir columnas user_id)
     const tables = [
-      'widgets', 'habits', 'habit_logs', 'tasks', 'pages', 'sticky_notes', 
-      'routine_tasks', 'routine_completions', 'alternancia_applications', 
-      'alternancia_bank', 'project_ideas', 'time_blocks', 'journal_entries', 
-      'language_words', 'language_resources', 'language_skills', 
-      'language_topics', 'planning_bank', 'finance_transactions', 
+      'widgets', 'habits', 'habit_logs', 'tasks', 'pages', 'sticky_notes',
+      'routine_tasks', 'routine_completions', 'alternancia_applications',
+      'alternancia_bank', 'project_ideas', 'time_blocks', 'journal_entries',
+      'language_words', 'language_resources', 'language_skills',
+      'language_topics', 'planning_bank', 'finance_transactions',
       'finance_goals', 'vision_boards', 'vault_resources', 'travel_pins'
     ];
 
@@ -412,17 +412,17 @@ export async function initDB() {
 
     try {
       await db.exec(`ALTER TABLE routine_tasks ADD COLUMN order_index INTEGER DEFAULT 0;`);
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       await db.exec(`ALTER TABLE tasks ADD COLUMN order_index INTEGER DEFAULT 0;`);
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       await db.exec(`ALTER TABLE stage_tasks ADD COLUMN month INTEGER DEFAULT 0;`);
-    } catch (e) {}
+    } catch (e) { }
 
-    console.log('[DB Initialization] Database tables initialized successfully.');
+    console.log('[DB Initialization] Daatabase tables initialized successfully.');
   } catch (e) {
     console.error('[DB Initialization] Error during table creation/migration:', e);
   }
