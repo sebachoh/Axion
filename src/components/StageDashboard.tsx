@@ -275,37 +275,7 @@ export default function StageDashboard({ initialTasks, initialProjects, initialC
                     key={m.num}
                     type="button"
                     onClick={() => setSelectedMonth(m.num)}
-                    style={{
-                      background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
-                      border: isActive ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '16px',
-                      padding: '14px 18px',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      gap: '12px',
-                      outline: 'none',
-                      boxShadow: isActive 
-                        ? '0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)' 
-                        : '0 4px 16px 0 rgba(0, 0, 0, 0.15)',
-                    }}
-                    onMouseOver={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-                      }
-                    }}
-                    onMouseOut={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
-                        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.08)';
-                      }
-                    }}
+                    className={`stage-month-card ${isActive ? 'active' : ''}`}
                   >
                     <div>
                       <span style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
