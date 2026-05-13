@@ -4,8 +4,9 @@ import path from 'path';
 // Determinar la URL de la base de datos
 // En desarrollo/local, usará 'file:lifeos.db'
 // En producción (Vercel), usará la URL de Turso (ej: 'libsql://mi-db.turso.io')
-const dbUrl = process.env.TURSO_DATABASE_URL || `file:${path.resolve(process.cwd(), 'lifeos.db')}`;
-const dbAuthToken = process.env.TURSO_AUTH_TOKEN;
+const dbUrlRaw = process.env.TURSO_DATABASE_URL || `file:${path.resolve(process.cwd(), 'lifeos.db')}`;
+const dbUrl = typeof dbUrlRaw === 'string' ? dbUrlRaw.trim() : dbUrlRaw;
+const dbAuthToken = typeof process.env.TURSO_AUTH_TOKEN === 'string' ? process.env.TURSO_AUTH_TOKEN.trim() : undefined;
 
 console.log(`[DB Initialization] Connecting to database at: ${dbUrl.startsWith('file:') ? 'Local SQLite File' : 'Turso Cloud'}`);
 
