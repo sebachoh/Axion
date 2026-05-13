@@ -6,6 +6,7 @@ import Script from 'next/script';
 export const metadata: Metadata = {
   title: 'Axion',
   description: 'Your aesthetic, dynamic, and modular life management system.',
+  manifest: '/manifest.json',
   icons: {
     icon: '/LogoBlanco.png',
   },
