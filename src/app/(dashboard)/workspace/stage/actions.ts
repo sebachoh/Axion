@@ -15,7 +15,17 @@ async function getUserId() {
 // === Stage Tasks Actions ===
 
 export async function seedStageTasksIfNeeded() {
-  const userId = await getUserId();
+  const session = await auth();
+  const email = session?.user?.email?.toLowerCase();
+  
+  // Only auto-seed the technical 5G/Metaverse thesis tasks for Sebastian's accounts
+  const isSebastian = email === 'sebaruiz01@gmail.com' || email === 'sebastian.ruiz@utp.edu.co';
+  if (!isSebastian) {
+    return; // Other users manage their curriculum entirely manually
+  }
+
+  const userId = (session?.user as any)?.id;
+  if (!userId) return;
 
   // Check if any monthly stage tasks already exist for this user
   const countStmt = db.prepare('SELECT COUNT(*) as count FROM stage_tasks WHERE user_id = ? AND month > 0');
