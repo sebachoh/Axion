@@ -17,12 +17,12 @@ async function getUserId() {
 export async function seedStageTasksIfNeeded() {
   const userId = await getUserId();
 
-  // Check if any stage tasks already exist for this user
-  const countStmt = db.prepare('SELECT COUNT(*) as count FROM stage_tasks WHERE user_id = ?');
+  // Check if any monthly stage tasks already exist for this user
+  const countStmt = db.prepare('SELECT COUNT(*) as count FROM stage_tasks WHERE user_id = ? AND month > 0');
   const countRes = await countStmt.get(userId) as { count: number };
 
   if (countRes.count > 0) {
-    return; // Already seeded or has user tasks
+    return; // Already seeded
   }
 
   const defaultTasks = [
