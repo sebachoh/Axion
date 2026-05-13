@@ -252,50 +252,78 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
       {/* Selector de Fecha */}
-      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <button 
           onClick={() => setActiveDate(selectedDate)}
-          className="glass-button"
           style={{
-            padding: '10px 20px',
-            fontSize: '0.9rem',
-            fontWeight: 800,
-            background: activeDate === selectedDate ? 'var(--color-text)' : 'rgba(255,255,255,0.03)',
-            color: activeDate === selectedDate ? 'var(--color-bg)' : '#fff',
-            borderColor: activeDate === selectedDate ? 'transparent' : 'var(--glass-border)',
-            boxShadow: activeDate === selectedDate ? '0 4px 15px rgba(255,255,255,0.1)' : 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            borderRadius: '10px',
-            cursor: 'pointer'
+            padding: '10px 24px', fontSize: '0.9rem', fontWeight: 800,
+            background: activeDate === selectedDate 
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(220,220,220,0.95))' 
+              : 'rgba(255,255,255,0.04)',
+            color: activeDate === selectedDate ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
+            border: activeDate === selectedDate ? '1px solid transparent' : '1px solid rgba(255,255,255,0.1)',
+            boxShadow: activeDate === selectedDate ? '0 4px 20px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.25s ease',
+            position: 'relative',
           }}
         >
-          <span>📅 Hoy</span>
-          <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({selectedDate})</span>
+          <span style={{ fontSize: '1rem' }}>📅</span>
+          <span>Hoy</span>
+          <span style={{ 
+            fontSize: '0.72rem', opacity: activeDate === selectedDate ? 0.5 : 0.4,
+            fontWeight: 500
+          }}>({selectedDate})</span>
+          {activeDate === selectedDate && (
+            <span style={{
+              position: 'absolute', bottom: '-2px', left: '50%', transform: 'translateX(-50%)',
+              width: '20px', height: '3px', borderRadius: '2px',
+              background: 'rgba(0,0,0,0.3)'
+            }} />
+          )}
         </button>
 
         <button 
           onClick={() => setActiveDate(tomorrowDateStr)}
-          className="glass-button"
           style={{
-            padding: '10px 20px',
-            fontSize: '0.9rem',
-            fontWeight: 800,
-            background: activeDate === tomorrowDateStr ? 'var(--color-text)' : 'rgba(255,255,255,0.03)',
-            color: activeDate === tomorrowDateStr ? 'var(--color-bg)' : '#fff',
-            borderColor: activeDate === tomorrowDateStr ? 'transparent' : 'var(--glass-border)',
-            boxShadow: activeDate === tomorrowDateStr ? '0 4px 15px rgba(255,255,255,0.1)' : 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            borderRadius: '10px',
-            cursor: 'pointer'
+            padding: '10px 24px', fontSize: '0.9rem', fontWeight: 800,
+            background: activeDate === tomorrowDateStr 
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(220,220,220,0.95))'
+              : 'rgba(255,255,255,0.04)',
+            color: activeDate === tomorrowDateStr ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
+            border: activeDate === tomorrowDateStr ? '1px solid transparent' : '1px solid rgba(255,255,255,0.1)',
+            boxShadow: activeDate === tomorrowDateStr ? '0 4px 20px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.2)' : 'none',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.25s ease',
+            position: 'relative',
           }}
         >
-          <span>🌅 Mañana</span>
-          <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({tomorrowDateStr})</span>
+          <span style={{ fontSize: '1rem' }}>🌅</span>
+          <span>Mañana</span>
+          <span style={{ 
+            fontSize: '0.72rem', opacity: activeDate === tomorrowDateStr ? 0.5 : 0.4,
+            fontWeight: 500
+          }}>({tomorrowDateStr})</span>
+          {activeDate === tomorrowDateStr && (
+            <span style={{
+              position: 'absolute', bottom: '-2px', left: '50%', transform: 'translateX(-50%)',
+              width: '20px', height: '3px', borderRadius: '2px',
+              background: 'rgba(0,0,0,0.3)'
+            }} />
+          )}
         </button>
+
+        {/* Active day indicator */}
+        <div style={{
+          marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '6px 14px', borderRadius: '10px',
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)'
+        }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1dd1a1', display: 'inline-block', boxShadow: '0 0 8px rgba(29,209,161,0.6)' }} />
+          <span style={{ fontSize: '0.78rem', fontWeight: 600, opacity: 0.7 }}>
+            Viendo: <strong style={{ opacity: 1, color: '#fff' }}>{activeDate === selectedDate ? 'Hoy' : 'Mañana'}</strong>
+          </span>
+        </div>
       </div>
 
       <div className="timeblocking-grid">

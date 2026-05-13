@@ -73,3 +73,22 @@ export async function deleteGoal(id: string) {
   await stmt.run({ id, userId });
   revalidatePath('/lifestyle/finanzas');
 }
+
+export async function saveBudget(category: string, amount: number, month: string) {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
+  const id = crypto.randomUUID();
+  const stmt = db.prepare(`
+    INSERT INTO finance_budgets (id, user_id, category, month, amount)
+    VALUES (@id, @userId, @category, @month, @amount)
+    ON CONFLICT(user_id, category, month) DO UPDATE SET amount = EXCLUDED.amount
+  `);
+  await stmt.run({ id, userId, category, month, amount });
+
+  revalidatePath('/finanzas');
+  revalidatePath('/lifestyle/finanzas');
+  revalidatePath('/');
+}
+

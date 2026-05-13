@@ -13,6 +13,8 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
   const [notes, setNotes] = useState<StickyNote[]>(initialNotes);
   const [isAdding, setIsAdding] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+  // Track if the last gesture was a real drag (to avoid toggling expand on drag end)
+  const dragMovedRef = useRef<Record<string, boolean>>({});
 
   // Form State
   const [title, setTitle] = useState('');
@@ -20,6 +22,39 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
   const [color, setColor] = useState('#fef68a'); // Default Yellow pastel
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
+
+  const findSmartPosition = (existingNotes: StickyNote[]): { x: number; y: number } => {
+    const NOTE_W = 185;
+    const NOTE_H = 185;
+    const PADDING = 20;
+    const CANVAS_W = canvasRef.current?.clientWidth ?? 800;
+    const CANVAS_H = canvasRef.current?.clientHeight ?? 500;
+
+    const cols = Math.max(1, Math.floor((CANVAS_W + PADDING) / (NOTE_W + PADDING)));
+    const rows = Math.max(1, Math.floor((CANVAS_H + PADDING) / (NOTE_H + PADDING)));
+
+    // Try grid slots first
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const candidateX = PADDING + c * (NOTE_W + PADDING);
+        const candidateY = PADDING + r * (NOTE_H + PADDING);
+
+        const overlaps = existingNotes.some(n => {
+          const dx = Math.abs(n.pos_x - candidateX);
+          const dy = Math.abs(n.pos_y - candidateY);
+          return dx < NOTE_W + PADDING && dy < NOTE_H + PADDING;
+        });
+
+        if (!overlaps) return { x: candidateX, y: candidateY };
+      }
+    }
+
+    // Fallback: offset from last note
+    const last = existingNotes[existingNotes.length - 1];
+    return last
+      ? { x: (last.pos_x + NOTE_W + PADDING) % (CANVAS_W - NOTE_W), y: last.pos_y }
+      : { x: PADDING, y: PADDING };
+  };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,15 +66,16 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
       setNotes(prev => prev.map(n => n.id === editingNoteId ? { ...n, title, body, color } : n));
       setEditingNoteId(null);
     } else {
-      // Add Mode
+      // Add Mode - find a smart position
+      const { x, y } = findSmartPosition(notes);
       await addStickyNote(title, body, color);
       const newNote: StickyNote = {
         id: crypto.randomUUID(),
         title,
         body,
         color,
-        pos_x: Math.floor(Math.random() * 50),
-        pos_y: Math.floor(Math.random() * 50),
+        pos_x: x,
+        pos_y: y,
       };
       setNotes((prev) => [...prev, newNote]);
     }
@@ -48,6 +84,15 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
     setTitle('');
     setBody('');
     setColor('#fef68a');
+  };
+
+  const handleNoteClick = (noteId: string) => {
+    // Only toggle expand on genuine click, not after drag
+    if (dragMovedRef.current[noteId]) {
+      dragMovedRef.current[noteId] = false;
+      return;
+    }
+    setExpandedNoteId(prev => prev === noteId ? null : noteId);
   };
 
   const handleDelete = async (id: string) => {
@@ -151,10 +196,12 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
         style={{ 
           flex: 1, 
           position: 'relative', 
-          border: '1px dashed var(--glass-border)', 
+          border: '1px solid rgba(255,255,255,0.12)', 
           borderRadius: 'var(--radius-md)', 
           overflow: 'hidden',
-          minHeight: '400px'
+          minHeight: '480px',
+          background: 'rgba(0, 0, 0, 0.28)',
+          boxShadow: 'inset 0 2px 12px rgba(0,0,0,0.2)',
         }}
       >
         {notes.map((note) => (
@@ -164,10 +211,12 @@ export default function StickyNotesCanvas({ initialNotes }: Props) {
             dragConstraints={canvasRef}
             dragElastic={0.1}
             dragMomentum={false}
+            onDragStart={() => { dragMovedRef.current[note.id] = false; }}
+            onDrag={() => { dragMovedRef.current[note.id] = true; }}
             onDragEnd={(_, info) => handleDragEnd(note.id, info, note)}
             initial={{ x: note.pos_x, y: note.pos_y }}
             layout
-            onClick={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
+            onClick={() => handleNoteClick(note.id)}
             
             style={{
               position: 'absolute',

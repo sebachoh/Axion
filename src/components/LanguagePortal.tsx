@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   addWord, 
   deleteWord, 
@@ -10,6 +11,7 @@ import {
   updateTopicContent,
   deleteTopic
 } from '@/app/(dashboard)/academia/idiomas/[lang]/actions';
+import { deleteLanguageTrack } from '@/app/(dashboard)/academia/idiomas/actions';
 
 export interface LangWord {
   id: string;
@@ -60,6 +62,7 @@ interface Props {
   resources: LangResource[];
   skills: LangSkill[];
   topics: LangTopic[];
+  langId?: string;
 }
 
 const SKILLS = [
@@ -83,12 +86,20 @@ const TYPE_ICONS: Record<string, string> = {
   PODCAST: '🎙️',
 };
 
-export default function LanguagePortal({ config, words, resources, skills, topics }: Props) {
+export default function LanguagePortal({ config, words, resources, skills, topics, langId }: Props) {
+  const router = useRouter();
   const [tab, setTab] = useState<'vocab' | 'recursos' | 'topics' | 'stats'>('vocab');
   const [topicFilter, setTopicFilter] = useState('');
   const [resourceSkillFilter, setResourceSkillFilter] = useState<string | null>(null);
   const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
   const [topicDraft, setTopicDraft] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleDeleteLanguage = async () => {
+    if (!langId) return;
+    await deleteLanguageTrack(langId);
+    router.push('/academia/idiomas');
+  };
 
   const vocabTopics = Array.from(new Set(words.map(w => w.topic).filter(Boolean)));
   const filteredWords = topicFilter ? words.filter(w => w.topic === topicFilter) : words;
@@ -114,6 +125,7 @@ export default function LanguagePortal({ config, words, resources, skills, topic
       <div className="full-bleed" style={{
         position: 'relative',
         width: 'calc(100% + 4rem)',
+        marginLeft: 'calc(-1 * var(--spacing-xl))',
         marginTop: 'calc(-1 * var(--spacing-xl))',
         height: '340px',
         background: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%), url(${config.bannerUrl}) center/cover no-repeat`,
@@ -137,8 +149,21 @@ export default function LanguagePortal({ config, words, resources, skills, topic
           </div>
 
           {config.countryOutlineUrl && (
-            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '0.75rem' }}>
               <img src={config.countryOutlineUrl} alt={`${config.name} Outline`} style={{ height: '100px', width: 'auto', filter: 'invert(1) opacity(0.4) drop-shadow(0 0 10px rgba(255,255,255,0.2))' }} />
+              {langId && (
+                !showDeleteConfirm ? (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    style={{ background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.4)', color: '#ff6b6b', padding: '5px 14px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                  >🗑 Eliminar idioma</button>
+                ) : (
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={handleDeleteLanguage} style={{ background: '#ff6b6b', border: 'none', color: '#fff', padding: '5px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}>Confirmar</button>
+                    <button onClick={() => setShowDeleteConfirm(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '5px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.75rem' }}>Cancelar</button>
+                  </div>
+                )
+              )}
             </div>
           )}
         </div>
@@ -164,7 +189,6 @@ export default function LanguagePortal({ config, words, resources, skills, topic
           >
             <span style={{ fontSize: '2rem' }}>{s.icon}</span>
             <p className="lang-skill-label" style={{ fontWeight: 700, fontSize: '1.1rem', margin: 0 }}>{s.label}</p>
-            <p className="lang-skill-subtitle" style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', margin: 0 }}>Ver recursos segmentados</p>
           </div>
         ))}
       </div>

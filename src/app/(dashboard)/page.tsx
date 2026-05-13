@@ -120,7 +120,8 @@ export default async function DashboardPage() {
         {/* ── Live Focus Widget ── */}
         <div className="glass-panel live-focus-widget" style={{
           background: 'linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
-          borderLeft: '5px solid var(--color-text)', borderRadius: '16px'
+          borderLeft: '5px solid var(--color-text)', borderRadius: '16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <div>
@@ -133,12 +134,12 @@ export default async function DashboardPage() {
             <div className="live-focus-divider" style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
             <div>
               <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.5, fontWeight: 700 }}>A Continuación</span>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)' }}>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text)' }}>
                 {nextBlock ? `${nextBlock.title} (${nextBlock.startTime})` : 'Fin de la jornada'}
               </p>
             </div>
           </div>
-          <Link href="/workspace/planeacion" className="glass-button" style={{ padding: '10px 20px', fontSize: '0.8rem', fontWeight: 700 }}>Ver Horario Completo</Link>
+          <Link href="/workspace/planeacion" className="glass-button" style={{ padding: '10px 20px', fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>Ver Horario Completo →</Link>
         </div>
 
         {/* ── Stats Pulse Row ── */}

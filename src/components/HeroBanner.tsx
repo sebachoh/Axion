@@ -42,13 +42,15 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
   const [showPicker, setShowPicker] = useState(false);
   const [customUrl, setCustomUrl] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [bgColor, setBgColor] = useState('rgba(0,0,0,0)');
 
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('axion-banner-image');
-    if (saved) {
-      setBannerUrl(saved);
-    }
+    if (saved) setBannerUrl(saved);
+    // Read CSS custom property for app background
+    const rawColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    if (rawColor) setBgColor(rawColor);
   }, []);
 
   const changeBanner = (url: string) => {
@@ -78,9 +80,13 @@ export default function HeroBanner({ currentDate, journalMoodToday, moodEmojis }
     }}>
       {/* Dark overlay for readability */}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%)', zIndex: 1 }} />
+      {/* Theme tint overlay: blends banner color with app background */}
+      {mounted && bgColor && (
+        <div style={{ position: 'absolute', inset: 0, background: bgColor, opacity: 0.22, zIndex: 2, pointerEvents: 'none' }} />
+      )}
 
       {/* Hero Content */}
-      <div style={{ position: 'relative', zIndex: 2 }}>
+      <div style={{ position: 'relative', zIndex: 3 }}>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', fontWeight: 600, textTransform: 'capitalize', marginBottom: '0.75rem', letterSpacing: '-0.05em' }}>
           {currentDate}
         </p>

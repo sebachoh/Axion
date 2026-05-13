@@ -5,8 +5,9 @@ import { auth } from '@/auth';
 async function getData(userId: string) {
   const transactions = await db.prepare('SELECT id, type, amount, category, description, date FROM finance_transactions WHERE user_id = ? ORDER BY date DESC, created_at DESC').all(userId) as Transaction[];
   const goals = await db.prepare('SELECT id, name, target_amount, current_amount, color FROM finance_goals WHERE user_id = ? ORDER BY created_at ASC').all(userId) as FinGoal[];
+  const budgets = await db.prepare('SELECT id, category, month, amount FROM finance_budgets WHERE user_id = ?').all(userId) as any[];
   
-  return { transactions, goals };
+  return { transactions, goals, budgets };
 }
 
 export default async function FinanzasPage() {
@@ -15,7 +16,7 @@ export default async function FinanzasPage() {
 
   if (!userId) return null;
 
-  const { transactions, goals } = await getData(userId);
+  const { transactions, goals, budgets } = await getData(userId);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -24,7 +25,7 @@ export default async function FinanzasPage() {
         <p className="page-subtitle">Control total sobre tu capital y metas financieras.</p>
       </header>
 
-      <FinanceDashboard transactions={transactions} goals={goals} />
+      <FinanceDashboard transactions={transactions} goals={goals} budgets={budgets} />
     </div>
   );
 }

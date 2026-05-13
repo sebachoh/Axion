@@ -2,6 +2,13 @@ import Link from 'next/link';
 import db from '@/infrastructure/db/sqlite';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import DeleteCareerButton from '@/components/DeleteCareerButton';
+
+async function deleteCareerAction(id: string, userId: string) {
+  'use server';
+  await db.prepare('DELETE FROM user_specializations WHERE id = ? AND user_id = ?').run(id, userId);
+  redirect('/academia/careers');
+}
 
 export default async function CareerSubportalPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,12 +25,19 @@ export default async function CareerSubportalPage({ params }: { params: Promise<
     return <div>Especialización no encontrada</div>;
   }
 
+  const deleteBound = deleteCareerAction.bind(null, id, userId);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header style={{ paddingBottom: '2rem', borderBottom: '1px solid var(--glass-border)' }}>
-        <Link href="/academia/careers" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block', marginBottom: '1rem' }}>
-          ← Volver a Careers
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Link href="/academia/careers" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-block', marginBottom: '1rem' }}>
+            ← Volver a Careers
+          </Link>
+          <form action={deleteBound}>
+            <DeleteCareerButton title={career.title} />
+          </form>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ 
             fontSize: '2rem', 
@@ -41,7 +55,7 @@ export default async function CareerSubportalPage({ params }: { params: Promise<
 
       <div className="glass-panel" style={{ padding: '2rem', minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', textAlign: 'center' }}>
-          El entorno de aprendizaje para "{career.title}" está listo.<br/>
+          El entorno de aprendizaje para &quot;{career.title}&quot; está listo.<br/>
           Pronto podrás añadir módulos, certificaciones y proyectos aquí.
         </p>
       </div>

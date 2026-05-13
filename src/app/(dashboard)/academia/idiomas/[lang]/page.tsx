@@ -85,6 +85,9 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
 
   if (!userId) return null;
 
+  // Get the DB record to retrieve the langId for deletion
+  const langRecord = await db.prepare('SELECT id FROM user_languages WHERE path = ? AND user_id = ?').get(`/academia/idiomas/${lang}`, userId) as { id: string } | undefined;
+
   const words = await getWords(lang, userId);
   const resources = await getResources(lang, userId);
   const skills = await getSkills(lang, userId);
@@ -98,6 +101,7 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
         resources={resources}
         skills={skills}
         topics={topics}
+        langId={langRecord?.id}
       />
     </div>
   );
