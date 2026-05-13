@@ -2,6 +2,7 @@ const CACHE_NAME = 'axion-pwa-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
+  '/LogoSquare.png',
   '/LogoBlanco.png',
   '/Logo.png'
 ];
