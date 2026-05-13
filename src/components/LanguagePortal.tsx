@@ -124,8 +124,6 @@ export default function LanguagePortal({ config, words, resources, skills, topic
       {/* ──────────────── HERO BANNER ──────────────── */}
       <div className="full-bleed" style={{
         position: 'relative',
-        width: 'calc(100% + 4rem)',
-        marginLeft: 'calc(-1 * var(--spacing-xl))',
         marginTop: 'calc(-1 * var(--spacing-xl))',
         height: '340px',
         background: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%), url(${config.bannerUrl}) center/cover no-repeat`,

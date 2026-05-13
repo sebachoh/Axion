@@ -258,6 +258,15 @@ export async function initDB() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS finance_budgets (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        category TEXT,
+        month TEXT,
+        amount REAL,
+        UNIQUE(user_id, category, month)
+      );
+
       CREATE TABLE IF NOT EXISTS vision_boards (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
