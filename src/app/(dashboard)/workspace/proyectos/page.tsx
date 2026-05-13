@@ -7,7 +7,7 @@ import { deleteProject } from './actions';
 
 async function getProjectIdeas(userId: string): Promise<IdeaItem[]> {
   const stmt = db.prepare('SELECT id, content, created_at as createdAt FROM project_ideas WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as unknown[];
+  const rows = await stmt.all(userId) as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;
@@ -21,7 +21,7 @@ async function getProjectIdeas(userId: string): Promise<IdeaItem[]> {
 
 async function getActiveProjects(userId: string) {
   const stmt = db.prepare('SELECT * FROM active_projects WHERE user_id = ? ORDER BY created_at DESC');
-  return stmt.all(userId) as any[];
+  return await stmt.all(userId) as any[];
 }
 
 export default async function ProyectosPage() {

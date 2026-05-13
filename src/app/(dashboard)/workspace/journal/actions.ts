@@ -25,12 +25,12 @@ export async function addJournalEntry(formData: FormData) {
     VALUES (@id, @content, @mediaUrl, @mood)
   `);
 
-  stmt.run({ id, content, mediaUrl, mood });
+  await stmt.run({ id, content, mediaUrl, mood });
   revalidatePath('/workspace/journal');
 }
 
 export async function deleteJournalEntry(id: string) {
   const stmt = db.prepare('DELETE FROM journal_entries WHERE id = @id');
-  stmt.run({ id });
+  await stmt.run({ id });
   revalidatePath('/workspace/journal');
 }

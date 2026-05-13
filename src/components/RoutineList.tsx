@@ -22,7 +22,7 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
 
   const handleDelete = async (id: string) => {
     setTasks(tasks.filter(t => t.id !== id));
-    await deleteRoutineTask(id, type);
+    await deleteRoutineTask(id);
   };
 
   const handleAdd = async (e: React.FormEvent) => {

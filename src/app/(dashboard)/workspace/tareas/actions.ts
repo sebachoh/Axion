@@ -4,7 +4,7 @@ import db from '@/infrastructure/db/sqlite';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 
-export async function addTask(formData: FormData) {
+export async function addTask(formData: FormData): Promise<void> {
   const session = await auth();
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
@@ -16,7 +16,7 @@ export async function addTask(formData: FormData) {
   const deadline = deadlineInput && deadlineInput.trim() !== '' ? deadlineInput : null;
   const notes = formData.get('notes') as string || null;
 
-  if (!title) return { error: 'Title is required' };
+  if (!title) return;
 
   const id = crypto.randomUUID();
 
@@ -25,7 +25,7 @@ export async function addTask(formData: FormData) {
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
-  stmt.run(id, userId, title, status, priority, deadline, notes);
+  await stmt.run(id, userId, title, status, priority, deadline, notes);
 
   revalidatePath('/workspace/tareas');
 }
@@ -36,7 +36,7 @@ export async function deleteTask(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM tasks WHERE id = ? AND user_id = ?');
-  stmt.run(id, userId);
+  await stmt.run(id, userId);
   revalidatePath('/workspace/tareas');
 }
 
@@ -46,7 +46,7 @@ export async function updateTaskStatus(id: string, newStatus: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('UPDATE tasks SET status = @newStatus WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, newStatus, userId });
+  await stmt.run({ id, newStatus, userId });
   revalidatePath('/workspace/tareas');
 }
 
@@ -55,11 +55,12 @@ export async function reorderTasks(taskIds: string[]) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  const stmt = db.prepare('UPDATE tasks SET order_index = @orderIndex WHERE id = @id AND user_id = @userId');
-  db.transaction(() => {
-    taskIds.forEach((id, index) => {
-      stmt.run({ id, orderIndex: index, userId });
-    });
-  })();
+  const sql = 'UPDATE tasks SET order_index = @orderIndex WHERE id = @id AND user_id = @userId';
+  const statements = taskIds.map((id, index) => ({
+    sql,
+    args: { id, orderIndex: index, userId }
+  }));
+
+  await db.batch(statements);
   revalidatePath('/workspace/tareas');
 }

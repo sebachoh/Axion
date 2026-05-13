@@ -29,7 +29,7 @@ export async function getRoutineTasks(type: string, date: string): Promise<Routi
     WHERE t.type = @type AND t.user_id = @userId
     ORDER BY t.order_index ASC, t.created_at ASC
   `);
-  const rows = stmt.all({ date, type, userId }) as any[];
+  const rows = await stmt.all({ date, type, userId }) as any[];
   return rows.map((r) => ({
     id: r.id,
     type: r.type,
@@ -43,19 +43,19 @@ export async function addRoutineTask(type: string, taskName: string) {
   const userId = await getUserId();
   const id = crypto.randomUUID();
   const indexStmt = db.prepare('SELECT MAX(order_index) as maxIdx FROM routine_tasks WHERE type = ? AND user_id = ?');
-  const result: any = indexStmt.get(type, userId);
+  const result: any = await indexStmt.get(type, userId);
   const nextIdx = (result?.maxIdx ?? -1) + 1;
 
   const stmt = db.prepare('INSERT INTO routine_tasks (id, user_id, type, task_name, is_completed, order_index) VALUES (?, ?, ?, ?, 0, ?)');
-  stmt.run(id, userId, type, taskName, nextIdx);
+  await stmt.run(id, userId, type, taskName, nextIdx);
   revalidatePath('/rutinas');
 }
 
 export async function deleteRoutineTask(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM routine_tasks WHERE id = ? AND user_id = ?');
-  stmt.run(id, userId);
-  db.prepare('DELETE FROM routine_completions WHERE task_id = ? AND user_id = ?').run(id, userId);
+  await stmt.run(id, userId);
+  await db.prepare('DELETE FROM routine_completions WHERE task_id = ? AND user_id = ?').run(id, userId);
   revalidatePath('/rutinas');
 }
 
@@ -63,23 +63,23 @@ export async function toggleRoutineTask(id: string, isCompleted: boolean, date: 
   const userId = await getUserId();
   if (isCompleted) {
     const stmt = db.prepare('INSERT OR IGNORE INTO routine_completions (user_id, task_id, completion_date) VALUES (?, ?, ?)');
-    stmt.run(userId, id, date);
+    await stmt.run(userId, id, date);
   } else {
     const stmt = db.prepare('DELETE FROM routine_completions WHERE task_id = ? AND completion_date = ? AND user_id = ?');
-    stmt.run(id, date, userId);
+    await stmt.run(id, date, userId);
   }
   revalidatePath('/rutinas');
 }
 
 export async function updateRoutineOrder(updates: {id: string, orderIndex: number}[]) {
   const userId = await getUserId();
-  const stmt = db.prepare('UPDATE routine_tasks SET order_index = ? WHERE id = ? AND user_id = ?');
-  const transaction = db.transaction((u) => {
-    for (const item of u) {
-      stmt.run(item.orderIndex, item.id, userId);
-    }
-  });
-  transaction(updates);
+  const sql = 'UPDATE routine_tasks SET order_index = ? WHERE id = ? AND user_id = ?';
+  const statements = updates.map((item) => ({
+    sql,
+    args: [item.orderIndex, item.id, userId]
+  }));
+
+  await db.batch(statements);
 }
 
 export async function getHabitsAnalytics(periodDays: number) {
@@ -94,7 +94,7 @@ export async function getHabitsAnalytics(periodDays: number) {
   const startStr = startDate.toISOString().split('T')[0];
   const endStr = new Date().toISOString().split('T')[0];
 
-  const totalTasks = (db.prepare('SELECT COUNT(*) as count FROM routine_tasks WHERE user_id = ?').get(userId) as any).count;
+  const totalTasks = (await db.prepare('SELECT COUNT(*) as count FROM routine_tasks WHERE user_id = ?').get(userId) as any).count;
   
   const stmt = db.prepare(`
     SELECT completion_date as date, COUNT(*) as completions
@@ -104,7 +104,7 @@ export async function getHabitsAnalytics(periodDays: number) {
     ORDER BY completion_date ASC
   `);
   
-  const history = stmt.all(startStr, endStr, userId) as any[];
+  const history = await stmt.all(startStr, endStr, userId) as any[];
   
   // Create full array of days
   const data = [];
@@ -133,7 +133,7 @@ export async function getHabitsAnalytics(periodDays: number) {
   }
 
   const globalPercentage = totalTasks > 0 ? (globalScoreSum / periodDays) * 100 : 0;
-  const currentStreak = calculateStreak(endStr, userId);
+  const currentStreak = await calculateStreak(endStr, userId);
   
   return {
     globalPercentage: Math.round(globalPercentage),
@@ -143,9 +143,9 @@ export async function getHabitsAnalytics(periodDays: number) {
   };
 }
 
-function calculateStreak(todayStr: string, userId: string): number {
+async function calculateStreak(todayStr: string, userId: string): Promise<number> {
   const stmt = db.prepare(`SELECT completion_date as date FROM routine_completions WHERE user_id = ? GROUP BY completion_date ORDER BY completion_date DESC`);
-  const logs = stmt.all(userId) as any[];
+  const logs = await stmt.all(userId) as any[];
   if (logs.length === 0) return 0;
 
   let streak = 0;

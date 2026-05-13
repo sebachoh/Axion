@@ -19,7 +19,7 @@ export async function addAlternancia(formData: FormData) {
   const id = crypto.randomUUID();
   
   // Calculate app_number for THIS user
-  const countRow = db.prepare('SELECT COUNT(*) as count FROM alternancia_applications WHERE user_id = ?').get(userId) as { count: number };
+  const countRow = await db.prepare('SELECT COUNT(*) as count FROM alternancia_applications WHERE user_id = ?').get(userId) as { count: number };
   const appNumber = countRow.count + 1;
 
   const stmt = db.prepare(`
@@ -27,7 +27,7 @@ export async function addAlternancia(formData: FormData) {
     VALUES (@id, @userId, @appNumber, @roleName, @company, @url, @status)
   `);
 
-  stmt.run({ id, userId, appNumber, roleName, company, url, status });
+  await stmt.run({ id, userId, appNumber, roleName, company, url, status });
 
   revalidatePath('/workspace/alternancia');
 }
@@ -42,7 +42,7 @@ export async function updateAlternanciaStatus(id: string, newStatus: string) {
     SET status = @newStatus, last_update = CURRENT_TIMESTAMP
     WHERE id = @id AND user_id = @userId
   `);
-  stmt.run({ id, userId, newStatus });
+  await stmt.run({ id, userId, newStatus });
   revalidatePath('/workspace/alternancia');
 }
 
@@ -52,7 +52,7 @@ export async function deleteAlternancia(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM alternancia_applications WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/alternancia');
 }
 
@@ -75,7 +75,7 @@ export async function addBancoItem(formData: FormData) {
     VALUES (@id, @userId, @category, @title, @meta)
   `);
 
-  stmt.run({ id, userId, category, title, meta });
+  await stmt.run({ id, userId, category, title, meta });
   revalidatePath('/workspace/alternancia/banco');
 }
 
@@ -85,6 +85,6 @@ export async function deleteBancoItem(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM alternancia_bank WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/alternancia/banco');
 }

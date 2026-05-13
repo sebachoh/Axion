@@ -21,7 +21,7 @@ export const {
       async authorize(credentials) {
         const { email, password } = credentials;
         
-        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
+        const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
         
         if (!user || !user.password) return null;
 
@@ -51,18 +51,18 @@ export const {
         if (!email) return false;
 
         // Check if user exists in our DB
-        const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email) as { id: string } | undefined;
+        const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email) as { id: string } | undefined;
 
         if (!existingUser) {
           // Continuity Protection: Check if there's orphaned data with this Google ID
           const googleId = user.id; // This is the Google 'sub'
-          const hasExistingData = db.prepare('SELECT id FROM tasks WHERE user_id = ? LIMIT 1').get(googleId);
+          const hasExistingData = await db.prepare('SELECT id FROM tasks WHERE user_id = ? LIMIT 1').get(googleId);
 
           // If there's data, use the Google ID as the permanent ID. 
           // Otherwise, generate a clean UUID.
           const permanentId = hasExistingData ? googleId : crypto.randomUUID();
 
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO users (id, email, name, image, email_verified)
             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
           `).run(permanentId, email, user.name, user.image);
@@ -75,7 +75,7 @@ export const {
       if (user || account) {
         // Find the persistent ID from our database by email
         // This unifies Google and Credentials under the same record
-        const dbUser = db.prepare('SELECT id FROM users WHERE email = ?').get(token.email) as { id: string } | undefined;
+        const dbUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(token.email) as { id: string } | undefined;
         if (dbUser) {
           token.id = dbUser.id;
         } else if (user) {

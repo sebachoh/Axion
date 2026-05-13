@@ -23,7 +23,7 @@ export async function addSpecialization(formData: FormData) {
   if (!title) return { error: "El título es obligatorio" };
 
   try {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO user_specializations (id, user_id, title, short_code, description, color_start, color_end)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(id, userId, shortCode, title, description, colorStart, colorEnd);
@@ -39,7 +39,7 @@ export async function addSpecialization(formData: FormData) {
 export async function deleteSpecialization(id: string) {
   const userId = await getUserId();
   try {
-    db.prepare('DELETE FROM user_specializations WHERE id = ? AND user_id = ?').run(id, userId);
+    await db.prepare('DELETE FROM user_specializations WHERE id = ? AND user_id = ?').run(id, userId);
     revalidatePath('/academia/careers');
     return { success: true };
   } catch (e) {

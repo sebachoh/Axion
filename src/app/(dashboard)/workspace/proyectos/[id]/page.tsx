@@ -12,7 +12,7 @@ export default async function ProjectSubportalPage({ params }: { params: Promise
     redirect('/login');
   }
 
-  const project = db.prepare('SELECT * FROM active_projects WHERE id = ? AND user_id = ?').get(id, userId) as any;
+  const project = await db.prepare('SELECT * FROM active_projects WHERE id = ? AND user_id = ?').get(id, userId) as any;
 
   if (!project) {
     return <div>Proyecto no encontrado</div>;

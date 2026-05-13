@@ -5,7 +5,7 @@ import AddLanguageCard from '@/components/AddLanguageCard';
 
 async function getUserLanguages(userId: string) {
   const stmt = db.prepare('SELECT * FROM user_languages WHERE user_id = ? ORDER BY created_at DESC');
-  return stmt.all(userId) as any[];
+  return await stmt.all(userId) as any[];
 }
 
 export default async function IdiomasPage() {

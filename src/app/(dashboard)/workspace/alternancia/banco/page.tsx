@@ -9,9 +9,9 @@ export interface BankItem {
   createdAt: Date;
 }
 
-function getBankItems(): BankItem[] {
+async function getBankItems(): Promise<BankItem[]> {
   const stmt = db.prepare('SELECT id, category, title, meta, created_at as createdAt FROM alternancia_bank ORDER BY created_at DESC');
-  const rows = stmt.all() as unknown[];
+  const rows = await stmt.all() as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;
@@ -25,8 +25,8 @@ function getBankItems(): BankItem[] {
   });
 }
 
-export default function BancoAlternanciaPage() {
-  const items = getBankItems();
+export default async function BancoAlternanciaPage() {
+  const items = await getBankItems();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

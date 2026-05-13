@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 
 async function getAlternanciaApps(userId: string): Promise<AlternanciaApp[]> {
   const stmt = db.prepare('SELECT id, app_number as appNumber, role_name as roleName, company, url, status, last_update as lastUpdate, created_at as createdAt FROM alternancia_applications WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as unknown[];
+  const rows = await stmt.all(userId) as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;

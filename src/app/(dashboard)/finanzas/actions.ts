@@ -19,7 +19,7 @@ export async function addTransaction(formData: FormData) {
 
   const id = crypto.randomUUID();
   const stmt = db.prepare('INSERT INTO finance_transactions (id, user_id, type, amount, category, description, date) VALUES (@id, @userId, @type, @amount, @category, @description, @date)');
-  stmt.run({ id, userId, type, amount, category, description, date });
+  await stmt.run({ id, userId, type, amount, category, description, date });
 
   revalidatePath('/lifestyle/finanzas');
   revalidatePath('/');
@@ -31,7 +31,7 @@ export async function deleteTransaction(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM finance_transactions WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/finanzas');
   revalidatePath('/');
 }
@@ -49,7 +49,7 @@ export async function addGoal(formData: FormData) {
 
   const id = crypto.randomUUID();
   const stmt = db.prepare('INSERT INTO finance_goals (id, user_id, name, target_amount, current_amount, color) VALUES (@id, @userId, @name, @targetAmount, 0, @color)');
-  stmt.run({ id, userId, name, targetAmount, color });
+  await stmt.run({ id, userId, name, targetAmount, color });
 
   revalidatePath('/lifestyle/finanzas');
 }
@@ -60,7 +60,7 @@ export async function updateGoalAmount(id: string, amount: number) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('UPDATE finance_goals SET current_amount = current_amount + @amount WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, amount, userId });
+  await stmt.run({ id, amount, userId });
   revalidatePath('/lifestyle/finanzas');
 }
 
@@ -70,6 +70,6 @@ export async function deleteGoal(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM finance_goals WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/finanzas');
 }

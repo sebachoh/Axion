@@ -6,7 +6,7 @@ import AddCareerCard from '@/components/AddCareerCard';
 
 async function getUserCareers(userId: string) {
   const stmt = db.prepare('SELECT * FROM user_specializations WHERE user_id = ? ORDER BY created_at DESC');
-  return stmt.all(userId) as any[];
+  return await stmt.all(userId) as any[];
 }
 
 export default async function CareersPage() {

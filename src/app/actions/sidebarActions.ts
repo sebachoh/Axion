@@ -71,7 +71,7 @@ export async function getSidebarLayout(): Promise<any[]> {
 
   try {
     const stmt = db.prepare("SELECT content FROM widgets WHERE user_id = ? AND type = 'sidebar_layout'");
-    const row = stmt.get(userId) as { content: string } | undefined;
+    const row = await stmt.get(userId) as { content: string } | undefined;
     if (row?.content) {
       return JSON.parse(row.content);
     }
@@ -91,15 +91,15 @@ export async function saveSidebarLayout(layout: any[]) {
   const layoutJson = JSON.stringify(layout);
 
   const stmtCheck = db.prepare("SELECT id FROM widgets WHERE user_id = ? AND type = 'sidebar_layout'");
-  const exists = stmtCheck.get(userId) as { id: string } | undefined;
+  const exists = await stmtCheck.get(userId) as { id: string } | undefined;
 
   if (exists) {
     const stmtUpdate = db.prepare("UPDATE widgets SET content = ? WHERE id = ?");
-    stmtUpdate.run(layoutJson, exists.id);
+    await stmtUpdate.run(layoutJson, exists.id);
   } else {
     const id = crypto.randomUUID();
     const stmtInsert = db.prepare("INSERT INTO widgets (id, user_id, type, content) VALUES (?, ?, 'sidebar_layout', ?)");
-    stmtInsert.run(id, userId, layoutJson);
+    await stmtInsert.run(id, userId, layoutJson);
   }
 
   revalidatePath('/');

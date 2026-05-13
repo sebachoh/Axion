@@ -17,7 +17,7 @@ export async function addJournalEntry(formData: FormData) {
 
   const id = crypto.randomUUID();
   const stmt = db.prepare('INSERT INTO journal_entries (id, user_id, content, mood, media_url) VALUES (@id, @userId, @content, @mood, @mediaUrl)');
-  stmt.run({ id, userId, content, mood, mediaUrl });
+  await stmt.run({ id, userId, content, mood, mediaUrl });
 
   revalidatePath('/lifestyle/journal');
   revalidatePath('/'); 
@@ -29,7 +29,7 @@ export async function deleteJournalEntry(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM journal_entries WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/journal');
   revalidatePath('/');
 }

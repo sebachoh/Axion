@@ -36,7 +36,7 @@ export async function registerUser(formData: FormData) {
   }
 
   // Check if user exists
-  const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+  const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
   if (existingUser) {
     return { error: "El correo ya está registrado" };
   }
@@ -46,7 +46,7 @@ export async function registerUser(formData: FormData) {
   const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
   try {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO users (id, email, password, name, verification_token)
       VALUES (?, ?, ?, ?, ?)
     `).run(id, email, hashedPassword, name, token);
@@ -61,14 +61,14 @@ export async function registerUser(formData: FormData) {
 }
 
 export async function verifyEmail(token: string) {
-  const user = db.prepare('SELECT id FROM users WHERE verification_token = ?').get(token) as any;
+  const user = await db.prepare('SELECT id FROM users WHERE verification_token = ?').get(token) as any;
 
   if (!user) {
     return { error: "Token de verificación inválido" };
   }
 
   try {
-    db.prepare(`
+    await db.prepare(`
       UPDATE users 
       SET email_verified = CURRENT_TIMESTAMP, verification_token = NULL 
       WHERE id = ?

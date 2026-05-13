@@ -16,7 +16,7 @@ export async function addVaultResource(formData: FormData) {
   const media_url = formData.get('media_url') as string;
   const tags = formData.get('tags') as string;
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO vault_resources (id, user_id, title, type, content, media_url, tags)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(id, userId, title, type, content, media_url, tags);
@@ -29,7 +29,7 @@ export async function deleteVaultResource(id: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM vault_resources WHERE id = ? AND user_id = ?').run(id, userId);
+  await db.prepare('DELETE FROM vault_resources WHERE id = ? AND user_id = ?').run(id, userId);
   revalidatePath('/boveda/recursos');
 }
 
@@ -38,5 +38,5 @@ export async function getVaultResources() {
    const userId = (session?.user as any)?.id;
    if (!userId) return [];
 
-   return db.prepare('SELECT * FROM vault_resources WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+   return await db.prepare('SELECT * FROM vault_resources WHERE user_id = ? ORDER BY created_at DESC').all(userId);
 }

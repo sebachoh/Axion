@@ -12,7 +12,7 @@ export default async function CareerSubportalPage({ params }: { params: Promise<
     redirect('/login');
   }
 
-  const career = db.prepare('SELECT * FROM user_specializations WHERE id = ? AND user_id = ?').get(id, userId) as any;
+  const career = await db.prepare('SELECT * FROM user_specializations WHERE id = ? AND user_id = ?').get(id, userId) as any;
 
   if (!career) {
     return <div>Especialización no encontrada</div>;

@@ -25,7 +25,7 @@ export async function addTimeBlock(formData: FormData) {
     VALUES (@id, @userId, @title, @startTime, @durationMins, @color, @blockDate)
   `);
 
-  stmt.run({ id, userId, title, startTime, durationMins, color, blockDate });
+  await stmt.run({ id, userId, title, startTime, durationMins, color, blockDate });
   revalidatePath('/workspace/planeacion');
 }
 
@@ -35,7 +35,7 @@ export async function deleteTimeBlock(id: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmt = db.prepare('DELETE FROM time_blocks WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/planeacion');
 }
 
@@ -48,7 +48,7 @@ export async function updateTimeBlock(id: string, updates: { title?: string, sta
   if (!fields) return;
 
   const stmt = db.prepare(`UPDATE time_blocks SET ${fields} WHERE id = @id AND user_id = @userId`);
-  stmt.run({ ...updates, id, userId });
+  await stmt.run({ ...updates, id, userId });
   revalidatePath('/workspace/planeacion');
 }
 
@@ -65,7 +65,7 @@ export async function addBankActivity(formData: FormData) {
   if (!name) return;
 
   const id = crypto.randomUUID();
-  db.prepare('INSERT INTO planning_bank (id, user_id, name, color, default_mins, icon) VALUES (@id, @userId, @name, @color, @mins, @icon)')
+  await db.prepare('INSERT INTO planning_bank (id, user_id, name, color, default_mins, icon) VALUES (@id, @userId, @name, @color, @mins, @icon)')
     .run({ id, userId, name, color, mins, icon });
   revalidatePath('/workspace/planeacion');
 }
@@ -75,6 +75,6 @@ export async function deleteBankActivity(id: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM planning_bank WHERE id = @id AND user_id = @userId').run({ id, userId });
+  await db.prepare('DELETE FROM planning_bank WHERE id = @id AND user_id = @userId').run({ id, userId });
   revalidatePath('/workspace/planeacion');
 }

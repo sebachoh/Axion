@@ -23,7 +23,7 @@ function getPriorityColor(p: string) {
 }
 
 async function getLatestJournalEntry(userId: string) {
-  return db.prepare('SELECT content FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').get(userId) as { content: string } | undefined;
+  return await db.prepare('SELECT content FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').get(userId) as { content: string } | undefined;
 }
 
 function getEndTime(startTime: string, durationMins: number): string {
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   
   if (!userId) return null;
 
-  const data = getDashboardData(userId);
+  const data = await getDashboardData(userId);
   const latestJournal = await getLatestJournalEntry(userId);
 
   const now = new Date();

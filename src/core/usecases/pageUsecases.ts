@@ -10,7 +10,7 @@ export async function getPageContent(route: string): Promise<string> {
   if (!userId) return '';
 
   const stmt = db.prepare('SELECT content FROM pages WHERE route = ? AND user_id = ?');
-  const result = stmt.get(route, userId) as { content: string } | undefined;
+  const result = await stmt.get(route, userId) as { content: string } | undefined;
   return result?.content || '';
 }
 
@@ -20,14 +20,14 @@ export async function savePageContent(route: string, content: string) {
   if (!userId) throw new Error("Unauthorized");
 
   const stmtCheck = db.prepare('SELECT route FROM pages WHERE route = ? AND user_id = ?');
-  const exists = stmtCheck.get(route, userId);
+  const exists = await stmtCheck.get(route, userId);
 
   if (exists) {
     const stmtUpdate = db.prepare('UPDATE pages SET content = ? WHERE route = ? AND user_id = ?');
-    stmtUpdate.run(content, route, userId);
+    await stmtUpdate.run(content, route, userId);
   } else {
     const stmtInsert = db.prepare('INSERT INTO pages (route, user_id, content) VALUES (?, ?, ?)');
-    stmtInsert.run(route, userId, content);
+    await stmtInsert.run(route, userId, content);
   }
 
   revalidatePath(route);

@@ -3,7 +3,7 @@ import JournalFeed, { JournalEntry } from '@/components/JournalFeed';
 import { auth } from '@/auth';
 
 async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
-  const rows = db.prepare('SELECT id, content, mood, media_url as mediaUrl, created_at as createdAt FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC').all(userId) as any[];
+  const rows = await db.prepare('SELECT id, content, mood, media_url as mediaUrl, created_at as createdAt FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC').all(userId) as any[];
   
   return rows.map(r => ({
     ...r,

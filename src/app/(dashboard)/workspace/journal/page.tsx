@@ -1,9 +1,9 @@
 import db from '@/infrastructure/db/sqlite';
 import JournalBoard, { JournalEntry } from '@/components/JournalBoard';
 
-function getJournalEntries(): JournalEntry[] {
+async function getJournalEntries(): Promise<JournalEntry[]> {
   const stmt = db.prepare('SELECT id, content, media_url as mediaUrl, mood, created_at as createdAt FROM journal_entries ORDER BY created_at DESC');
-  const rows = stmt.all() as unknown[];
+  const rows = await stmt.all() as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;
@@ -17,8 +17,8 @@ function getJournalEntries(): JournalEntry[] {
   });
 }
 
-export default function JournalPage() {
-  const entries = getJournalEntries();
+export default async function JournalPage() {
+  const entries = await getJournalEntries();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

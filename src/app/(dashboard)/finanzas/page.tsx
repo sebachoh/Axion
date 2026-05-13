@@ -3,8 +3,8 @@ import FinanceDashboard, { Transaction, FinGoal } from '@/components/FinanceDash
 import { auth } from '@/auth';
 
 async function getData(userId: string) {
-  const transactions = db.prepare('SELECT id, type, amount, category, description, date FROM finance_transactions WHERE user_id = ? ORDER BY date DESC, created_at DESC').all(userId) as Transaction[];
-  const goals = db.prepare('SELECT id, name, target_amount, current_amount, color FROM finance_goals WHERE user_id = ? ORDER BY created_at ASC').all(userId) as FinGoal[];
+  const transactions = await db.prepare('SELECT id, type, amount, category, description, date FROM finance_transactions WHERE user_id = ? ORDER BY date DESC, created_at DESC').all(userId) as Transaction[];
+  const goals = await db.prepare('SELECT id, name, target_amount, current_amount, color FROM finance_goals WHERE user_id = ? ORDER BY created_at ASC').all(userId) as FinGoal[];
   
   return { transactions, goals };
 }

@@ -7,7 +7,7 @@ import { Briefcase } from 'lucide-react';
 
 async function getStageTasks(userId: string): Promise<StageTask[]> {
   const stmt = db.prepare('SELECT id, title, status, priority, created_at as createdAt FROM stage_tasks WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     createdAt: new Date(r.createdAt)
@@ -16,7 +16,7 @@ async function getStageTasks(userId: string): Promise<StageTask[]> {
 
 async function getStageProjects(userId: string): Promise<StageProject[]> {
   const stmt = db.prepare('SELECT id, title, description, status, created_at as createdAt FROM stage_projects WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     createdAt: new Date(r.createdAt)
@@ -25,7 +25,7 @@ async function getStageProjects(userId: string): Promise<StageProject[]> {
 
 async function getStageCommands(userId: string): Promise<StageCommand[]> {
   const stmt = db.prepare('SELECT id, title, command, description, category, created_at as createdAt FROM stage_commands WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     createdAt: new Date(r.createdAt)

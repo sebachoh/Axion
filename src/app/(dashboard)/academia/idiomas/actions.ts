@@ -22,7 +22,7 @@ export async function addLanguageTrack(formData: FormData) {
   if (!name) return { error: "El nombre es obligatorio" };
 
   try {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO user_languages (id, user_id, name, flag, description, path)
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(id, userId, name, flag, description, path);
@@ -38,7 +38,7 @@ export async function addLanguageTrack(formData: FormData) {
 export async function deleteLanguageTrack(id: string) {
   const userId = await getUserId();
   try {
-    db.prepare('DELETE FROM user_languages WHERE id = ? AND user_id = ?').run(id, userId);
+    await db.prepare('DELETE FROM user_languages WHERE id = ? AND user_id = ?').run(id, userId);
     revalidatePath('/academia/idiomas');
     return { success: true };
   } catch (e) {

@@ -28,7 +28,7 @@ export async function addHogarChore(formData: FormData) {
     VALUES (@id, @userId, @name, @frequencyDays, NULL)
   `);
 
-  stmt.run({ id, userId, name, frequencyDays });
+  await stmt.run({ id, userId, name, frequencyDays });
   revalidatePath('/lifestyle/hogar');
 }
 
@@ -40,14 +40,14 @@ export async function logHogarChoreDone(id: string) {
     WHERE id = @id AND user_id = @userId
   `);
 
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/hogar');
 }
 
 export async function deleteHogarChore(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM hogar_chores WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/hogar');
 }
 
@@ -65,7 +65,7 @@ export async function addShoppingItem(formData: FormData) {
     VALUES (@id, @userId, @itemName, 0)
   `);
 
-  stmt.run({ id, userId, itemName });
+  await stmt.run({ id, userId, itemName });
   revalidatePath('/lifestyle/hogar');
 }
 
@@ -79,14 +79,14 @@ export async function toggleShoppingItem(id: string, currentCompleted: boolean) 
     WHERE id = @id AND user_id = @userId
   `);
 
-  stmt.run({ id, userId, isCompleted });
+  await stmt.run({ id, userId, isCompleted });
   revalidatePath('/lifestyle/hogar');
 }
 
 export async function deleteShoppingItem(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM hogar_shopping_list WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/hogar');
 }
 
@@ -106,7 +106,7 @@ export async function addRentPayment(formData: FormData) {
     VALUES (@id, @userId, @monthYear, @amount, 0, NULL)
   `);
 
-  stmt.run({ id, userId, monthYear, amount });
+  await stmt.run({ id, userId, monthYear, amount });
   revalidatePath('/lifestyle/hogar');
 }
 
@@ -118,13 +118,13 @@ export async function markRentAsPaid(id: string) {
     WHERE id = @id AND user_id = @userId
   `);
 
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/hogar');
 }
 
 export async function deleteRentPayment(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM hogar_rent_payments WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/hogar');
 }

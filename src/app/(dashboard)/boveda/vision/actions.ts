@@ -16,7 +16,7 @@ export async function addVisionBoard(formData: FormData) {
   const content = formData.get('content') as string;
   const image_url = formData.get('image_url') as string;
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO vision_boards (id, user_id, title, area, timeframe, content, image_url)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(id, userId, title, area, timeframe, content, image_url);
@@ -29,7 +29,7 @@ export async function deleteVisionBoard(id: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM vision_boards WHERE id = ? AND user_id = ?').run(id, userId);
+  await db.prepare('DELETE FROM vision_boards WHERE id = ? AND user_id = ?').run(id, userId);
   revalidatePath('/boveda/vision');
 }
 
@@ -38,5 +38,5 @@ export async function getVisionBoards() {
    const userId = (session?.user as any)?.id;
    if (!userId) return [];
 
-   return db.prepare('SELECT * FROM vision_boards WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+   return await db.prepare('SELECT * FROM vision_boards WHERE user_id = ? ORDER BY created_at DESC').all(userId);
 }

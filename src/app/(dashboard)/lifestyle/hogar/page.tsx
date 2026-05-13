@@ -5,7 +5,7 @@ import { Home } from 'lucide-react';
 
 async function getHogarChores(userId: string): Promise<HogarChore[]> {
   const stmt = db.prepare('SELECT id, name, last_done_at as lastDoneAt, frequency_days as frequencyDays, created_at as createdAt FROM hogar_chores WHERE user_id = ? ORDER BY last_done_at ASC, created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     lastDoneAt: r.lastDoneAt ? new Date(r.lastDoneAt) : null,
@@ -15,7 +15,7 @@ async function getHogarChores(userId: string): Promise<HogarChore[]> {
 
 async function getShoppingList(userId: string): Promise<ShoppingItem[]> {
   const stmt = db.prepare('SELECT id, item_name as itemName, is_completed as isCompleted, created_at as createdAt FROM hogar_shopping_list WHERE user_id = ? ORDER BY is_completed ASC, created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     isCompleted: !!r.isCompleted,
@@ -25,7 +25,7 @@ async function getShoppingList(userId: string): Promise<ShoppingItem[]> {
 
 async function getRentPayments(userId: string): Promise<RentPayment[]> {
   const stmt = db.prepare('SELECT id, month_year as monthYear, amount, is_paid as isPaid, paid_at as paidAt, created_at as createdAt FROM hogar_rent_payments WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   return rows.map(r => ({
     ...r,
     isPaid: !!r.isPaid,

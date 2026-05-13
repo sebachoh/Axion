@@ -23,7 +23,7 @@ export async function addProject(formData: FormData) {
   if (!title) return { error: "El título es obligatorio" };
 
   try {
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO active_projects (id, user_id, short_name, title, description, color_start, color_end)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(id, userId, shortName, title, description, colorStart, colorEnd);
@@ -36,14 +36,35 @@ export async function addProject(formData: FormData) {
   }
 }
 
-export async function deleteProject(id: string) {
+export async function deleteProject(id: string): Promise<void> {
   const userId = await getUserId();
   try {
-    db.prepare('DELETE FROM active_projects WHERE id = ? AND user_id = ?').run(id, userId);
+    await db.prepare('DELETE FROM active_projects WHERE id = ? AND user_id = ?').run(id, userId);
     revalidatePath('/workspace/proyectos');
-    return { success: true };
   } catch (e) {
     console.error(e);
-    return { error: "Error al eliminar el proyecto" };
+  }
+}
+
+export async function addProjectIdea(formData: FormData): Promise<void> {
+  const userId = await getUserId();
+  const content = formData.get('content') as string;
+  if (!content) return;
+
+  try {
+    await db.prepare('INSERT INTO project_ideas (id, user_id, content) VALUES (?, ?, ?)').run(crypto.randomUUID(), userId, content);
+    revalidatePath('/workspace/proyectos');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function deleteProjectIdea(id: string): Promise<void> {
+  const userId = await getUserId();
+  try {
+    await db.prepare('DELETE FROM project_ideas WHERE id = ? AND user_id = ?').run(id, userId);
+    revalidatePath('/workspace/proyectos');
+  } catch (e) {
+    console.error(e);
   }
 }

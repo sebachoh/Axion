@@ -18,7 +18,7 @@ export async function addWord(formData: FormData) {
   if (!lang || !word || !translation) return;
 
   const id = crypto.randomUUID();
-  db.prepare(`INSERT INTO language_words (id, user_id, lang, word, translation, precision, topic) VALUES (@id, @userId, @lang, @word, @translation, @precision, @topic)`)
+  await db.prepare(`INSERT INTO language_words (id, user_id, lang, word, translation, precision, topic) VALUES (@id, @userId, @lang, @word, @translation, @precision, @topic)`)
     .run({ id, userId, lang, word, translation, precision, topic });
 
   revalidatePath(`/academia/idiomas/${lang}`);
@@ -29,7 +29,7 @@ export async function deleteWord(id: string, lang: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM language_words WHERE id = @id AND user_id = @userId').run({ id, userId });
+  await db.prepare('DELETE FROM language_words WHERE id = @id AND user_id = @userId').run({ id, userId });
   revalidatePath(`/academia/idiomas/${lang}`);
 }
 
@@ -47,7 +47,7 @@ export async function addResource(formData: FormData) {
   if (!lang || !title || !url) return;
 
   const id = crypto.randomUUID();
-  db.prepare(`INSERT INTO language_resources (id, user_id, lang, title, url, type, skill) VALUES (@id, @userId, @lang, @title, @url, @type, @skill)`)
+  await db.prepare(`INSERT INTO language_resources (id, user_id, lang, title, url, type, skill) VALUES (@id, @userId, @lang, @title, @url, @type, @skill)`)
     .run({ id, userId, lang, title, url, type, skill });
 
   revalidatePath(`/academia/idiomas/${lang}`);
@@ -58,7 +58,7 @@ export async function deleteResource(id: string, lang: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM language_resources WHERE id = @id AND user_id = @userId').run({ id, userId });
+  await db.prepare('DELETE FROM language_resources WHERE id = @id AND user_id = @userId').run({ id, userId });
   revalidatePath(`/academia/idiomas/${lang}`);
 }
 
@@ -68,7 +68,7 @@ export async function updateSkillLevel(lang: string, skill: string, level: numbe
   if (!userId) throw new Error("Unauthorized");
 
   const id = crypto.randomUUID();
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO language_skills (id, user_id, lang, skill, level) VALUES (@id, @userId, @lang, @skill, @level)
     ON CONFLICT(user_id, lang, skill) DO UPDATE SET level = @level
   `).run({ id, userId, lang, skill, level });
@@ -84,7 +84,7 @@ export async function addTopic(formData: FormData) {
   const title = formData.get('title') as string;
   if (!lang || !title) return;
   const id = crypto.randomUUID();
-  db.prepare(`INSERT INTO language_topics (id, user_id, lang, title) VALUES (@id, @userId, @lang, @title)`)
+  await db.prepare(`INSERT INTO language_topics (id, user_id, lang, title) VALUES (@id, @userId, @lang, @title)`)
     .run({ id, userId, lang, title });
   revalidatePath(`/academia/idiomas/${lang}`);
 }
@@ -94,7 +94,7 @@ export async function updateTopicContent(id: string, lang: string, content: stri
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('UPDATE language_topics SET content = @content WHERE id = @id AND user_id = @userId').run({ id, content, userId });
+  await db.prepare('UPDATE language_topics SET content = @content WHERE id = @id AND user_id = @userId').run({ id, content, userId });
   revalidatePath(`/academia/idiomas/${lang}`);
 }
 
@@ -103,6 +103,6 @@ export async function deleteTopic(id: string, lang: string) {
   const userId = (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
-  db.prepare('DELETE FROM language_topics WHERE id = @id AND user_id = @userId').run({ id, userId });
+  await db.prepare('DELETE FROM language_topics WHERE id = @id AND user_id = @userId').run({ id, userId });
   revalidatePath(`/academia/idiomas/${lang}`);
 }

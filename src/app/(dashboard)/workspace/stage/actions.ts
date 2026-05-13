@@ -27,7 +27,7 @@ export async function addStageTask(formData: FormData) {
     VALUES (@id, @userId, @title, 'Pendiente', @priority)
   `);
 
-  stmt.run({ id, userId, title, priority });
+  await stmt.run({ id, userId, title, priority });
   revalidatePath('/workspace/stage');
 }
 
@@ -41,14 +41,14 @@ export async function toggleStageTaskStatus(id: string, currentStatus: string) {
     WHERE id = @id AND user_id = @userId
   `);
 
-  stmt.run({ id, userId, newStatus });
+  await stmt.run({ id, userId, newStatus });
   revalidatePath('/workspace/stage');
 }
 
 export async function deleteStageTask(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM stage_tasks WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/stage');
 }
 
@@ -68,7 +68,7 @@ export async function addStageProject(formData: FormData) {
     VALUES (@id, @userId, @title, @description, @status)
   `);
 
-  stmt.run({ id, userId, title, description, status });
+  await stmt.run({ id, userId, title, description, status });
   revalidatePath('/workspace/stage');
 }
 
@@ -80,14 +80,14 @@ export async function updateStageProjectStatus(id: string, newStatus: string) {
     WHERE id = @id AND user_id = @userId
   `);
 
-  stmt.run({ id, userId, newStatus });
+  await stmt.run({ id, userId, newStatus });
   revalidatePath('/workspace/stage');
 }
 
 export async function deleteStageProject(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM stage_projects WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/stage');
 }
 
@@ -108,13 +108,13 @@ export async function addStageCommand(formData: FormData) {
     VALUES (@id, @userId, @title, @command, @description, @category)
   `);
 
-  stmt.run({ id, userId, title, command, description, category });
+  await stmt.run({ id, userId, title, command, description, category });
   revalidatePath('/workspace/stage');
 }
 
 export async function deleteStageCommand(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM stage_commands WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/workspace/stage');
 }

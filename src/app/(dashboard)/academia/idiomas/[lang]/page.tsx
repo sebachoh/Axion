@@ -55,23 +55,23 @@ export async function generateStaticParams() {
   return Object.keys(LANG_CONFIGS).map(lang => ({ lang }));
 }
 
-function getWords(lang: string, userId: string): LangWord[] {
-  const rows = db.prepare('SELECT id, lang, word, translation, precision, topic, created_at as createdAt FROM language_words WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
+async function getWords(lang: string, userId: string): Promise<LangWord[]> {
+  const rows = await db.prepare('SELECT id, lang, word, translation, precision, topic, created_at as createdAt FROM language_words WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
-function getResources(lang: string, userId: string): LangResource[] {
-  const rows = db.prepare('SELECT id, lang, title, url, type, skill, created_at as createdAt FROM language_resources WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
+async function getResources(lang: string, userId: string): Promise<LangResource[]> {
+  const rows = await db.prepare('SELECT id, lang, title, url, type, skill, created_at as createdAt FROM language_resources WHERE lang = @lang AND user_id = @userId ORDER BY created_at DESC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
-function getSkills(lang: string, userId: string): LangSkill[] {
-  const rows = db.prepare('SELECT skill, level FROM language_skills WHERE lang = @lang AND user_id = @userId').all({ lang, userId }) as any[];
+async function getSkills(lang: string, userId: string): Promise<LangSkill[]> {
+  const rows = await db.prepare('SELECT skill, level FROM language_skills WHERE lang = @lang AND user_id = @userId').all({ lang, userId }) as any[];
   return rows;
 }
 
-function getTopics(lang: string, userId: string): LangTopic[] {
-  const rows = db.prepare('SELECT id, lang, title, content, created_at as createdAt FROM language_topics WHERE lang = @lang AND user_id = @userId ORDER BY created_at ASC').all({ lang, userId }) as any[];
+async function getTopics(lang: string, userId: string): Promise<LangTopic[]> {
+  const rows = await db.prepare('SELECT id, lang, title, content, created_at as createdAt FROM language_topics WHERE lang = @lang AND user_id = @userId ORDER BY created_at ASC').all({ lang, userId }) as any[];
   return rows.map(r => ({ ...r, createdAt: new Date(r.createdAt) }));
 }
 
@@ -85,10 +85,10 @@ export default async function LangPage({ params }: { params: Promise<{ lang: str
 
   if (!userId) return null;
 
-  const words = getWords(lang, userId);
-  const resources = getResources(lang, userId);
-  const skills = getSkills(lang, userId);
-  const topics = getTopics(lang, userId);
+  const words = await getWords(lang, userId);
+  const resources = await getResources(lang, userId);
+  const skills = await getSkills(lang, userId);
+  const topics = await getTopics(lang, userId);
 
   return (
     <div className="dashboard-page-wrapper">

@@ -3,9 +3,9 @@ import TimeBlockingDashboard, { TimeBlock } from '@/components/TimeBlockingDashb
 import { Task } from '@/core/domain/Task';
 import { auth } from '@/auth';
 
-function getTimeBlocks(date: string, userId: string): TimeBlock[] {
+async function getTimeBlocks(date: string, userId: string): Promise<TimeBlock[]> {
   const stmt = db.prepare('SELECT id, title, start_time as startTime, duration_mins as durationMins, color, block_date as blockDate FROM time_blocks WHERE block_date = @date AND user_id = @userId ORDER BY start_time ASC');
-  const rows = stmt.all({ date, userId }) as unknown[];
+  const rows = await stmt.all({ date, userId }) as unknown[];
   
   return rows.map((row: unknown) => {
     const r = row as any;
@@ -28,9 +28,9 @@ function getTodayStr() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function getTasks(userId: string): Task[] {
+async function getTasks(userId: string): Promise<Task[]> {
   const stmt = db.prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC');
-  const rows = stmt.all(userId) as any[];
+  const rows = await stmt.all(userId) as any[];
   
   return rows.map(row => ({
     id: row.id,
@@ -43,9 +43,9 @@ function getTasks(userId: string): Task[] {
   }));
 }
 
-function getBankActivities(userId: string) {
+async function getBankActivities(userId: string) {
   const stmt = db.prepare('SELECT id, name, color, default_mins as defaultMins, icon FROM planning_bank WHERE user_id = ? ORDER BY created_at ASC');
-  return stmt.all(userId) as any[];
+  return await stmt.all(userId) as any[];
 }
 
 export default async function PlaneacionPage() {
@@ -64,12 +64,12 @@ export default async function PlaneacionPage() {
   const dd = String(tomorrow.getDate()).padStart(2, '0');
   const tomorrowStr = `${yyyy}-${mm}-${dd}`;
 
-  const blocksToday = getTimeBlocks(todayStr, userId);
-  const blocksTomorrow = getTimeBlocks(tomorrowStr, userId);
+  const blocksToday = await getTimeBlocks(todayStr, userId);
+  const blocksTomorrow = await getTimeBlocks(tomorrowStr, userId);
   const blocks = [...blocksToday, ...blocksTomorrow];
 
-  const tasks = getTasks(userId);
-  const bankActivities = getBankActivities(userId);
+  const tasks = await getTasks(userId);
+  const bankActivities = await getBankActivities(userId);
 
   return (
     <div className="dashboard-page-wrapper" style={{ 

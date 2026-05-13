@@ -14,7 +14,7 @@ export interface StickyNote {
 
 export async function getStickyNotes(): Promise<StickyNote[]> {
   const stmt = db.prepare('SELECT id, title, body, color, pos_x, pos_y FROM sticky_notes');
-  const rows = stmt.all() as any[];
+  const rows = await stmt.all() as any[];
   return rows.map((r) => ({
     id: r.id,
     title: r.title,
@@ -31,23 +31,23 @@ export async function addStickyNote(title: string, body: string, color: string) 
   // Add some random initial offset so they stack nicely
   const spawnX = Math.floor(Math.random() * 50);
   const spawnY = Math.floor(Math.random() * 50);
-  stmt.run(id, title, body, color, spawnX, spawnY);
+  await stmt.run(id, title, body, color, spawnX, spawnY);
   revalidatePath('/');
 }
 
 export async function deleteStickyNote(id: string) {
   const stmt = db.prepare('DELETE FROM sticky_notes WHERE id = ?');
-  stmt.run(id);
+  await stmt.run(id);
   revalidatePath('/');
 }
 
 export async function updateStickyNotePosition(id: string, x: number, y: number) {
   const stmt = db.prepare('UPDATE sticky_notes SET pos_x = ?, pos_y = ? WHERE id = ?');
-  stmt.run(x, y, id);
+  await stmt.run(x, y, id);
 }
 
 export async function updateStickyNoteContent(id: string, title: string, body: string, color: string) {
   const stmt = db.prepare('UPDATE sticky_notes SET title = ?, body = ?, color = ? WHERE id = ?');
-  stmt.run(title, body, color, id);
+  await stmt.run(title, body, color, id);
   revalidatePath('/');
 }

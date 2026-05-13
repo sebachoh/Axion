@@ -34,7 +34,7 @@ export async function getTravelPins(mapId: string): Promise<TravelPin[]> {
       WHERE user_id = @userId AND map_id = @mapId
       ORDER BY created_at DESC
     `);
-    return stmt.all({ userId, mapId }) as TravelPin[];
+    return await stmt.all({ userId, mapId }) as TravelPin[];
   } catch (error) {
     console.error("Error fetching travel pins:", error);
     return [];
@@ -60,7 +60,7 @@ export async function saveTravelPin(data: {
     SELECT id FROM travel_pins 
     WHERE user_id = @userId AND map_id = @mapId AND LOWER(city_name) = LOWER(@cityName)
   `);
-  const existing = checkStmt.get({ userId, mapId: data.mapId, cityName: data.cityName }) as { id: string } | undefined;
+  const existing = await checkStmt.get({ userId, mapId: data.mapId, cityName: data.cityName }) as { id: string } | undefined;
 
   if (existing && !data.id) {
     // Si ya existe la ciudad, actualizamos sus valores
@@ -69,7 +69,7 @@ export async function saveTravelPin(data: {
       SET status = @status, color = @color, notes = @notes, pos_x = @posX, pos_y = @posY
       WHERE id = @id AND user_id = @userId
     `);
-    updateStmt.run({
+    await updateStmt.run({
       id: existing.id,
       userId,
       status: data.status,
@@ -85,7 +85,7 @@ export async function saveTravelPin(data: {
       SET city_name = @cityName, status = @status, color = @color, notes = @notes, pos_x = @posX, pos_y = @posY
       WHERE id = @id AND user_id = @userId
     `);
-    updateStmt.run({
+    await updateStmt.run({
       id: data.id,
       userId,
       cityName: data.cityName,
@@ -101,7 +101,7 @@ export async function saveTravelPin(data: {
       INSERT INTO travel_pins (id, user_id, map_id, city_name, status, color, notes, pos_x, pos_y)
       VALUES (@id, @userId, @mapId, @cityName, @status, @color, @notes, @posX, @posY)
     `);
-    insertStmt.run({
+    await insertStmt.run({
       id,
       userId,
       mapId: data.mapId,
@@ -121,7 +121,7 @@ export async function saveTravelPin(data: {
 export async function deleteTravelPin(id: string) {
   const userId = await getUserId();
   const stmt = db.prepare('DELETE FROM travel_pins WHERE id = @id AND user_id = @userId');
-  stmt.run({ id, userId });
+  await stmt.run({ id, userId });
   revalidatePath('/lifestyle/viajes');
 }
 
@@ -137,6 +137,6 @@ export async function toggleTravelPinStatus(id: string, currentStatus: string) {
     SET status = @newStatus, color = @defaultColor
     WHERE id = @id AND user_id = @userId
   `);
-  stmt.run({ id, userId, newStatus, defaultColor });
+  await stmt.run({ id, userId, newStatus, defaultColor });
   revalidatePath('/lifestyle/viajes');
 }
