@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
+import Link from 'next/link';
 import UserProfile from '@/components/UserProfile';
 import DynamicSidebar from '@/components/DynamicSidebar';
 
@@ -107,7 +108,7 @@ export default function DashboardContainer({ initialLayout, user, children }: Da
           opacity: isCollapsed ? 0 : 1,
           transition: 'opacity 0.2s ease-in-out'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
             <img 
               src="/LogoBlanco.png" 
               alt="Axion Logo" 
@@ -122,7 +123,7 @@ export default function DashboardContainer({ initialLayout, user, children }: Da
             }}>
               Axion
             </h2>
-          </div>
+          </Link>
           
           {/* Close Sidebar Button */}
           <button

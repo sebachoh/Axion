@@ -50,6 +50,30 @@ export async function updateTaskStatus(id: string, newStatus: string) {
   revalidatePath('/workspace/tareas');
 }
 
+export async function updateTask(id: string, formData: FormData): Promise<void> {
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error("Unauthorized");
+
+  const title = formData.get('title') as string;
+  const priority = formData.get('priority') as string;
+  const deadlineInput = formData.get('deadline') as string;
+  const deadline = deadlineInput && deadlineInput.trim() !== '' ? deadlineInput : null;
+  const notes = formData.get('notes') as string || null;
+
+  if (!title) return;
+
+  const stmt = db.prepare(`
+    UPDATE tasks 
+    SET title = ?, priority = ?, deadline = ?, notes = ?
+    WHERE id = ? AND user_id = ?
+  `);
+
+  await stmt.run(title, priority, deadline, notes, id, userId);
+
+  revalidatePath('/workspace/tareas');
+}
+
 export async function reorderTasks(taskIds: string[]) {
   const session = await auth();
   const userId = (session?.user as any)?.id;

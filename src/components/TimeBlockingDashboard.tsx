@@ -10,6 +10,7 @@ import {
   deleteBankActivity
 } from '@/app/(dashboard)/workspace/planeacion/actions';
 import { Task } from '@/core/domain/Task';
+import { Target, Dumbbell, Book, Laptop, Brain, Apple, Music, Palette, Home, Car } from 'lucide-react';
 
 export interface TimeBlock {
   id: string;
@@ -105,6 +106,41 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   const [draggingBankActivity, setDraggingBankActivity] = useState<BankActivity | null>(null);
   const [movingBlock, setMovingBlock] = useState<TimeBlock | null>(null);
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
+  const [selectedIcon, setSelectedIcon] = useState('Target');
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const availableIcons = ['Target', 'Dumbbell', 'Book', 'Laptop', 'Brain', 'Apple', 'Music', 'Palette', 'Home', 'Car'];
+
+  const renderIcon = (name: string) => {
+    const props = { size: 16 };
+    switch (name) {
+      case 'Target': return <Target {...props} />;
+      case 'Dumbbell': return <Dumbbell {...props} />;
+      case 'Book': return <Book {...props} />;
+      case 'Laptop': return <Laptop {...props} />;
+      case 'Brain': return <Brain {...props} />;
+      case 'Apple': return <Apple {...props} />;
+      case 'Music': return <Music {...props} />;
+      case 'Palette': return <Palette {...props} />;
+      case 'Home': return <Home {...props} />;
+      case 'Car': return <Car {...props} />;
+      default: return <Target {...props} />;
+    }
+  };
+
+  const renderBlockTitle = (title: string) => {
+    const words = title.split(' ');
+    const firstWord = words[0];
+    if (availableIcons.includes(firstWord)) {
+      return (
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {renderIcon(firstWord)}
+          {words.slice(1).join(' ')}
+        </span>
+      );
+    }
+    return title;
+  };
+
   const calendarRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -352,13 +388,13 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                <input name="duration_mins" type="number" placeholder="Minutos (ej. 60)" defaultValue={60} required style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }} />
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-               <select name="color" style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#000', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
-                 <option value="#bbf7d0">🟢 Trabajo</option>
-                 <option value="#bfdbfe">🔵 Salud</option>
-                 <option value="#fbcfe8">🩷 Rutinas</option>
-                 <option value="#fef68a">🟡 Ocio</option>
-                 <option value="#e9d5ff">🟣 Creatividad</option>
-                 <option value="#ff6b6b">🔴 Urgencia</option>
+               <select name="color" style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: 'var(--color-text)', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
+                 <option value="#bbf7d0" style={{ background: '#1a1a1a', color: '#fff' }}>🟢 Trabajo</option>
+                 <option value="#bfdbfe" style={{ background: '#1a1a1a', color: '#fff' }}>🔵 Salud</option>
+                 <option value="#fbcfe8" style={{ background: '#1a1a1a', color: '#fff' }}>🩷 Rutinas</option>
+                 <option value="#fef68a" style={{ background: '#1a1a1a', color: '#fff' }}>🟡 Ocio</option>
+                 <option value="#e9d5ff" style={{ background: '#1a1a1a', color: '#fff' }}>🟣 Creatividad</option>
+                 <option value="#ff6b6b" style={{ background: '#1a1a1a', color: '#fff' }}>🔴 Urgencia</option>
                 </select>
                <button type="submit" className="glass-button" style={{ padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800, fontSize: '0.8rem' }}>Añadir</button>
             </div>
@@ -387,7 +423,10 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                 onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <span>{act.icon} {act.name}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {act.icon && renderIcon(act.icon)} 
+                  {act.name}
+                </span>
                 <button 
                   onClick={() => deleteBankActivity(act.id)} 
                   style={{ background: 'transparent', border: 'none', marginLeft: '6px', cursor: 'pointer', fontSize: '10px', opacity: 0.5, padding: '2px' }}
@@ -403,9 +442,44 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
              </div>
              
              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Emoji</label>
-                  <input name="icon" placeholder="🏠" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid var(--glass-border)', fontSize: '0.9rem', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative' }}>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Icono</label>
+                  <input type="hidden" name="icon" value={selectedIcon} />
+                  <button
+                    type="button"
+                    onClick={() => setShowIconPicker(!showIconPicker)}
+                    style={{
+                      width: '100%', padding: '10px', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.04)', color: 'var(--color-text)',
+                      border: '1px solid var(--glass-border)', fontSize: '0.9rem',
+                      outline: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    {renderIcon(selectedIcon)}
+                  </button>
+                  {showIconPicker && (
+                    <div style={{
+                      position: 'absolute', bottom: '100%', left: 0, right: 0,
+                      background: '#1a1a1a', border: '1px solid var(--glass-border)',
+                      borderRadius: '8px', padding: '8px', zIndex: 10,
+                      display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px'
+                    }}>
+                      {availableIcons.map(iconName => (
+                        <button
+                          key={iconName}
+                          type="button"
+                          onClick={() => { setSelectedIcon(iconName); setShowIconPicker(false); }}
+                          style={{
+                            padding: '6px', background: selectedIcon === iconName ? 'rgba(255,255,255,0.1)' : 'transparent',
+                            border: 'none', borderRadius: '4px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text)'
+                          }}
+                        >
+                          {renderIcon(iconName)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Duración (min)</label>
@@ -416,12 +490,12 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Color</label>
-                  <select name="color" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: '#000', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
-                    <option value="#bfdbfe">Blue</option>
-                    <option value="#fbcfe8">Pink</option>
-                    <option value="#bbf7d0">Green</option>
-                    <option value="#fef68a">Yellow</option>
-                    <option value="#e9d5ff">Purple</option>
+                  <select name="color" style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', color: 'var(--color-text)', border: '1px solid var(--glass-border)', fontSize: '0.85rem', outline: 'none' }}>
+                    <option value="#bfdbfe" style={{ background: '#1a1a1a', color: '#fff' }}>Blue</option>
+                    <option value="#fbcfe8" style={{ background: '#1a1a1a', color: '#fff' }}>Pink</option>
+                    <option value="#bbf7d0" style={{ background: '#1a1a1a', color: '#fff' }}>Green</option>
+                    <option value="#fef68a" style={{ background: '#1a1a1a', color: '#fff' }}>Yellow</option>
+                    <option value="#e9d5ff" style={{ background: '#1a1a1a', color: '#fff' }}>Purple</option>
                   </select>
                 </div>
                 <button type="submit" className="glass-button" style={{ padding: '10px', background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 800, fontSize: '0.8rem' }}>Añadir</button>
@@ -496,10 +570,10 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{block.title}</span>
+                <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{renderBlockTitle(block.title)}</span>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <span style={{ opacity: 0.4, fontSize: '0.7rem' }}>✎</span>
-                  <form action={deleteTimeBlock.bind(null, block.id)}>
+                  <form action={deleteTimeBlock.bind(null, block.id)} onClick={(e) => e.stopPropagation()}>
                     <button type="submit" style={{ background: 'transparent', border: 'none', color: 'rgba(0,0,0,0.4)', cursor: 'pointer' }}>✕</button>
                   </form>
                 </div>
@@ -546,12 +620,12 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '0.75rem', opacity: 0.7 }}>Color</label>
-                    <select name="color" defaultValue={editingBlock.color} style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: '#000', border: '1px solid #444' }}>
-                      <option value="#bbf7d0">🟢 Trabajo</option>
-                      <option value="#bfdbfe">🔵 Salud</option>
-                      <option value="#fbcfe8">🩷 Rutinas</option>
-                      <option value="#fef68a">🟡 Ocio</option>
-                      <option value="#e9d5ff">Lila 🟣 Creatividad</option>
+                    <select name="color" defaultValue={editingBlock.color} style={{ padding: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text)', border: '1px solid #444' }}>
+                      <option value="#bbf7d0" style={{ background: '#1a1a1a', color: '#fff' }}>🟢 Trabajo</option>
+                      <option value="#bfdbfe" style={{ background: '#1a1a1a', color: '#fff' }}>🔵 Salud</option>
+                      <option value="#fbcfe8" style={{ background: '#1a1a1a', color: '#fff' }}>🩷 Rutinas</option>
+                      <option value="#fef68a" style={{ background: '#1a1a1a', color: '#fff' }}>🟡 Ocio</option>
+                      <option value="#e9d5ff" style={{ background: '#1a1a1a', color: '#fff' }}>Lila 🟣 Creatividad</option>
                     </select>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
