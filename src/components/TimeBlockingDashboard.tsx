@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Sun, Sunrise } from 'lucide-react';
+import { Sun, Sunrise, Cloud } from 'lucide-react';
+import { syncAppleCalendar } from '@/app/actions/appleSyncActions';
 import { 
   addTimeBlock, 
   deleteTimeBlock, 
@@ -108,6 +109,8 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
   const [selectedIcon, setSelectedIcon] = useState('Target');
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const availableIcons = ['Target', 'Dumbbell', 'Book', 'Laptop', 'Brain', 'Apple', 'Music', 'Palette', 'Home', 'Car'];
 
   const renderIcon = (name: string) => {
@@ -356,6 +359,40 @@ export default function TimeBlockingDashboard({ initialBlocks, selectedDate, ini
               background: 'rgba(0,0,0,0.4)'
             }} />
           )}
+        </button>
+
+        <button 
+          onClick={async () => {
+            setIsSyncing(true);
+            const res = await syncAppleCalendar();
+            setIsSyncing(false);
+            if (res.success) {
+              const now = new Date();
+              setLastSyncTime(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+            }
+            alert(res.message || res.error);
+          }}
+          disabled={isSyncing}
+          style={{
+            padding: '10px 22px', 
+            fontSize: '0.85rem', 
+            fontWeight: 700,
+            fontFamily: 'Outfit, Inter, var(--font-sans), sans-serif',
+            letterSpacing: '-0.015em',
+            background: 'rgba(255,255,255,0.04)',
+            color: 'rgba(255,255,255,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            borderRadius: '12px', cursor: isSyncing ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease',
+            opacity: isSyncing ? 0.7 : 1,
+          }}
+          onMouseOver={e => !isSyncing && (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+          onMouseOut={e => !isSyncing && (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+        >
+          <Cloud size={15} strokeWidth={2.5} style={{ opacity: 0.9 }} />
+          <span>
+            {isSyncing ? 'Sincronizando...' : lastSyncTime ? `Sincronizado: ${lastSyncTime}` : 'Sincronizar iCloud'}
+          </span>
         </button>
 
         {/* Active day indicator */}
