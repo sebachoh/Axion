@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { saveSidebarLayout } from '@/app/actions/sidebarActions';
-import { 
-  Pencil, Check, Plus, Trash2, ArrowUp, ArrowDown, Folder, 
-  Terminal, ShieldCheck, Home, Calendar, Notebook, CheckSquare, 
+import {
+  Pencil, Check, Plus, Trash2, ArrowUp, ArrowDown, Folder,
+  Terminal, ShieldCheck, Home, Calendar, Notebook, CheckSquare,
   BarChart, Wallet, BookOpen, Compass, Layers, Link2
 } from 'lucide-react';
 import SidebarLink from './SidebarLink';
@@ -17,6 +17,7 @@ interface SidebarItem {
   label: string;
   icon: string;
 }
+//comentario
 
 interface SidebarSection {
   id: string;
@@ -38,7 +39,7 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
 
   // SVG Icon mapping for existing options
   const getIcon = (iconName: string) => {
-    switch(iconName) {
+    switch (iconName) {
       case 'home':
         return <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>;
       case 'calendar':
@@ -197,20 +198,20 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-      
+
       {/* Scrollable Navigation Menu */}
-      <nav className="no-scrollbar sidebar-nav-mask" style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: isEditing ? '1.5rem' : '1rem', 
-        overflowY: 'auto', 
-        flex: 1, 
+      <nav className="no-scrollbar sidebar-nav-mask" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: isEditing ? '1.5rem' : '1rem',
+        overflowY: 'auto',
+        flex: 1,
         paddingRight: '4px',
-        paddingBottom: '1rem' 
+        paddingBottom: '1rem'
       }}>
         {layout.map((section, secIndex) => (
-          <div 
-            key={section.id} 
+          <div
+            key={section.id}
             className={`sidebar-section ${section.isSpecial ? 'special' : ''}`}
             style={{
               border: isEditing ? '1px dashed rgba(255,255,255,0.15)' : 'none',
@@ -222,39 +223,39 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
             {/* Section Header */}
             {isEditing ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <input 
-                  type="text" 
-                  value={section.title} 
+                <input
+                  type="text"
+                  value={section.title}
                   onChange={(e) => updateSectionTitle(secIndex, e.target.value)}
-                  style={{ 
-                    flex: 1, 
-                    padding: '4px 8px', 
-                    borderRadius: '6px', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    background: 'rgba(255,255,255,0.05)', 
-                    color: section.isSpecial ? '#f9ca24' : 'var(--color-text)', 
-                    fontSize: '0.75rem', 
-                    fontWeight: 700, 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.1em' 
-                  }} 
+                  style={{
+                    flex: 1,
+                    padding: '4px 8px',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: section.isSpecial ? '#f9ca24' : 'var(--color-text)',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
+                  }}
                 />
-                <button 
-                  onClick={() => moveSection(secIndex, 'up')} 
+                <button
+                  onClick={() => moveSection(secIndex, 'up')}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', padding: '2px' }}
                   title="Subir sección"
                 >
                   <ArrowUp size={12} />
                 </button>
-                <button 
-                  onClick={() => moveSection(secIndex, 'down')} 
+                <button
+                  onClick={() => moveSection(secIndex, 'down')}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', padding: '2px' }}
                   title="Bajar sección"
                 >
                   <ArrowDown size={12} />
                 </button>
-                <button 
-                  onClick={() => deleteSection(secIndex)} 
+                <button
+                  onClick={() => deleteSection(secIndex)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff6b6b', display: 'flex', alignItems: 'center', padding: '2px' }}
                   title="Eliminar sección"
                 >
@@ -271,67 +272,67 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
                 <div key={item.id}>
                   {isEditing ? (
                     /* EDIT ROW */
-                    <div style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      gap: '4px', 
-                      background: 'rgba(255,255,255,0.02)', 
-                      padding: '8px', 
-                      borderRadius: '8px', 
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      background: 'rgba(255,255,255,0.02)',
+                      padding: '8px',
+                      borderRadius: '8px',
                       border: '1px solid rgba(255,255,255,0.04)',
                       marginBottom: '4px'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <button 
-                            onClick={() => moveItem(secIndex, itemIndex, 'up')} 
+                          <button
+                            onClick={() => moveItem(secIndex, itemIndex, 'up')}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.6rem', padding: '0 2px' }}
                           >
                             ▲
                           </button>
-                          <button 
-                            onClick={() => moveItem(secIndex, itemIndex, 'down')} 
+                          <button
+                            onClick={() => moveItem(secIndex, itemIndex, 'down')}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.6rem', padding: '0 2px' }}
                           >
                             ▼
                           </button>
                         </div>
-                        <input 
-                          type="text" 
-                          value={item.label} 
+                        <input
+                          type="text"
+                          value={item.label}
                           onChange={(e) => updateItemLabel(secIndex, itemIndex, e.target.value)}
                           placeholder="Nombre"
-                          style={{ 
-                            flex: 1, 
-                            padding: '3px 6px', 
-                            borderRadius: '4px', 
-                            border: '1px solid rgba(255,255,255,0.1)', 
-                            background: 'rgba(255,255,255,0.05)', 
-                            color: '#fff', 
-                            fontSize: '0.8rem', 
-                            minWidth: 0 
-                          }} 
+                          style={{
+                            flex: 1,
+                            padding: '3px 6px',
+                            borderRadius: '4px',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: 'rgba(255,255,255,0.05)',
+                            color: '#fff',
+                            fontSize: '0.8rem',
+                            minWidth: 0
+                          }}
                         />
-                        <button 
-                          onClick={() => deleteItem(secIndex, itemIndex)} 
+                        <button
+                          onClick={() => deleteItem(secIndex, itemIndex)}
                           style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff6b6b', padding: '4px' }}
                         >
                           <Trash2 size={13} />
                         </button>
                       </div>
-                      <input 
-                        type="text" 
-                        value={item.href} 
+                      <input
+                        type="text"
+                        value={item.href}
                         onChange={(e) => updateItemHref(secIndex, itemIndex, e.target.value)}
                         placeholder="URL (Ej: /workspace/tareas)"
-                        style={{ 
-                          padding: '2px 6px', 
-                          borderRadius: '4px', 
-                          border: '1px solid rgba(255,255,255,0.05)', 
-                          background: 'rgba(255,255,255,0.02)', 
-                          color: 'var(--color-text-muted)', 
-                          fontSize: '0.7rem' 
-                        }} 
+                        style={{
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(255,255,255,0.05)',
+                          background: 'rgba(255,255,255,0.02)',
+                          color: 'var(--color-text-muted)',
+                          fontSize: '0.7rem'
+                        }}
                       />
                     </div>
                   ) : (
@@ -342,17 +343,17 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
               ))}
 
               {isEditing && (
-                <button 
-                  onClick={() => addItemToSection(secIndex)} 
-                  style={{ 
-                    background: 'rgba(255,255,255,0.03)', 
-                    color: 'var(--color-text-muted)', 
-                    border: '1px dashed rgba(255,255,255,0.1)', 
-                    width: '100%', 
-                    padding: '6px', 
-                    borderRadius: '8px', 
-                    fontSize: '0.75rem', 
-                    cursor: 'pointer', 
+                <button
+                  onClick={() => addItemToSection(secIndex)}
+                  style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    color: 'var(--color-text-muted)',
+                    border: '1px dashed rgba(255,255,255,0.1)',
+                    width: '100%',
+                    padding: '6px',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
                     marginTop: '4px',
                     display: 'flex',
                     alignItems: 'center',
@@ -368,16 +369,16 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
         ))}
 
         {isEditing && (
-          <button 
-            onClick={addSection} 
+          <button
+            onClick={addSection}
             className="glass-button"
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              fontSize: '0.8rem', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
+            style={{
+              width: '100%',
+              padding: '10px',
+              fontSize: '0.8rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
               border: '1px dashed var(--glass-border)'
             }}
@@ -387,25 +388,25 @@ export default function DynamicSidebar({ initialLayout }: DynamicSidebarProps) {
         )}
 
         {/* Minimalist icon-only edit button integrated at the bottom of the scrollable list */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
           alignItems: 'center',
           marginTop: '1.2rem',
           paddingBottom: '0.5rem',
           flexShrink: 0
         }}>
-          <button 
-            onClick={handleToggleEdit} 
+          <button
+            onClick={handleToggleEdit}
             disabled={isSaving}
-            style={{ 
-              background: 'var(--glass-bg, rgba(255,255,255,0.03))', 
-              border: '1px solid var(--glass-border, rgba(255,255,255,0.08))', 
+            style={{
+              background: 'var(--glass-bg, rgba(255,255,255,0.03))',
+              border: '1px solid var(--glass-border, rgba(255,255,255,0.08))',
               borderRadius: '50%',
               width: '38px',
               height: '38px',
-              cursor: 'pointer', 
-              color: isEditing ? '#1dd1a1' : 'var(--color-text)', 
+              cursor: 'pointer',
+              color: isEditing ? '#1dd1a1' : 'var(--color-text)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
