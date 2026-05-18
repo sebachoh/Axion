@@ -4,6 +4,37 @@ import { useState, useEffect } from 'react';
 import { RoutineTask, addRoutineTask, deleteRoutineTask, toggleRoutineTask, updateRoutineOrder } from '@/core/usecases/routineUsecases';
 import { Reorder } from 'framer-motion';
 
+function getEmojiForTask(name: string, type: 'morning' | 'night'): string {
+  const lowercase = name.toLowerCase();
+  
+  // Specific mappings based on keywords
+  if (lowercase.includes('desayuno') || lowercase.includes('comer') || lowercase.includes('desayunar')) return '🍳';
+  if (lowercase.includes('meditar') || lowercase.includes('yoga')) return '🧘';
+  if (lowercase.includes('gym') || lowercase.includes('entrenar') || lowercase.includes('ejercicio')) return '🏋️';
+  if (lowercase.includes('leer') || lowercase.includes('libro')) return '📚';
+  if (lowercase.includes('dormir') || lowercase.includes('cama') || lowercase.includes('acostar')) return '🛌';
+  if (lowercase.includes('trabajar') || lowercase.includes('pc') || lowercase.includes('laptop')) return '💻';
+  if (lowercase.includes('ducha') || lowercase.includes('bañar')) return '🚿';
+  if (lowercase.includes('cafe') || lowercase.includes('café')) return '☕';
+  
+  // New mappings for the user's specific routines
+  if (lowercase.includes('planear') || lowercase.includes('plan')) return '📅';
+  if (lowercase.includes('skincare') || lowercase.includes('cara') || lowercase.includes('lavar')) return '🧴';
+  if (lowercase.includes('ropa') || lowercase.includes('alistar')) return '👕';
+  if (lowercase.includes('pantalla')) return '📵';
+  
+  // More general mappings
+  if (lowercase.includes('estudiar') || lowercase.includes('aprender')) return '🧠';
+  if (lowercase.includes('correr') || lowercase.includes('caminar')) return '🏃';
+  if (lowercase.includes('perro') || lowercase.includes('mascota')) return '🐶';
+  if (lowercase.includes('musica') || lowercase.includes('escuchar')) return '🎵';
+  if (lowercase.includes('limpiar') || lowercase.includes('ordenar')) return '🧹';
+  if (lowercase.includes('cocinar')) return '👨‍🍳';
+  if (lowercase.includes('agua') || lowercase.includes('hidratar')) return '💧';
+  
+  return type === 'morning' ? '☀️' : '🌙';
+}
+
 interface Props {
   initialTasks: RoutineTask[];
   type: 'morning' | 'night';
@@ -109,6 +140,21 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
                 >
                   {task.isCompleted && <span style={{ color: 'var(--color-bg)', fontSize: '0.8rem' }}>✓</span>}
                 </button>
+                
+                {/* Círculo con Emoji */}
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.2rem'
+                }}>
+                  {getEmojiForTask(task.taskName, type)}
+                </div>
+
                 <span style={{ 
                   fontSize: '1.1rem', 
                   fontWeight: 500, 
