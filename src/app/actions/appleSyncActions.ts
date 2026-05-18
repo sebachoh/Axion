@@ -257,8 +257,22 @@ export async function syncAppleCalendar(manualUserId?: string) {
         const cleanEndTime = `${endHour}${endMinute}00`;
 
         let summary = block.title;
-        if (summary.startsWith('Apple ')) {
-          summary = '🍎 ' + summary.substring(6);
+        const iconToEmoji: Record<string, string> = {
+          'Target': '🎯',
+          'Dumbbell': '🏋️',
+          'Book': '📚',
+          'Laptop': '💻',
+          'Brain': '🧠',
+          'Apple': '🍎',
+          'Music': '🎵',
+          'Palette': '🎨',
+          'Home': '🏠',
+          'Car': '🚗'
+        };
+        const words = summary.split(' ');
+        const firstWord = words[0];
+        if (iconToEmoji[firstWord]) {
+          summary = iconToEmoji[firstWord] + ' ' + words.slice(1).join(' ');
         }
 
         const icsData = [
