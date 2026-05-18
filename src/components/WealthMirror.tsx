@@ -30,7 +30,7 @@ export default function WealthMirror({ balance }: WealthMirrorProps) {
     localStorage.setItem('axion-wealth-hidden', next ? 'true' : 'false');
     window.dispatchEvent(new Event('storage'));
   };
-
+  //hola
   return (
     <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '4px solid #2ed573' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
