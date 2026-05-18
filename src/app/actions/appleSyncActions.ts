@@ -120,9 +120,9 @@ function parseEvent(data: string): { title: string, startTime: string, durationM
 /**
  * Sincroniza bidireccionalmente el calendario de Apple.
  */
-export async function syncAppleCalendar() {
+export async function syncAppleCalendar(manualUserId?: string) {
   const session = await auth();
-  const userId = (session?.user as any)?.id;
+  const userId = manualUserId || (session?.user as any)?.id;
   if (!userId) throw new Error("Unauthorized");
 
   if (!APPLE_ID || !APPLE_APP_SPECIFIC_PASSWORD) {
@@ -256,6 +256,11 @@ export async function syncAppleCalendar() {
         const cleanEndDate = `${endYear}${endMonth}${endDay}`;
         const cleanEndTime = `${endHour}${endMinute}00`;
 
+        let summary = block.title;
+        if (summary.startsWith('Apple ')) {
+          summary = '🍎 ' + summary.substring(6);
+        }
+
         const icsData = [
           'BEGIN:VCALENDAR',
           'VERSION:2.0',
@@ -268,7 +273,7 @@ export async function syncAppleCalendar() {
           `DTSTART:${cleanDate}T${cleanTime}00`,
           `DTEND:${cleanEndDate}T${cleanEndTime}`,
           'STATUS:CONFIRMED',
-          `SUMMARY:${block.title}`,
+          `SUMMARY:${summary}`,
           'END:VEVENT',
           'END:VCALENDAR'
         ].join('\r\n');
