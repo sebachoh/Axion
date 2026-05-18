@@ -174,6 +174,7 @@ export async function syncAppleCalendar(manualUserId?: string) {
         if (!event) continue;
 
         const lines = obj.data.split('\n');
+        // Fix: Added explicit type annotation for Vercel build
         const uidLine = lines.find((l: string) => l.trim().startsWith('UID:'));
         const icloud_id = uidLine ? uidLine.substring(4).trim() : obj.url;
 
