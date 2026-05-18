@@ -173,9 +173,8 @@ export async function syncAppleCalendar(manualUserId?: string) {
         const event = parseEvent(obj.data);
         if (!event) continue;
 
-        // Extraer el UID del evento para el mapeo
         const lines = obj.data.split('\n');
-        const uidLine = lines.find(l => l.trim().startsWith('UID:'));
+        const uidLine = lines.find((l: string) => l.trim().startsWith('UID:'));
         const icloud_id = uidLine ? uidLine.substring(4).trim() : obj.url;
 
         // Verificar si ya tenemos mapeado este evento
