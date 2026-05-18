@@ -6,7 +6,8 @@ import { Reorder } from 'framer-motion';
 
 function getEmojiForTask(name: string, type: 'morning' | 'night'): string {
   const lowercase = name.toLowerCase();
-  
+  //lolololo
+
   // Specific mappings based on keywords
   if (lowercase.includes('desayuno') || lowercase.includes('comer') || lowercase.includes('desayunar')) return '🍳';
   if (lowercase.includes('meditar') || lowercase.includes('yoga')) return '🧘';
@@ -16,13 +17,13 @@ function getEmojiForTask(name: string, type: 'morning' | 'night'): string {
   if (lowercase.includes('trabajar') || lowercase.includes('pc') || lowercase.includes('laptop')) return '💻';
   if (lowercase.includes('ducha') || lowercase.includes('bañar')) return '🚿';
   if (lowercase.includes('cafe') || lowercase.includes('café')) return '☕';
-  
+
   // New mappings for the user's specific routines
   if (lowercase.includes('planear') || lowercase.includes('plan')) return '📅';
   if (lowercase.includes('skincare') || lowercase.includes('cara') || lowercase.includes('lavar')) return '🧴';
   if (lowercase.includes('ropa') || lowercase.includes('alistar')) return '👕';
   if (lowercase.includes('pantalla')) return '📵';
-  
+
   // More general mappings
   if (lowercase.includes('estudiar') || lowercase.includes('aprender')) return '🧠';
   if (lowercase.includes('correr') || lowercase.includes('caminar')) return '🏃';
@@ -31,7 +32,7 @@ function getEmojiForTask(name: string, type: 'morning' | 'night'): string {
   if (lowercase.includes('limpiar') || lowercase.includes('ordenar')) return '🧹';
   if (lowercase.includes('cocinar')) return '👨‍🍳';
   if (lowercase.includes('agua') || lowercase.includes('hidratar')) return '💧';
-  
+
   return type === 'morning' ? '☀️' : '🌙';
 }
 
@@ -62,7 +63,7 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
 
     const tempId = crypto.randomUUID();
     const maxOrder = tasks.length > 0 ? Math.max(...tasks.map(t => t.orderIndex ?? 0)) : -1;
-    
+
     const newTask: RoutineTask = {
       id: tempId,
       type,
@@ -78,7 +79,7 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
 
   return (
     <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', flex: 1, minHeight: '100%' }}>
-      
+
       {/* Progress Bar overall */}
       {tasks.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>
@@ -87,21 +88,21 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
             <span>{Math.round((tasks.filter(t => t.isCompleted).length / tasks.length) * 100)}%</span>
           </div>
           <div style={{ height: '8px', width: '100%', background: 'rgba(0,0,0,0.1)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-            <div style={{ 
-              width: `${(tasks.filter(t => t.isCompleted).length / tasks.length) * 100}%`, 
-              background: 'linear-gradient(90deg, var(--bg-gradient-3), var(--color-text))', 
-              height: '100%', 
+            <div style={{
+              width: `${(tasks.filter(t => t.isCompleted).length / tasks.length) * 100}%`,
+              background: 'linear-gradient(90deg, var(--bg-gradient-3), var(--color-text))',
+              height: '100%',
               borderRadius: 'var(--radius-full)',
               transition: 'width 0.3s ease'
-             }}></div>
+            }}></div>
           </div>
         </div>
       )}
 
       {/* List */}
-      <Reorder.Group 
-        axis="y" 
-        values={tasks} 
+      <Reorder.Group
+        axis="y"
+        values={tasks}
         onReorder={async (newOrder) => {
           setTasks(newOrder);
           // Map to new indices
@@ -109,29 +110,29 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
           await updateRoutineOrder(updates);
         }}
         className="custom-scrollbar"
-        style={{ 
-          display: 'flex', flexDirection: 'column', gap: '0.8rem', 
-          marginBottom: 'auto', paddingRight: '10px' 
+        style={{
+          display: 'flex', flexDirection: 'column', gap: '0.8rem',
+          marginBottom: 'auto', paddingRight: '10px'
         }}
       >
         {tasks.map(task => (
-           <Reorder.Item key={task.id} value={task} style={{ listStyleType: 'none', cursor: 'grab' }} whileDrag={{ cursor: 'grabbing', scale: 1.02, zIndex: 10 }}>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Reorder.Item key={task.id} value={task} style={{ listStyleType: 'none', cursor: 'grab' }} whileDrag={{ cursor: 'grabbing', scale: 1.02, zIndex: 10 }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '12px', 
-              background: 'var(--glass-bg-hover)', 
+              padding: '12px',
+              background: 'var(--glass-bg-hover)',
               borderRadius: 'var(--radius-sm)',
               opacity: task.isCompleted ? 0.6 : 1,
               transition: 'opacity 0.2s'
             }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button
                   onClick={() => handleToggle(task.id, task.isCompleted)}
-                  style={{ 
-                    width: '24px', height: '24px', borderRadius: '50%', 
-                    border: '2px solid var(--color-text)', 
+                  style={{
+                    width: '24px', height: '24px', borderRadius: '50%',
+                    border: '2px solid var(--color-text)',
                     background: task.isCompleted ? 'var(--color-text)' : 'transparent',
                     cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -140,7 +141,7 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
                 >
                   {task.isCompleted && <span style={{ color: 'var(--color-bg)', fontSize: '0.8rem' }}>✓</span>}
                 </button>
-                
+
                 {/* Círculo con Emoji */}
                 <div style={{
                   width: '36px',
@@ -155,23 +156,23 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
                   {getEmojiForTask(task.taskName, type)}
                 </div>
 
-                <span style={{ 
-                  fontSize: '1.1rem', 
-                  fontWeight: 500, 
-                  textDecoration: task.isCompleted ? 'line-through' : 'none' 
+                <span style={{
+                  fontSize: '1.1rem',
+                  fontWeight: 500,
+                  textDecoration: task.isCompleted ? 'line-through' : 'none'
                 }}>
                   {task.taskName}
                 </span>
-             </div>
-             <button 
-               onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
-               className="icon-btn"
-               title="Eliminar rutina"
-             >
-               ×
-             </button>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
+                className="icon-btn"
+                title="Eliminar rutina"
+              >
+                ×
+              </button>
             </div>
-           </Reorder.Item>
+          </Reorder.Item>
         ))}
 
         {tasks.length === 0 && (
@@ -183,15 +184,15 @@ export default function RoutineList({ initialTasks, type, dateStr }: Props) {
 
       {/* Add Form */}
       <form onSubmit={handleAdd} style={{ display: 'flex', gap: '10px', marginTop: '2rem' }}>
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Añadir nuevo hábito a la rutina..."
           value={newTaskName}
           onChange={e => setNewTaskName(e.target.value)}
-          style={{ 
-            flex: 1, padding: '10px 14px', borderRadius: 'var(--radius-sm)', 
-            border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', 
-            color: 'var(--color-text)', outline: 'none' 
+          style={{
+            flex: 1, padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)',
+            color: 'var(--color-text)', outline: 'none'
           }}
         />
         <button type="submit" className="glass-button" style={{ background: 'var(--color-text)', color: 'var(--color-bg)' }}>

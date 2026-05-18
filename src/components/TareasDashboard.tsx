@@ -187,7 +187,7 @@ export default function TareasDashboard({ initialTasks }: Props) {
             fontWeight: 600, fontSize: '0.9rem',
             textDecoration: task.status === 'done' ? 'line-through' : 'none',
             color: task.status === 'done' ? 'var(--color-text-muted)' : 'var(--color-text)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+            whiteSpace: 'normal', wordBreak: 'break-word'
           }}>{task.title}</span>
           {task.notes && <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{task.notes}</span>}
           <div style={{ display: 'flex', gap: '8px', marginTop: '2px', fontSize: '0.72rem', fontWeight: 600 }}>
