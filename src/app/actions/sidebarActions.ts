@@ -15,6 +15,7 @@ const defaultSidebarLayout = [
       { id: 'planeacion', href: '/workspace/planeacion', label: 'Planeación del Día', icon: 'calendar' },
       { id: 'rutinas', href: '/rutinas', label: 'Rutinas', icon: 'routine' },
       { id: 'notas', href: '/stickynotes', label: 'Notas', icon: 'notes' },
+      { id: 'detox', href: '/detox', label: 'Detox', icon: 'compass' },
       { id: 'tareas', href: '/workspace/tareas', label: 'Tareas', icon: 'tasks' }
     ]
   },
