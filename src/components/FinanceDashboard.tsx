@@ -68,6 +68,9 @@ export default function FinanceDashboard({ transactions, goals, budgets = [] }: 
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
   const balance = totalIncome - totalExpense;
 
+  const totalMonthBudget = budgets.filter(b => b.month === selectedMonth).reduce((acc, b) => acc + b.amount, 0);
+  const totalMonthSpent = transactions.filter(t => t.type === 'expense' && t.date.startsWith(selectedMonth)).reduce((acc, t) => acc + t.amount, 0);
+
   // Save budget handler
   const handleSaveCatBudget = async (category: string, value: string) => {
     const amount = parseFloat(value);
@@ -240,6 +243,27 @@ export default function FinanceDashboard({ transactions, goals, budgets = [] }: 
                 </div>
               </div>
 
+              {/* General Month Budget Summary */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '0.5rem',
+                background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.75rem', opacity: 0.6, textTransform: 'uppercase', fontWeight: 700 }}>Presupuesto Total</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#a855f7' }}>€{totalMonthBudget.toLocaleString()}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.75rem', opacity: 0.6, textTransform: 'uppercase', fontWeight: 700 }}>Total Gastado</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: totalMonthSpent > totalMonthBudget && totalMonthBudget > 0 ? '#ff6b6b' : '#fff' }}>€{totalMonthSpent.toLocaleString()}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.75rem', opacity: 0.6, textTransform: 'uppercase', fontWeight: 700 }}>Restante</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: (totalMonthBudget - totalMonthSpent) >= 0 ? '#1dd1a1' : '#ff6b6b' }}>
+                    {totalMonthBudget > 0 ? `€${(totalMonthBudget - totalMonthSpent).toLocaleString()}` : '-'}
+                  </span>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
                 {CATEGORIES.map(cat => {
                   const budgetVal = budgets.find(b => b.category === cat && b.month === selectedMonth)?.amount || 0;
@@ -256,7 +280,7 @@ export default function FinanceDashboard({ transactions, goals, budgets = [] }: 
 
                   // Dynamic colors and status messages
                   let statusColor = '#a855f7'; // purple by default
-                  let statusText = 'Sin presupuesto establecido';
+                  let statusText = actualExpense > 0 ? 'Sin presupuesto (consumo libre)' : 'Sin presupuesto establecido';
                   if (budgetVal > 0) {
                     if (actualExpense > budgetVal) {
                       statusColor = '#ff6b6b'; // bright red
@@ -268,6 +292,8 @@ export default function FinanceDashboard({ transactions, goals, budgets = [] }: 
                       statusColor = '#1dd1a1'; // safe green
                       statusText = `Te quedan €${leftAmount.toLocaleString()}`;
                     }
+                  } else if (actualExpense > 0) {
+                    statusColor = '#ff6b6b'; // Warn if spending without budget limit
                   }
 
                   return (
@@ -307,27 +333,27 @@ export default function FinanceDashboard({ transactions, goals, budgets = [] }: 
                       </div>
 
                       {/* Info & Progress bar */}
-                      {budgetVal > 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                            <span style={{ opacity: 0.6 }}>Gastado: €{actualExpense.toLocaleString()} de €{budgetVal.toLocaleString()}</span>
-                            <span style={{ fontWeight: 700, color: statusColor }}>{pct}%</span>
-                          </div>
-                          
-                          {/* Progress bar */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                          <span style={{ opacity: 0.6 }}>Gastado: €{actualExpense.toLocaleString()} {budgetVal > 0 ? `de €${budgetVal.toLocaleString()}` : ''}</span>
+                          {budgetVal > 0 && <span style={{ fontWeight: 700, color: statusColor }}>{pct}%</span>}
+                        </div>
+                        
+                        {/* Progress bar */}
+                        {budgetVal > 0 && (
                           <div style={{ height: '8px', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', overflow: 'hidden' }}>
                             <div style={{ 
                               height: '100%', width: `${pct}%`, background: statusColor, 
                               borderRadius: '4px', transition: 'width 0.4s ease' 
                             }} />
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {/* Reference Text ("Te queda x...") */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', opacity: 0.85 }}>
                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusColor, display: 'inline-block' }} />
-                        <span style={{ fontWeight: 600, color: budgetVal > 0 ? '#fff' : 'var(--color-text-muted)' }}>{statusText}</span>
+                        <span style={{ fontWeight: 600, color: budgetVal > 0 && actualExpense === 0 ? 'var(--color-text-muted)' : '#fff' }}>{statusText}</span>
                       </div>
                     </div>
                   );
