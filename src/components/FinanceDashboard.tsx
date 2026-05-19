@@ -41,8 +41,9 @@ interface Props {
 }
 
 const CATEGORIES = [
-  '🏠 Vivienda', '🍕 Comida', '🚗 Transporte', '🎬 Ocio', 
-  '🏥 Salud', '🎓 Educación', '💼 Trabajo', '📈 Inversión', '🛠 Otros'
+  '🏠 Vivienda', '🍕 Comida', '🚗 Transporte', '🏥 Salud', 
+  '🧼 Higiene', '📱 Celular y suscripciones', '⚠️ Imprevistos', 
+  '💸 Pago prestamo', '🎓 Educación', '💼 Trabajo', '🎬 Salidas/Eventos'
 ];
 
 export default function FinanceDashboard({ transactions, goals, budgets = [] }: Props) {

@@ -25,8 +25,9 @@ interface Props {
 }
 
 const CATEGORIES = [
-  '🏠 Vivienda', '🍕 Comida', '🚗 Transporte', '🎬 Ocio', 
-  '🏥 Salud', '🎓 Educación', '💼 Trabajo', '📈 Inversión', '🛠 Otros'
+  '🏠 Vivienda', '🍕 Comida', '🚗 Transporte', '🏥 Salud', 
+  '🧼 Higiene', '📱 Celular y suscripciones', '⚠️ Imprevistos', 
+  '💸 Pago prestamo', '🎓 Educación', '💼 Trabajo', '🎬 Salidas/Eventos'
 ];
 
 // Color mapping for categories
@@ -34,12 +35,14 @@ const CATEGORY_COLORS: Record<string, string> = {
   '🏠 Vivienda': '#3b82f6', // Blue
   '🍕 Comida': '#ef4444', // Red
   '🚗 Transporte': '#f59e0b', // Yellow
-  '🎬 Ocio': '#ec4899', // Pink
   '🏥 Salud': '#10b981', // Green
-  '🎓 Educación': '#8b5cf6', // Purple
-  '💼 Trabajo': '#6366f1', // Indigo
-  '📈 Inversión': '#14b8a6', // Teal
-  '🛠 Otros': '#6b7280' // Gray
+  '🧼 Higiene': '#14b8a6', // Teal
+  '📱 Celular y suscripciones': '#8b5cf6', // Purple
+  '⚠️ Imprevistos': '#f97316', // Orange
+  '💸 Pago prestamo': '#f43f5e', // Rose
+  '🎓 Educación': '#6366f1', // Indigo
+  '💼 Trabajo': '#0ea5e9', // Sky
+  '🎬 Salidas/Eventos': '#ec4899' // Pink
 };
 
 export default function FinanceAnalytics({ transactions, budgets }: Props) {
