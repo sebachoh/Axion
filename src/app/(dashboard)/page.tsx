@@ -7,6 +7,7 @@ import BackgroundCustomizer from '@/components/BackgroundCustomizer';
 import HeroBanner from '@/components/HeroBanner';
 import { Sun, Moon, Zap, Calendar, Wallet, Flame, CheckSquare, Notebook } from 'lucide-react';
 import WealthBalanceCard from '@/components/WealthBalanceCard';
+import DashboardTaskItem from '@/components/DashboardTaskItem';
 
 const MOOD_EMOJIS: Record<string, string> = {
   '1': '😫',
@@ -235,9 +236,7 @@ export default async function DashboardPage() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {data.tasksToday.map(t => (
-                    <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderLeft: `5px solid ${getPriorityColor(t.priority)}` }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{t.title}</span>
-                    </div>
+                    <DashboardTaskItem key={t.id} task={t} />
                   ))}
                 </div>
               )}
